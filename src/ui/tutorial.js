@@ -7,7 +7,7 @@ export const TIPS = {
   start:() => 'Mỗi lượt ma lực tối đa +1 (tới 10) và hồi đầy. Lá nào đủ ma lực sẽ có viền sáng. Chạm một lá để hiện nút hành động, nhấp chuột phải (hoặc giữ lâu) để xem công dụng.' + (P(0).deckName === 'Thuỷ – Lôi' ? ' Thử triệu hồi Tiên Sấm (1 ma lực) trước.' : ''),
   upkeep:'Linh thú đầu tiên miễn phí, từ con thứ hai mỗi con khoá 1 viên ma lực ở các lượt sau (viên có gạch chéo). Đổi lại linh thú có Kênh phép làm phép cùng hệ của bạn mạnh thêm.',
   combo:'Combo đầu tiên: Aguamenti làm mục tiêu Ướt, rồi Fulmen (Sét) vào mục tiêu đang Ướt sẽ kích Giật lan: thêm 2 sát thương và lan sang mọi kẻ địch khác đang Ướt.',
-  react:'Phản ứng nguyên tố vừa kích hoạt. Bảng phản ứng nằm ở cột bên phải: ví dụ Đóng băng rồi Lửa thành Hơi nước gấp đôi sát thương, còn Nước sẽ Dập lửa.',
+  react:'Phản ứng nguyên tố vừa kích hoạt! Ướt + Sét = Giật lan · Đóng băng + Lửa = Hơi nước (×2) · Ướt + Lửa = Dập lửa · Cháy + Băng = Tan chảy · Ướt + Đóng băng = Đóng băng sâu. Bảng đầy đủ ở Kho lá bài.',
   mark:'Mỗi lần linh thú kênh phép, nó nhận 1 dấu ấn ◆. Linh thú có dạng tiến hoá đủ 2 dấu ấn sẽ tiến hoá ngay trên sân.',
   evolve:'Linh thú vừa tiến hoá! Dạng mới mạnh hơn, giữ nguyên chỗ và không tốn thêm ma lực.',
   attack:'Linh thú tấn công được từ lượt sau khi triệu hồi. Chạm linh thú có viền đỏ, bấm Tấn công rồi chọn mục tiêu. Đối thủ có Hộ vệ thì phải đánh Hộ vệ trước.',

@@ -62,14 +62,16 @@ export function render(){
   $('#oppHand').innerHTML = ai.hand.map(() => '<div class="card back mini"></div>').join('');
   $('#oppST').innerHTML = rowHTML(ai.st, MAXS); $('#oppFam').innerHTML = rowHTML(ai.fam, MAXF);
   $('#myFam').innerHTML = rowHTML(me.fam, MAXF); $('#myST').innerHTML = rowHTML(me.st, MAXS);
-  $('#myHand').innerHTML = me.hand.map(c => cardHTML(c, 'hand')).join('');
+  // Bài trên tay xoè hình quạt: --i là vị trí so với giữa, --ov là độ chồng (càng nhiều lá càng chồng)
+  const n = me.hand.length, mid = (n - 1) / 2, ov = n <= 4 ? .08 : n <= 6 ? .28 : .42;
+  $('#myHand').innerHTML = me.hand.map((c, i) => cardHTML(c, 'hand').replace('style="', `style="--i:${i - mid};--a:${Math.abs(i - mid)};--ov:${ov};`)).join('');
   $('#myInfo').innerHTML = heroHTML(0);
   const wd = WEATHER[W()];
   $('#turnline').innerHTML = `<button class="weather" data-weather-info="1"><span class="wdot w-${W()}"></span><b>${wd.name}</b><span class="wdesc">${wd.desc}</span>
     <span class="meta">còn ${G.weather.left} vòng · kế tiếp: <span class="wnext"><span class="wdot w-${G.forecast}"></span>${WEATHER[G.forecast].name}</span></span></button>
     <span class="turn">Lượt ${G.turnNo} · ${P(G.active).name}</span>`;
   $('#chain').innerHTML = G.chain.length ? `<span class="lbl">Chuỗi</span>` + G.chain.map((L, i) => `<span class="link ${i === G.chain.length - 1 ? 'top' : ''} ${L.negated ? 'neg' : ''} ${L.res ? 'res' : ''}" style="--k:var(--${L.card.d.kind})">${L.n}. ${L.card.d.name}</span>`).join('<span class="meta">→</span>') : '';
-  renderTip(); renderPrompt(); renderInsp(); renderMenu();
+  renderTip(); renderPrompt(); renderMenu(); fitField();
   $('#overlay').innerHTML = G.over ? `<div class="over"><div class="box"><h2>${G.winner === 0 ? 'Chiến thắng' : 'Thất bại'}</h2><p>${G.winner === 0 ? 'Pháp sư đối thủ đã gục.' : 'Bạn đã cạn sinh lực.'}</p><div class="row" style="justify-content:center"><button class="btn primary" id="again">Đấu lại</button><button class="btn" data-newgame="1">Đổi bộ bài</button></div></div></div>` : '';
 }
 export function renderTip(){
@@ -86,27 +88,11 @@ export function renderPrompt(){
   if (UI.pick) { text = UI.pick.text; btns = UI.pick.buttons.map(b => ({label:b.label, primary:b.primary, fn:() => resolvePick(b.v)})); }
   else if (G.over) text = 'Ván đấu đã kết thúc.';
   else if (G.active === 0 && !UI.busy) {
-    text = `Còn ${me.mana} ma lực. Chạm một lá để hiện nút hành động, nhấp chuột phải (hoặc giữ lâu) để xem công dụng.`;
+    text = `Còn <b>${me.mana}</b> ma lực.<br><span class="meta">Chạm lá để chọn hành động · chuột phải / giữ lâu để xem công dụng.</span>`;
     btns.push({label:'Kết thúc lượt', primary:true, fn:() => run(endTurn)});
   } else text = G.active === 0 ? 'Đang xử lý…' : 'Máy đang niệm phép…';
   UI.btns = btns.map(b => b.fn);
   $('#prompt').innerHTML = `<p>${text}</p>` + btns.map((b, i) => `<button class="btn ${b.primary ? 'primary' : ''}" data-btn="${i}" ${b.dis ? 'disabled' : ''}>${b.label}</button>`).join('');
-}
-export function renderInsp(){
-  const el = $('#insp'), x = UI.insp;
-  if (x && x.grave !== undefined) {
-    const g = P(x.grave).grave; el.className = 'panel insp empty';
-    el.innerHTML = `<h2>Mộ của ${P(x.grave).name}</h2>` + (g.length ? `<p>${g.map(c => c.d.name).join(', ')}</p>` : '<p class="meta">Chưa có lá nào.</p>');
-    return;
-  }
-  const c = x && x.card;
-  if (isHidden(c)) {
-    el.className = 'panel insp empty';
-    el.innerHTML = `<h2>Xem lá bài</h2><p class="meta">Chạm vào một lá hoặc nhấp chuột phải để đọc công dụng. Lá úp của đối thủ thì không xem được.</p>`;
-    return;
-  }
-  el.className = 'panel insp';
-  el.innerHTML = cardDetailHTML(c);
 }
 /* Nội dung chi tiết một lá: dùng cho khung "Xem lá bài" và bảng công dụng khi nhấp chuột phải */
 export function cardDetailHTML(c){
@@ -117,6 +103,16 @@ export function cardDetailHTML(c){
     ${Object.keys(c.st).length ? `<p class="meta">Đang: ${Object.keys(c.st).map(k => STN[k]).join(', ')}</p>` : ''}</div>`;
 }
 export function isHidden(c){ return !c || c.hero || (c.owner === 1 && (c.set || P(1).hand.includes(c))); }
+
+/* Mặt sân nghiêng chừa khoảng trống phía trên khung bao: kéo sân lên sát HUD đối thủ (chừa chỗ cho lá đứng ở hàng xa) */
+export function fitField(){
+  const f = document.querySelector('.field3d'); if (!f || !f.querySelector) return;   // sim: DOM giả không có querySelector
+  const pl = f.querySelector('.plane'); if (!pl) return;
+  if (!document.body.classList.contains('view-3d')) { f.style.marginTop = ''; return; }
+  const cw = pl.querySelector('.slot,.card')?.getBoundingClientRect().width || 80;
+  const gap = pl.getBoundingClientRect().top - f.getBoundingClientRect().top;
+  f.style.marginTop = Math.min(0, -(gap - cw * .45)) + 'px';
+}
 
 /* ---------- Nút hành động hiện ngay cạnh lá được chọn ---------- */
 export function menuFor(c){
@@ -171,6 +167,15 @@ export function showInfo(c, x, y){
   el.hidden = false;
   const m = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
   el.style.left = Math.min(Math.max(8, x + 12), vw - m.width - 8) + 'px';
+  el.style.top = Math.min(Math.max(8, y + 12), vh - m.height - 8) + 'px';
+}
+export function showGrave(pi, x, y){
+  const el = $('#cardinfo'), g = P(pi).grave;
+  el.className = 'cardinfo';
+  el.innerHTML = `<div class="iname">Mộ của ${P(pi).name}</div>` + (g.length ? `<p>${g.map(c => c.d.name).join(', ')}</p>` : '<p class="meta">Chưa có lá nào.</p>');
+  el.hidden = false;
+  const m = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+  el.style.left = Math.min(Math.max(8, x - m.width / 2), vw - m.width - 8) + 'px';
   el.style.top = Math.min(Math.max(8, y + 12), vh - m.height - 8) + 'px';
 }
 export function hideInfo(){ const el = $('#cardinfo'); if (el && !el.hidden) el.hidden = true; }

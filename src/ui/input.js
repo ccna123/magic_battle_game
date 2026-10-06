@@ -3,7 +3,7 @@ import { G, P, allTargets, hero, resolvePick } from '../engine/core.js';
 import { ART, applyArt, saveArt } from './art.js';
 import { loadArt, renderLib } from './library.js';
 import { canNewGame, closeDeckPick, openDeckPick, renderDeckPick, startWithDeck } from './deckpick.js';
-import { canMenu, hideInfo, placeMenu, render, showInfo } from './render.js';
+import { canMenu, fitField, hideInfo, placeMenu, render, showGrave, showInfo } from './render.js';
 import { UI } from './state.js';
 import { dismissTip } from './tutorial.js';
 
@@ -46,10 +46,10 @@ export function bindInput(){
     if (ac) { const f = ac.dataset.act === 'close' ? null : UI.acts[+ac.dataset.act]; UI.sel = null; if (f) f(); else render(); return; }
     if (e.target.closest('#cardmenu')) return;
     const b = e.target.closest('[data-btn]'); if (b) { const f = UI.btns[+b.dataset.btn]; if (f) f(); return; }
-    const gv = e.target.closest('[data-grave]'); if (gv) { UI.insp = {grave:+gv.dataset.grave}; UI.sel = null; render(); return; }
+    const gv = e.target.closest('[data-grave]'); if (gv) { const r = gv.getBoundingClientRect(); if (UI.sel) { UI.sel = null; render(); } showGrave(+gv.dataset.grave, r.left + r.width / 2, r.bottom); return; }
     const bd = e.target.closest('[data-bond]');
     if (bd) {
-      const bc = P(+bd.dataset.bond).bond.card; UI.insp = {card:bc};
+      const bc = P(+bd.dataset.bond).bond.card;
       UI.sel = UI.sel !== bc && canMenu(bc) ? bc : null;
       render(); return;
     }
@@ -58,7 +58,6 @@ export function bindInput(){
     const el = e.target.closest('[data-uid]');
     const c = el && allTargets().find(x => String(x.uid) === el.dataset.uid);
     if (!c) { if (UI.sel) { UI.sel = null; render(); } return; }
-    UI.insp = {card:c};
     if (UI.pick) { if (UI.pick.cands.has(c.uid)) resolvePick(c); else render(); return; }
     // Chạm lá: hiện nút hành động ngay cạnh lá (chạm lại để ẩn)
     UI.sel = UI.sel !== c && canMenu(c) ? c : null;
@@ -78,7 +77,7 @@ export function bindInput(){
     clearTimeout(press); press = setTimeout(() => { press = null; pressed = true; showInfo(t, p.clientX, p.clientY); }, 500);
   }, {passive:true});
   for (const ev of ['touchend', 'touchmove', 'touchcancel']) document.addEventListener(ev, () => { clearTimeout(press); press = null; }, {passive:true});
-  window.addEventListener('resize', () => { placeMenu(); hideInfo(); });
+  window.addEventListener('resize', () => { fitField(); placeMenu(); hideInfo(); });
   document.addEventListener('scroll', () => { placeMenu(); hideInfo(); }, true);
   $('#artFile').addEventListener('change', e => { const f = e.target.files && e.target.files[0]; if (f && UI.uploadFor) loadArt(f, UI.uploadFor); });
   document.addEventListener('keydown', e => {

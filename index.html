@@ -11,48 +11,32 @@
 </head>
 <body class="view-3d">
 <div class="app">
-  <main style="min-width:0">
-    <div class="head">
-      <div>
-        <h1>Đấu Trường <span>Phép Thuật</span></h1>
-        <p class="sub">Bản thử luật mới: ma lực, linh thú khế ước, kênh phép, phản ứng nguyên tố và thời tiết sân đấu.</p>
-      </div>
-      <div class="row"><button class="btn" id="viewBtn" aria-pressed="true">Góc nhìn: Nghiêng</button><button class="btn" data-newgame="1">Chọn bộ bài</button><button class="btn" id="openLib">Kho lá bài</button></div>
-    </div>
-    <div class="board">
+  <div class="head">
+    <h1>Đấu Trường <span>Phép Thuật</span></h1>
+    <div class="row"><button class="btn sm" id="viewBtn" aria-pressed="true">Góc nhìn: Nghiêng</button><button class="btn sm" data-newgame="1">Chọn bộ bài</button><button class="btn sm" id="openLib">Kho lá bài</button></div>
+  </div>
+  <!-- Màn chơi kiểu Tag Force: HUD đối thủ trên, sân nghiêng giữa, bảng lệnh bên phải, bài trên tay xoè ngay trong màn -->
+  <div class="board">
+    <div class="hud top">
       <div class="info" id="oppInfo"></div>
       <div class="opphand" id="oppHand"></div>
-      <!-- Sân đấu: mặt phẳng nghiêng kiểu Tag Force (tắt bằng nút Góc nhìn) -->
-      <div class="field3d"><div class="plane">
-        <div class="zone opp"><span class="zlabel">Phép</span><span id="oppST" style="display:contents"></span></div>
-        <div class="zone z3 opp"><span class="zlabel">Linh thú</span><span id="oppFam" style="display:contents"></span></div>
-        <div class="midline"></div>
-        <div class="zone z3 me"><span class="zlabel">Linh thú</span><span id="myFam" style="display:contents"></span></div>
-        <div class="zone me"><span class="zlabel">Phép</span><span id="myST" style="display:contents"></span></div>
-      </div></div>
-      <div class="strip">
-        <div class="phases" id="turnline"></div>
-        <div class="chain" id="chain"></div>
-        <div id="tip"></div>
-        <div class="prompt" id="prompt"></div>
-      </div>
-      <div class="hand" id="myHand"></div>
-      <div class="info" id="myInfo"></div>
     </div>
-  </main>
-  <aside>
-    <div class="panel insp" id="insp"></div>
-    <div class="panel">
-      <h2>Phản ứng nguyên tố</h2>
-      <table class="react-table"><tbody>
-        <tr><td><span class="st-wet">Ướt</span> + <span class="st-stun">Sét</span></td><td>Giật lan: +2 sát thương, lan 2 sang mọi kẻ địch khác đang Ướt</td></tr>
-        <tr><td><span class="st-frozen">Đóng băng</span> + <span class="st-burn">Lửa</span></td><td>Hơi nước: sát thương ×2</td></tr>
-        <tr><td><span class="st-wet">Ướt</span> + <span class="st-burn">Lửa</span></td><td>Dập lửa: −2 sát thương, không gây Cháy</td></tr>
-        <tr><td><span class="st-burn">Cháy</span> + <span class="st-frozen">Băng</span></td><td>Tan chảy: +1 sát thương</td></tr>
-        <tr><td><span class="st-wet">Ướt</span> + <span class="st-frozen">Đóng băng</span></td><td>Đóng băng sâu: kéo dài thêm 1 lượt</td></tr>
-      </tbody></table>
+    <div class="phases" id="turnline"></div>
+    <div class="field3d"><div class="plane">
+      <div class="zone opp"><span class="zlabel">Phép</span><span id="oppST" style="display:contents"></span></div>
+      <div class="zone z3 opp"><span class="zlabel">Linh thú</span><span id="oppFam" style="display:contents"></span></div>
+      <div class="midline"></div>
+      <div class="zone z3 me"><span class="zlabel">Linh thú</span><span id="myFam" style="display:contents"></span></div>
+      <div class="zone me"><span class="zlabel">Phép</span><span id="myST" style="display:contents"></span></div>
+    </div></div>
+    <div class="strip">
+      <div class="chain" id="chain"></div>
+      <div id="tip"></div>
+      <div class="prompt" id="prompt"></div>
     </div>
-  </aside>
+    <div class="hand" id="myHand"></div>
+    <div class="hud bottom"><div class="info" id="myInfo"></div></div>
+  </div>
 </div>
 <div id="overlay"></div>
 <div id="cardmenu" class="cardmenu" role="menu" hidden></div>
