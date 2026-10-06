@@ -1,0 +1,468 @@
+<title>Xưởng Sprite Gemini</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Alegreya+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: cột đơn, đầu trang là cách dùng, sau đó 19 thẻ đợt xếp lưới 2 cột trên màn rộng */
+:root{
+  --bg:#0e1517; --panel:#15222a; --rail:#2a3d45; --ink:#ece5d1; --mute:#93a39f; --brass:#d1a94f;
+  --creature:#b9803f; --spell:#3f9c82; --done:#7cc49b;
+  --font-display:'Grenze Gotisch','Times New Roman',Georgia,serif;
+  --font-body:'Alegreya Sans','Segoe UI',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15.5px;line-height:1.5;margin:0;padding:20px 16px 48px}
+.wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(32px,6vw,48px);line-height:1;margin:0;text-wrap:balance}
+h1 span{color:var(--brass)}
+.lead{color:var(--mute);margin:6px 0 0;max-width:68ch}
+.stats{display:flex;gap:18px;flex-wrap:wrap;font-variant-numeric:tabular-nums;color:var(--mute);font-size:14px}
+.stats b{color:var(--ink);font-size:20px;font-weight:700;margin-right:4px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.step{background:var(--panel);border:1px solid var(--rail);border-radius:12px;padding:12px 14px}
+.step b{font-family:var(--font-display);font-weight:500;font-size:19px;display:block;margin-bottom:2px}
+.step p{margin:0;color:var(--mute);font-size:14.5px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--rail);border-radius:8px;padding:6px 12px;cursor:pointer}
+.btn:hover,.btn:focus-visible{border-color:var(--brass);outline:none}
+.btn.on{border-color:var(--brass);color:var(--brass)}
+.btn.primary{background:var(--brass);border-color:var(--brass);color:var(--bg);font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,500px),1fr));gap:14px}
+.batch{background:var(--panel);border:1px solid var(--rail);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0;border-top:4px solid var(--k)}
+.batch.creature{--k:var(--creature)} .batch.spell{--k:var(--spell)}
+.batch.is-done{opacity:.62}
+.bhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.bnum{font-variant-numeric:tabular-nums;color:var(--mute);font-size:13px;letter-spacing:.06em}
+.bhead h2{font-family:var(--font-display);font-weight:500;font-size:24px;margin:0;line-height:1.1}
+.kind{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--k)}
+.names{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;font-size:13px}
+.names span{background:color-mix(in srgb,var(--bg) 60%,var(--panel));border-radius:5px;padding:3px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.names i{font-style:normal;color:var(--mute);font-variant-numeric:tabular-nums;margin-right:4px}
+@media (max-width:460px){.names{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row label{display:flex;gap:6px;align-items:center;color:var(--mute);font-size:14px;margin-left:auto;cursor:pointer}
+.row input{accent-color:var(--done);width:16px;height:16px}
+details summary{cursor:pointer;color:var(--mute);font-size:13.5px}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--rail);border-radius:8px;padding:10px;font:12.5px/1.45 ui-monospace,Menlo,Consolas,monospace;color:var(--ink);margin:8px 0 0;max-height:280px;overflow:auto}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--brass);color:var(--bg);font-weight:700;padding:8px 16px;border-radius:99px;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.style-box pre{max-height:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Xưởng Sprite <span>Gemini</span></h1>
+    <p class="lead">304 sprite mới cho Đấu Trường Phép Thuật: 192 quái thú và 112 phép, chia thành 19 đợt. Mỗi đợt là một tấm lưới 4×4 (16 hình) cùng chủ đề, để màu sắc và nét vẽ trong một tấm đồng bộ với nhau.</p>
+  </header>
+  <div class="stats" id="stats"></div>
+  <div class="steps">
+    <div class="step"><b>1. Làm đợt 1 trước</b><p>Sao chép prompt, dán vào Gemini và chọn ảnh vuông. Tạo lại đến khi đủ 16 ô, không có ô trùng và không có con nào bị cắt.</p></div>
+    <div class="step"><b>2. Đính kèm ảnh mẫu</b><p>Từ đợt 2 trở đi, đính kèm tấm đợt 1 cùng prompt. Prompt đã có sẵn câu yêu cầu vẽ theo đúng phong cách ảnh đính kèm.</p></div>
+    <div class="step"><b>3. Gửi lại cho Claude</b><p>Gửi ảnh kèm số đợt, ví dụ "đợt 7". Mỗi ô sẽ được cắt, xoá nền và gán vào đúng id trong danh sách.</p></div>
+  </div>
+  <details class="step style-box">
+    <summary>Khối phong cách chung (đã nằm sẵn trong mọi prompt)</summary>
+    <pre id="styleText"></pre>
+  </details>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="grid"></div>
+</div>
+<div class="toast" id="toast">Đã sao chép</div>
+
+<script>
+const STYLE = `Pixel art sprite sheet for a dark-fantasy card dueling game. Square image.
+Style: 64x64-pixel-art look, crisp 1-pixel dark outline, no anti-aliasing, limited palette of about 24 colors,
+light from the top-left, slight 3/4 front view, rich jewel tones, storybook bestiary mood.
+Layout: a 4x4 grid of 16 equal square cells separated by thin dark lines.
+Each cell holds exactly one subject. The subject is small, about 60% of the cell width, centered,
+with wide empty margin on every side. Nothing touches or crosses the cell lines. Nothing is cropped:
+wing tips, tails, horns, antlers and weapons are fully visible inside the cell.
+Background: solid flat magenta (#FF00FF) in every cell, no gradient, no floor, no scenery, no shadows.
+Every cell shows a different subject. No variations, no duplicates, no empty cells, no extra subjects.
+No text, no letters, no numbers, no watermark, no signature.
+If an image is attached, match its exact art style, outline weight, palette and subject scale.`;
+const SPELL_LINE = `Each subject is a spell emblem: a plain wooden wand pointing up-right with the magical effect bursting from its tip.
+Bold readable icon, no hands, no people, nothing outside the cell.`;
+
+// [id, tên tiếng Việt, mô tả cho Gemini]
+const BATCHES = [
+ {t:'Rừng già', k:'creature', items:[
+  ['treant_sapling','Mầm Cây Thần','a small walking tree sapling with a mossy face'],
+  ['oak_guardian','Hộ Vệ Sồi','a giant oak tree guardian with glowing amber eyes and branch arms'],
+  ['moss_bear','Gấu Rêu','a large bear covered in moss and tiny mushrooms'],
+  ['thorn_fox','Cáo Gai','a red fox with a thorny bramble tail'],
+  ['stag_spirit','Linh Hươu','a pale green spirit stag with leafy antlers'],
+  ['silver_boar','Lợn Rừng Nanh Bạc','a wild boar with huge silver tusks'],
+  ['mushroom_imp','Yêu Tinh Nấm','a tiny imp wearing a red spotted mushroom cap'],
+  ['vine_serpent','Rắn Dây Leo','a serpent made of twisting green vines with flower eyes'],
+  ['owlbear','Gấu Cú','a bear-owl hybrid with a feathered head and big claws'],
+  ['dryad','Nữ Thần Cây','a dryad woman with bark skin and leaf hair'],
+  ['beetle_knight','Bọ Hiệp Sĩ','a giant armored stag beetle with a shiny green shell'],
+  ['wolf_alpha','Sói Đầu Đàn','a large black wolf with glowing green eyes'],
+  ['firefly_pixies','Bầy Tiên Đom Đóm','a small cluster of three glowing firefly pixies'],
+  ['iron_hedgehog','Nhím Giáp','a giant hedgehog with metal spikes'],
+  ['raven_trickster','Quạ Láu Lỉnh','a raven holding a tiny stolen ring in its beak'],
+  ['forest_troll','Troll Rừng','a lanky forest troll with bark-like skin and a staff']]},
+ {t:'Đầm lầy', k:'creature', items:[
+  ['bog_hag','Phù Thuỷ Đầm Lầy','a hunched bog hag with green skin and a crooked staff'],
+  ['moss_croc','Cá Sấu Rêu','a crocodile with algae-covered scales'],
+  ['giant_leech','Đỉa Khổng Lồ','a giant slimy purple leech'],
+  ['toad_king','Vua Cóc','a fat warty toad wearing a tiny crown'],
+  ['wisp','Ma Trơi','a floating blue flame wisp with a faint face'],
+  ['mud_golem','Golem Bùn','a dripping mud golem with reeds growing on it'],
+  ['hydra_whelp','Hydra Con','a small three-headed swamp hydra'],
+  ['blood_mosquito','Muỗi Độc','a giant mosquito with a glowing red abdomen'],
+  ['kelpie','Ngựa Nước','a water horse with a seaweed mane'],
+  ['lizardfolk','Người Thằn Lằn','a lizardfolk warrior with a bone spear'],
+  ['bog_zombie','Xác Sống Đầm','a swamp zombie draped in moss'],
+  ['poison_newt','Kỳ Nhông Độc','a spotted poison salamander, bright yellow and black'],
+  ['heron_witch','Diệc Phù Thuỷ','a tall grey heron wearing a small witch hat'],
+  ['grave_moth','Bướm Đêm Mộ','a large pale moth with skull-patterned wings'],
+  ['shock_eel','Lươn Điện','a glowing electric eel crackling with sparks'],
+  ['fungus_horror','Quái Nấm','a shambling mass of glowing purple fungus']]},
+ {t:'Núi & hang động', k:'creature', items:[
+  ['cave_troll','Troll Hang','a hulking grey cave troll with a stone club'],
+  ['rune_golem','Golem Đá Rune','a golem of stacked boulders with glowing runes'],
+  ['giant_bat','Dơi Khổng Lồ','a giant bat with ragged wings'],
+  ['goblin_miner','Goblin Thợ Mỏ','a goblin with a pickaxe and a candle helmet'],
+  ['crystal_spider','Nhện Pha Lê','a spider with crystal shard legs'],
+  ['dwarf_runesmith','Người Lùn Thợ Rune','a dwarf with a braided beard holding a glowing hammer'],
+  ['basalt_tortoise','Rùa Đá','a tortoise with a volcanic rock shell'],
+  ['giant_mole','Chuột Chũi Khổng Lồ','a giant mole with huge digging claws'],
+  ['cyclops','Khổng Lồ Một Mắt','a one-eyed cyclops with a tree-trunk club'],
+  ['gargoyle','Gargoyle','a stone gargoyle crouching with bat wings'],
+  ['ogre','Ogre','a fat ogre with a spiked club'],
+  ['manticore','Manticore','a manticore with a lion body, bat wings and a scorpion tail'],
+  ['griffin','Griffin','a griffin with golden feathers and a lion body'],
+  ['mountain_ram','Cừu Núi Khổng Lồ','a giant mountain ram with spiral horns'],
+  ['gem_slime','Slime Ngọc','a translucent slime with gemstones floating inside'],
+  ['kobold_trapper','Kobold Đặt Bẫy','a small kobold holding a rope trap']]},
+ {t:'Bất tử & ma quái', k:'creature', items:[
+  ['skeleton_warrior','Bộ Xương Chiến Binh','a skeleton warrior with a rusted sword and shield'],
+  ['skeleton_archer','Bộ Xương Cung Thủ','a skeleton archer with a bone bow'],
+  ['lich','Vu Sư Bất Tử','a lich in tattered robes holding a glowing skull staff'],
+  ['hooded_wraith','Oan Hồn','a hooded wraith with no face, only two glowing eyes'],
+  ['ghoul','Quỷ Ăn Xác','a hunched pale ghoul with long claws'],
+  ['bone_dragon','Rồng Xương','a skeletal dragon with green ghost fire, wings folded'],
+  ['banshee_queen','Nữ Hoàng Than Khóc','a crowned banshee with flowing ghostly hair'],
+  ['mummy','Xác Ướp','a bandaged mummy with glowing blue eyes'],
+  ['headless_knight','Kỵ Sĩ Không Đầu','a headless knight carrying his helmet under one arm'],
+  ['ghost_hound','Chó Ma','a translucent spectral hound'],
+  ['poltergeist','Ma Quậy','a small mischievous ghost throwing a plate'],
+  ['bat_swarm','Bầy Dơi Đỏ','a small cluster of red-eyed bats'],
+  ['crypt_spider','Nhện Hầm Mộ','a pale spider with a skull pattern on its back'],
+  ['death_knight','Hiệp Sĩ Tử Thần','an armored knight with a flaming blue sword'],
+  ['stitched_giant','Xác Sống Khâu Vá','a giant stitched-together zombie'],
+  ['soul_lantern','Đèn Lồng Linh Hồn','a floating lantern with a trapped soul inside']]},
+ {t:'Biển & hồ', k:'creature', items:[
+  ['sea_serpent','Thuỷ Quái','a long finned sea serpent, coiled'],
+  ['siren','Nàng Tiên Cá Hát','a siren mermaid with a pearl necklace'],
+  ['giant_crab','Cua Khổng Lồ','a giant red crab with huge claws'],
+  ['glow_jelly','Sứa Phát Sáng','a glowing blue jellyfish'],
+  ['shark_knight','Hiệp Sĩ Cá Mập','a shark-man warrior with a trident'],
+  ['island_turtle','Rùa Đảo','an ancient sea turtle with a tiny island on its shell'],
+  ['octo_wizard','Bạch Tuộc Pháp Sư','an octopus wearing a wizard hat and holding a wand'],
+  ['water_nymph','Thuỷ Thần','a water nymph made of flowing water'],
+  ['anglerfish','Cá Lồng Đèn','an anglerfish with a glowing lure'],
+  ['war_seahorse','Cá Ngựa Chiến','a large armored seahorse'],
+  ['pufferfish','Cá Nóc Gai','a spiky pufferfish puffed up'],
+  ['lake_monster','Quái Vật Hồ','a long-necked lake monster'],
+  ['coral_golem','Golem San Hô','a golem made of pink coral'],
+  ['narwhal','Kỳ Lân Biển','a narwhal with a glowing spiral horn'],
+  ['pirate_ghost','Hải Tặc Ma','a ghostly pirate with a cutlass'],
+  ['manta_ray','Cá Đuối Bay','a large manta ray gliding']]},
+ {t:'Bầu trời', k:'creature', items:[
+  ['thunderbird','Chim Sấm','a huge thunderbird with lightning-edged feathers'],
+  ['pegasus','Pegasus','a white winged horse'],
+  ['harpy','Harpy','a harpy with a woman\'s face and eagle wings'],
+  ['roc','Đại Bàng Roc','a giant roc eagle clutching a boulder'],
+  ['cloud_giant','Khổng Lồ Mây','a giant made of clouds'],
+  ['storm_falcon','Chim Ưng Bão','a falcon wreathed in wind'],
+  ['sky_whale','Cá Voi Trời','a whale floating in the sky with tiny clouds around it'],
+  ['feather_serpent','Rắn Lông Vũ','a feathered serpent with rainbow plumes'],
+  ['wind_sprite','Tiên Gió','a small swirling wind spirit with a face'],
+  ['omen_vulture','Kền Kền Điềm Gở','a black vulture with red eyes'],
+  ['kite_dragon','Rồng Diều','a thin dragon shaped like a paper kite'],
+  ['sage_owl','Cú Hiền Triết','an old owl with spectacles and a book'],
+  ['bat_king','Vua Dơi','a large bat wearing a crown'],
+  ['crow_flock','Bầy Quạ','a small swirling flock of crows'],
+  ['star_moth','Bướm Sao','a moth with starry night-sky wings'],
+  ['sky_jelly','Sứa Bay','a jellyfish floating in the air']]},
+ {t:'Sa mạc', k:'creature', items:[
+  ['sand_wurm','Giun Cát','a giant sand worm rearing up with sand spraying'],
+  ['giant_scorpion','Bọ Cạp Khổng Lồ','a giant black scorpion'],
+  ['djinn','Thần Đèn','a blue djinn rising from a brass lamp'],
+  ['mummy_cat','Mèo Ướp Xác','a bandaged mummy cat'],
+  ['jackal_warrior','Chiến Binh Chó Rừng','a jackal-headed warrior with a spear'],
+  ['ghost_camel','Lạc Đà Linh','a ghostly camel'],
+  ['sun_lizard','Thằn Lằn Mặt Trời','a lizard with a glowing sun-shaped frill'],
+  ['dust_devil','Quỷ Bụi','a whirlwind of sand with angry eyes'],
+  ['gold_scarab','Bọ Hung Vàng','a large golden scarab beetle'],
+  ['cobra_queen','Rắn Hổ Mang Chúa','a giant cobra with golden hood ornaments'],
+  ['naga','Naga','a naga with a snake lower body holding a scimitar'],
+  ['glass_golem','Golem Thuỷ Tinh','a golem made of desert glass'],
+  ['bone_vulture','Kền Kền Xương','a skeleton vulture'],
+  ['mirage_fox','Cáo Ảo Ảnh','a fennec fox shimmering like a mirage'],
+  ['sphinx_cat','Nhân Sư Nhỏ','a small sphinx: cat body with a calm human face and a striped headdress'],
+  ['tomb_guardian','Vệ Thần Lăng Mộ','a stone guardian statue with a jackal head']]},
+ {t:'Băng giá', k:'creature', items:[
+  ['yeti','Người Tuyết','a white furry yeti'],
+  ['frost_wolf','Sói Băng','a wolf with icy crystal fur'],
+  ['ice_golem','Golem Băng','a golem of blue ice blocks'],
+  ['snow_owl','Cú Tuyết','a snowy owl breathing frost'],
+  ['mammoth','Voi Ma Mút','a woolly mammoth'],
+  ['ice_dragon','Rồng Băng','a pale blue ice dragon, wings folded'],
+  ['frost_giant','Khổng Lồ Băng','a frost giant with an ice axe'],
+  ['penguin_knight','Chim Cánh Cụt Hiệp Sĩ','a penguin in tiny armor with a sword'],
+  ['snow_fairy','Tiên Tuyết','a tiny snowflake fairy'],
+  ['walrus','Hải Mã','a walrus with huge tusks'],
+  ['ice_wraith','Hồn Băng','a frozen wraith with icicle claws'],
+  ['armored_polar_bear','Gấu Bắc Cực','a polar bear wearing frost armor'],
+  ['crystal_stag','Hươu Pha Lê','a stag with ice crystal antlers'],
+  ['cursed_snowman','Người Tuyết Bị Nguyền','an evil snowman with coal eyes'],
+  ['frost_moth','Bướm Băng','a moth with frosted wings'],
+  ['aurora_serpent','Rắn Cực Quang','a serpent glowing with aurora colors']]},
+ {t:'Lửa & núi lửa', k:'creature', items:[
+  ['fire_salamander','Kỳ Nhông Lửa','a salamander made of flames'],
+  ['magma_golem','Golem Dung Nham','a golem of cracked glowing magma'],
+  ['hellhound','Chó Địa Ngục','a black hound with a fire mane'],
+  ['fire_imp','Tiểu Quỷ Lửa','a tiny red imp with flame horns'],
+  ['phoenix_chick','Phượng Hoàng Non','a small baby phoenix'],
+  ['lava_turtle','Rùa Dung Nham','a turtle with a tiny volcano on its shell'],
+  ['efreet','Thần Lửa','a fire djinn with a smoky lower body'],
+  ['ember_bat','Dơi Than','a bat made of glowing embers'],
+  ['fire_drake','Rồng Lửa Nhỏ','a small red drake breathing a little fire'],
+  ['ash_wraith','Hồn Tro','a wraith made of ash and smoke'],
+  ['flame_horse','Ngựa Lửa','a horse with a flaming mane and hooves'],
+  ['obsidian_knight','Hiệp Sĩ Hắc Thạch','a knight in obsidian armor'],
+  ['coal_beetle','Bọ Than','a beetle with a glowing coal shell'],
+  ['lava_slime','Slime Dung Nham','a bubbling lava slime'],
+  ['cinder_bird','Chim Tàn Lửa','a small bird trailing sparks'],
+  ['volcano_titan','Titan Núi Lửa','a huge titan with a volcano on its back']]},
+ {t:'Cơ khí & đồ vật sống', k:'creature', items:[
+  ['brass_automaton','Người Máy Đồng','a brass automaton with a wind-up key on its back'],
+  ['paper_golem','Golem Giấy','a golem of folded parchment pages'],
+  ['book_mimic','Sách Ăn Thịt','a spellbook with teeth and a tongue'],
+  ['chest_mimic','Rương Ăn Thịt','a treasure chest with teeth'],
+  ['living_armor','Áo Giáp Sống','an empty suit of armor walking'],
+  ['broom_servant','Chổi Phục Vụ','an enchanted broom with little arms carrying a bucket'],
+  ['clock_owl','Cú Cơ Khí','a mechanical owl made of gears'],
+  ['gear_spider','Nhện Bánh Răng','a mechanical spider of gears'],
+  ['candle_golem','Golem Nến','a golem of melting candles'],
+  ['mirror_knight','Hiệp Sĩ Gương','a knight made of mirror shards'],
+  ['teapot_dragon','Rồng Ấm Trà','a small dragon shaped like a teapot'],
+  ['pumpkin_scarecrow','Bù Nhìn Bí Ngô','a scarecrow with a glowing pumpkin head'],
+  ['crystal_sentinel','Lính Canh Pha Lê','a crystal sentinel statue'],
+  ['chess_knight','Mã Cờ Sống','a living stone chess knight piece'],
+  ['puppet_jester','Rối Hề','a puppet jester hanging on strings'],
+  ['iron_bull','Bò Sắt','an iron bull breathing steam']]},
+ {t:'Rồng', k:'creature', items:[
+  ['emerald_dragon','Rồng Lục Bảo','an emerald green dragon, wings folded'],
+  ['ruby_dragon','Rồng Hồng Ngọc','a ruby red dragon, wings folded'],
+  ['sapphire_dragon','Rồng Lam Ngọc','a sapphire blue dragon, wings folded'],
+  ['gold_dragon','Rồng Vàng','a golden dragon, wings folded'],
+  ['shadow_dragon','Rồng Bóng Tối','a black shadow dragon with purple eyes'],
+  ['storm_dragon','Rồng Bão','a dragon crackling with lightning'],
+  ['forest_dragon','Rồng Rừng','a dragon with bark scales and leaves'],
+  ['sea_dragon','Rồng Biển','a sea dragon with fins'],
+  ['crystal_dragon','Rồng Pha Lê','a crystal dragon'],
+  ['baby_dragon','Rồng Con','a cute baby dragon hatching from an egg'],
+  ['wyrm','Rồng Rắn','a long wingless wyrm, coiled'],
+  ['sun_dragon','Rồng Mặt Trời','a radiant white-gold sun dragon'],
+  ['moon_dragon','Rồng Mặt Trăng','a silver moon dragon'],
+  ['twin_head_dragon','Rồng Hai Đầu','a two-headed dragon'],
+  ['dragon_turtle','Rùa Rồng','a dragon turtle'],
+  ['dragon_rider','Kỵ Sĩ Rồng','a knight riding a small dragon']]},
+ {t:'Tiên & linh thú nhỏ', k:'creature', items:[
+  ['fairy_queen','Nữ Hoàng Tiên','a fairy queen with butterfly wings'],
+  ['gnome_wizard','Gnome Pháp Sư','a gnome wizard with a tall pointed hat'],
+  ['house_brownie','Tiểu Quỷ Nhà','a small brownie house spirit holding a broom'],
+  ['gold_sprite','Yêu Tinh Vàng','a small bearded sprite sitting on a pot of gold'],
+  ['satyr','Thần Dê','a satyr playing pan pipes'],
+  ['flower_sprite','Tiên Hoa','a tiny flower sprite'],
+  ['moon_rabbit','Thỏ Trăng','a white rabbit with a crescent moon mark'],
+  ['cat_familiar','Mèo Phù Thuỷ','a black cat familiar with glowing eyes'],
+  ['toad_familiar','Cóc Phù Thuỷ','a toad familiar with a gem on its head'],
+  ['kitsune','Hồ Ly Chín Đuôi','a nine-tailed fox'],
+  ['tanuki','Tanuki','a tanuki with a leaf on its head'],
+  ['kappa','Kappa','a kappa water creature with a bowl-shaped head'],
+  ['star_nymph','Tiên Sao','a glowing star nymph'],
+  ['goblin_merchant','Goblin Thương Nhân','a goblin merchant with a huge backpack'],
+  ['lantern_hob','Yêu Tinh Đèn','a small hob holding a lantern'],
+  ['dream_sheep','Cừu Giấc Mơ','a fluffy sheep floating on a small cloud']]},
+ {t:'Phép lửa & sét', k:'spell', items:[
+  ['fire_lance','Thương Lửa','a lance of fire'],
+  ['fire_rain','Mưa Lửa','fire raining from a small cloud'],
+  ['flame_whip','Roi Lửa','a whip of flame'],
+  ['fire_wall','Tường Lửa','a short wall of flames'],
+  ['meteor','Thiên Thạch','a small flaming meteor'],
+  ['blue_flame','Lửa Xanh','a blue magical flame'],
+  ['ember_storm','Bão Tàn Lửa','a swirl of embers'],
+  ['fire_shield','Khiên Lửa','a round shield of fire'],
+  ['chain_lightning','Sét Chuỗi','a lightning bolt branching into chains'],
+  ['thunder_strike','Sấm Sét','a lightning strike from a small cloud'],
+  ['spark_orb','Cầu Điện','an orb crackling with sparks'],
+  ['storm_call','Gọi Bão','a dark storm cloud'],
+  ['static_net','Lưới Điện','a net of electricity'],
+  ['plasma_ray','Tia Plasma','a purple plasma beam'],
+  ['fire_bird_blast','Phượng Lửa','a bird-shaped fire blast'],
+  ['blast_rune','Rune Nổ','a glowing red rune about to explode']]},
+ {t:'Phép băng & nước', k:'spell', items:[
+  ['ice_spear','Giáo Băng','a spear of ice'],
+  ['frost_nova','Vòng Băng','a ring of ice spikes'],
+  ['blizzard','Bão Tuyết','a small swirling blizzard'],
+  ['ice_wall','Tường Băng','a short wall of ice'],
+  ['freeze_ray','Tia Đóng Băng','a pale blue freezing ray'],
+  ['giant_snowball','Cầu Tuyết','a giant snowball'],
+  ['water_whip','Roi Nước','a whip of water'],
+  ['tidal_wave','Sóng Thần','a curling tidal wave'],
+  ['bubble_prison','Ngục Bong Bóng','a bubble trapping a small creature silhouette'],
+  ['rain_call','Gọi Mưa','a small rain cloud'],
+  ['whirlpool','Xoáy Nước','a whirlpool'],
+  ['mist_veil','Màn Sương','a cloud of mist'],
+  ['ice_mirror','Gương Băng','a mirror made of ice'],
+  ['hail_storm','Mưa Đá','hailstones falling from a small cloud'],
+  ['frozen_heart','Tim Băng','a frozen heart-shaped crystal'],
+  ['steam_burst','Hơi Nước','a burst of hot steam']]},
+ {t:'Phép đất & thiên nhiên', k:'spell', items:[
+  ['earth_spike','Gai Đất','stone spikes erupting'],
+  ['quake','Động Đất','a cracked ground fissure'],
+  ['boulder_toss','Ném Tảng Đá','a flying boulder'],
+  ['sand_storm','Bão Cát','a swirling sandstorm'],
+  ['vine_lash','Roi Dây Leo','thorny vines lashing'],
+  ['bloom','Nở Hoa','flowers blooming in a burst'],
+  ['poison_cloud','Mây Độc','a green poison cloud'],
+  ['thorn_armor','Giáp Gai','a breastplate made of thorns'],
+  ['root_snare','Rễ Trói','roots grabbing a small boot'],
+  ['leaf_storm','Bão Lá','swirling leaves'],
+  ['stone_skin','Da Đá','a round shield with a stone texture'],
+  ['mud_trap','Bẫy Bùn','a bubbling mud puddle'],
+  ['crystal_growth','Pha Lê Mọc','crystals growing in a cluster'],
+  ['seed_bomb','Bom Hạt','an exploding seed pod'],
+  ['wind_blade','Lưỡi Gió','a crescent-shaped wind blade'],
+  ['tornado','Lốc Xoáy','a small tornado']]},
+ {t:'Phép ánh sáng & hồi phục', k:'spell', items:[
+  ['light_ray','Tia Sáng','a beam of bright golden light'],
+  ['heal_wave','Sóng Hồi Phục','a green healing wave'],
+  ['sun_burst','Bùng Nổ Mặt Trời','a radiant sunburst'],
+  ['halo_shield','Khiên Hào Quang','a golden halo-shaped shield'],
+  ['revive_feather','Lông Hồi Sinh','a glowing golden feather'],
+  ['purify','Thanh Tẩy','white sparkles cleansing purple smoke'],
+  ['blessing','Ban Phước','a golden star blessing with soft rays'],
+  ['light_cage','Lồng Ánh Sáng','a cage made of light bars'],
+  ['star_fall','Mưa Sao','small falling stars'],
+  ['moon_beam','Tia Trăng','a silver beam from a crescent moon'],
+  ['hex_barrier','Kết Giới Lục Giác','a hexagonal force field'],
+  ['regen_seed','Hạt Hồi Sinh','a glowing green seed sprouting'],
+  ['spirit_wolf','Sói Hộ Mệnh','a wolf made of white light'],
+  ['mirror_shield','Khiên Gương','a reflective silver shield'],
+  ['dawn_bell','Chuông Bình Minh','a golden bell ringing with light'],
+  ['light_wings','Cánh Ánh Sáng','a pair of wings made of light']]},
+ {t:'Phép hắc ám & nguyền', k:'spell', items:[
+  ['skull_curse','Lời Nguyền Sọ','a green glowing skull'],
+  ['shadow_bolt','Tia Bóng Tối','a dark purple bolt'],
+  ['drain_life','Hút Sinh Lực','red energy streams flowing back into the wand'],
+  ['hex_doll','Búp Bê Bùa','a small stitched cloth doll glowing purple'],
+  ['dark_chains','Xích Bóng Tối','black chains'],
+  ['void_portal','Cổng Hư Không','a black void portal'],
+  ['plague_swarm','Bầy Ruồi Dịch','a swarm of black flies'],
+  ['blood_moon','Trăng Máu','a red moon'],
+  ['fear_mask','Mặt Nạ Sợ Hãi','a terrifying floating mask'],
+  ['soul_rip','Xé Linh Hồn','a ghostly soul pulled out of a small silhouette'],
+  ['wither_aura','Héo Úa','a black aura withering a flower'],
+  ['shadow_clone','Phân Thân Bóng','a dark shadow copy of a small silhouette'],
+  ['wither_rune','Rune Héo Úa','a dark glowing rune'],
+  ['bone_spear','Giáo Xương','a spear made of bone'],
+  ['night_veil','Màn Đêm','a dark starless veil'],
+  ['cursed_coin','Đồng Xu Nguyền','a cursed gold coin with a skull emblem']]},
+ {t:'Phép tâm trí & thời gian', k:'spell', items:[
+  ['haste','Tăng Tốc','a winged boot with speed lines'],
+  ['slow_time','Làm Chậm','an hourglass with slowed sand'],
+  ['time_stop','Ngừng Thời Gian','a frozen pocket clock'],
+  ['illusion_twin','Ảo Ảnh Phân Thân','two shimmering copies of a small silhouette'],
+  ['mind_control','Điều Khiển Tâm Trí','a purple spiral eye'],
+  ['sleep_charm','Bùa Ngủ','a sleepy crescent moon with tiny stars'],
+  ['confusion','Rối Trí','dizzy stars swirling in a circle'],
+  ['memory_orb','Cầu Ký Ức','a glowing orb with swirling memories inside'],
+  ['invisibility','Tàng Hình','a fading translucent silhouette'],
+  ['teleport','Dịch Chuyển','a swirling teleport ring'],
+  ['foresight','Tiên Tri','a glowing crystal ball'],
+  ['silence','Im Lặng','a bell muffled by a cloth'],
+  ['charm_heart','Bùa Mê','a pink heart charm'],
+  ['dream_walk','Mộng Du','a floating dream bubble with clouds inside'],
+  ['mirror_image','Ảnh Gương','three mirrored reflections of a small silhouette'],
+  ['rewind','Tua Ngược','a backward spiral arrow']]},
+ {t:'Phép triệu hồi & tiện ích', k:'spell', items:[
+  ['summon_circle','Vòng Triệu Hồi','a summoning circle with a small creature emerging'],
+  ['frog_curse','Biến Thành Ếch','a sparkle turning a small silhouette into a frog'],
+  ['grow_giant','Hoá Khổng Lồ','a mushroom growing huge'],
+  ['shrink','Thu Nhỏ','a shrinking sparkle around a tiny figure'],
+  ['unlock','Mở Khoá','a padlock popping open'],
+  ['levitate','Bay Bổng','a floating rock'],
+  ['light_orb','Quả Cầu Sáng','a floating light orb'],
+  ['fetch_key','Triệu Chìa Khoá','a key flying toward the wand'],
+  ['mend','Hàn Gắn','a broken vase repairing itself'],
+  ['gold_touch','Hoá Vàng','an apple turning to gold'],
+  ['portal_door','Cửa Không Gian','a glowing magic door'],
+  ['familiar_call','Gọi Linh Thú','a glowing paw print'],
+  ['potion_brew','Pha Thuốc','a bubbling cauldron'],
+  ['sealed_scroll','Phong Ấn Cuộn Giấy','a sealed glowing scroll'],
+  ['star_compass','La Bàn Sao','a star compass'],
+  ['storm_bottle','Bão Trong Chai','a glass bottle containing a storm']]},
+];
+
+function promptFor(b){
+  const list = b.items.map((it, i) => `${i + 1}. ${it[2]}`).join('\n');
+  return `${STYLE}${b.k === 'spell' ? '\n' + SPELL_LINE : ''}\nTheme of this sheet: ${b.k === 'spell' ? 'spells' : 'creatures'} of the ${EN[b.t] || b.t}.\nCells in reading order (left to right, top to bottom):\n${list}`;
+}
+const EN = {'Rừng già':'ancient forest','Đầm lầy':'swamp','Núi & hang động':'mountains and caves','Bất tử & ma quái':'undead and haunted crypts',
+  'Biển & hồ':'sea and lakes','Bầu trời':'sky','Sa mạc':'desert','Băng giá':'frozen north','Lửa & núi lửa':'volcano',
+  'Cơ khí & đồ vật sống':'enchanted workshop','Rồng':'dragon peaks','Tiên & linh thú nhỏ':'fairy glade',
+  'Phép lửa & sét':'fire and lightning school','Phép băng & nước':'ice and water school','Phép đất & thiên nhiên':'earth and nature school',
+  'Phép ánh sáng & hồi phục':'light and healing school','Phép hắc ám & nguyền':'dark curses school','Phép tâm trí & thời gian':'mind and time school',
+  'Phép triệu hồi & tiện ích':'summoning and utility school'};
+
+let done = {};
+try { done = JSON.parse(localStorage.getItem('sprite-done') || '{}') || {}; } catch (e) { done = {}; }
+let filter = 'all';
+const $ = s => document.querySelector(s);
+
+function render(){
+  const total = BATCHES.reduce((n, b) => n + b.items.length, 0);
+  const finished = BATCHES.filter((b, i) => done[i]).reduce((n, b) => n + b.items.length, 0);
+  $('#stats').innerHTML = `<span><b>${total}</b>sprite</span><span><b>${BATCHES.length}</b>đợt</span><span><b>${finished}</b>đã xong</span>`;
+  const f = [['all','Tất cả'],['creature','Quái thú'],['spell','Phép'],['todo','Chưa làm']];
+  $('#filters').innerHTML = f.map(([k, l]) => `<button class="btn ${filter === k ? 'on' : ''}" data-f="${k}">${l}</button>`).join('');
+  $('#grid').innerHTML = BATCHES.map((b, i) => {
+    if (filter === 'creature' || filter === 'spell') { if (b.k !== filter) return ''; }
+    if (filter === 'todo' && done[i]) return '';
+    return `<article class="batch ${b.k} ${done[i] ? 'is-done' : ''}">
+      <div class="bhead"><span class="bnum">ĐỢT ${String(i + 1).padStart(2, '0')}</span><h2>${b.t}</h2><span class="kind">${b.k === 'spell' ? 'Phép' : 'Quái thú'}</span></div>
+      <div class="names">${b.items.map((it, j) => `<span title="${it[0]}: ${it[2]}"><i>${j + 1}</i>${it[1]}</span>`).join('')}</div>
+      <div class="row"><button class="btn primary" data-copy="${i}">Sao chép prompt</button>
+        <label><input type="checkbox" id="done-${i}" data-done="${i}" ${done[i] ? 'checked' : ''}> Đã xong</label></div>
+      <details><summary>Xem prompt đầy đủ</summary><pre>${promptFor(b).replace(/</g, '&lt;')}</pre></details>
+    </article>`;
+  }).join('');
+}
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 1400); }
+function copy(text, pre){
+  const ok = () => toast('Đã sao chép');
+  const fallback = () => { if (pre) { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast('Đã bôi đen, nhấn Ctrl+C để sao chép'); } };
+  try { navigator.clipboard.writeText(text).then(ok, fallback); } catch (e) { fallback(); }
+}
+document.addEventListener('click', e => {
+  const f = e.target.closest('[data-f]'); if (f) { filter = f.dataset.f; render(); return; }
+  const c = e.target.closest('[data-copy]');
+  if (c) { const card = c.closest('.batch'); const d = card.querySelector('details'); d.open = true; copy(promptFor(BATCHES[+c.dataset.copy]), d.querySelector('pre')); }
+});
+document.addEventListener('change', e => {
+  const d = e.target.closest('[data-done]'); if (!d) return;
+  done[d.dataset.done] = d.checked; try { localStorage.setItem('sprite-done', JSON.stringify(done)); } catch (er) {}
+  render();
+});
+$('#styleText').textContent = STYLE + '\n\n(Thêm cho các đợt phép)\n' + SPELL_LINE;
+render();
+</script>

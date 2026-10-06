@@ -1,0 +1,19 @@
+{
+  "name": "dau-truong-phep-thuat",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Game đấu bài phép thuật: ma lực, linh thú khế ước, phản ứng nguyên tố, thời tiết sân đấu.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "sim": "node sim/simulate.js"
+  },
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}
