@@ -12,7 +12,7 @@
 - [x] Script máy đấu máy để cân bằng
 
 ## Sắp làm
-- [ ] **Đấu Đũa:** khi phản chú chặn một phép, hai bên úp ma lực đặt cược, bên cao hơn thắng
+- [ ] **Đấu phép tốc độ** (bản thử ở `duel.html`): không có lượt, ma lực hồi liên tục, phép có thời gian niệm, ngắt phép, khiên/gương, Đấu Đũa. Tiếp theo: linh thú, đủ 4 bộ, cân bằng
 - [ ] **Phép niệm 2 lượt:** phép cấp cao đặt ngửa trên sân một lượt trước khi nổ, đối thủ có cơ hội phá
 - [ ] **Màn xây bộ bài:** chọn lá, đường cong ma lực, kiểm tra luật 2 bản và 2 trường phái
 - [ ] **Vẽ sprite cho lá mới** (tools/sprite-prompts.html): một số lá Thổ – Quang và Ám – Tâm đang dùng hình pixel tự sinh

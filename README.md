@@ -63,6 +63,7 @@ tools/
   slice_sheet.py        Cắt sprite sheet nền magenta thành từng PNG
   sprite-prompts.html   304 prompt Gemini để tạo thêm sprite (mở bằng trình duyệt)
 sim/simulate.js         Máy đấu máy để cân bằng
+duel.html + src/duel/   Bản thử Đấu phép tốc độ (thời gian thực)
 ```
 
 ## Thêm một lá bài mới

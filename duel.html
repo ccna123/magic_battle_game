@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Đấu Phép Tốc Độ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+  <style id="artcss"></style>
+</head>
+<body>
+<!-- Bản thử Đấu phép tốc độ: máy ở trên, bạn ở dưới, phép bay dọc giữa sân -->
+<div class="board duel" data-weather="clear">
+  <header class="d-top">
+    <a class="btn sm" href="./">← Chế độ theo lượt</a>
+    <div class="weather" id="dWeather"></div>
+    <span class="meta d-time" id="dTime">0:00</span>
+  </header>
+  <section class="d-side opp" id="oppInfo"></section>
+  <div class="d-arena">
+    <div class="d-mid"></div>
+    <div id="dProj"></div>
+    <div id="dClash" class="d-clash" hidden>
+      <div class="d-ctitle">Đấu Đũa!</div>
+      <div class="d-push"><i></i></div>
+      <div class="meta">Bấm <b>Space</b> (hoặc chạm vào đây) thật nhanh · còn <b id="dClashT">0</b>s</div>
+    </div>
+  </div>
+  <section class="d-side me" id="myInfo"></section>
+  <div class="d-hand" id="dHand"></div>
+</div>
+<div id="dOverlay"></div>
+<script type="module" src="/src/duel/duel.js"></script>
+</body>
+</html>
