@@ -25,7 +25,7 @@ npm run dev        # mở http://localhost:5173
 | `npm run dev` | Chạy bản phát triển, sửa code là trang tự tải lại |
 | `npm run build` | Đóng gói vào `dist/`, mở được ở bất kỳ web tĩnh nào |
 | `npm run preview` | Xem thử bản đã build |
-| `npm run sim` | Cho máy tự đấu 60 ván và in thống kê cân bằng (`npm run sim -- 200` để chạy 200 ván) |
+| `npm run sim` | Cho máy tự đấu 60 ván và in thống kê cân bằng (`npm run sim -- 200` để chạy 200 ván, `npm run sim -- 100 all` để đấu vòng tròn mọi cặp bộ bài) |
 
 Thư mục `dist/` sau khi build có thể đưa thẳng lên GitHub Pages, Netlify, Vercel hoặc itch.io (dạng HTML5).
 
@@ -38,7 +38,7 @@ src/
   config.js             Hằng số luật: sinh lực, số ô, ma lực tối đa, số dấu ấn để tiến hoá…
   styles.css            Toàn bộ giao diện
   data/
-    cards.js            ★ Dữ liệu và hiệu ứng của mọi lá bài + 2 bộ bài khởi đầu
+    cards.js            ★ Dữ liệu và hiệu ứng của mọi lá bài + 4 bộ bài khởi đầu
     weather.js          Danh sách thời tiết
     sprites.js          Danh sách sprite có trong public/sprites
   engine/

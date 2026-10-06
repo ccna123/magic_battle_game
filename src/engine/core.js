@@ -52,7 +52,7 @@ export function log(t, cls = ''){ G.log.unshift({t, cls}); if (G.log.length > 15
 export function onField(c){ return !!c && !c.hero && (P(c.owner).fam.includes(c) || P(c.owner).st.includes(c)); }
 export function alive(t){ return t && (t.hero || P(t.owner).fam.includes(t)); }
 export function remove(c){ for (const p of G.p) for (const z of ['hand','fam','st','grave','deck']) { const i = p[z].indexOf(c); if (i >= 0) { p[z].splice(i, 1); return z; } } }
-export function atk(c){ let v = c.d.atk + (c.tmp || 0) + (W() === 'moon' ? (c.id === 'werewolf' ? 2 : 1) : 0); for (const s of [0, 1]) for (const e of P(s).st) if (!e.set && e.d.aura) v += e.d.aura(e, c); return Math.max(0, v); }
+export function atk(c){ let v = c.d.atk + (c.tmp || 0) + (c.mod || 0) + (W() === 'moon' ? (c.id === 'werewolf' ? 2 : 1) : 0); for (const s of [0, 1]) for (const e of P(s).st) if (!e.set && e.d.aura) v += e.d.aura(e, c); return Math.max(0, v); }
 export function upkeep(pi){ return Math.max(0, P(pi).fam.filter(f => !f.d.token).length - 1); }   // linh thú đầu tiên miễn phí
 export function allTargets(){ return [...G.heroes, ...G.p.flatMap(p => [...p.hand, ...p.fam, ...p.st, ...p.grave]), P(0).bond.card, P(1).bond.card]; }
 export function floatText(t, text, color, big){
@@ -110,7 +110,7 @@ export function heal(pi, n){ const p = P(pi); p.lp = Math.min(START_LP + 10, p.l
 export function gameOver(w){ if (G.over) return; G.over = true; G.winner = w; render(); }
 
 /* ---------- Vào/ra sân ---------- */
-export function toHand(c, pi){ c.owner = pi; c.hp = c.d.hp || 0; c.st = {}; c.marks = 0; c.tmp = 0; c.set = false; P(pi).hand.push(c); }
+export function toHand(c, pi){ c.owner = pi; c.hp = c.d.hp || 0; c.st = {}; c.marks = 0; c.tmp = 0; c.mod = 0; c.set = false; P(pi).hand.push(c); }
 export function drawCard(pi){
   const p = P(pi);
   if (!p.deck.length) { p.fatigue++; log(`${p.name} hết bài, kiệt sức: mất ${p.fatigue} sinh lực`, 'dmg'); damageHero(pi, p.fatigue); return; }
@@ -118,7 +118,7 @@ export function drawCard(pi){
   if (p.hand.length >= HAND_MAX) { p.grave.push(c); log(`${p.name} đầy tay, ${c.d.name} cháy mất`); return; }
   p.hand.push(c); log(p.ai ? 'Máy rút 1 lá' : `Bạn rút ${c.d.name}`);
 }
-export function place(c, pi){ remove(c); c.owner = pi; c.hp = c.d.hp; c.st = {}; c.marks = c.marks || 0; c.tmp = 0; c.atkCount = 0; c.summonTurn = G.turnNo; P(pi).fam.push(c); }
+export function place(c, pi){ remove(c); c.owner = pi; c.hp = c.d.hp; c.st = {}; c.marks = c.marks || 0; c.tmp = 0; c.mod = 0; c.atkCount = 0; c.summonTurn = G.turnNo; P(pi).fam.push(c); }
 export function spawnToken(id, pi){ if (P(pi).fam.length >= MAXF) return; const t = mk(id, pi); place(t, pi); t.ttl = t.d.ttl; log(`${P(pi).name} gọi ${t.d.name}`); render(); FX.summon(t); }
 export function kill(u){
   if (!P(u.owner).fam.includes(u)) return;
@@ -255,7 +255,7 @@ export function legalAttackTargets(u){
 }
 export function canAttack(u){
   return u.owner === G.active && P(u.owner).fam.includes(u) && atk(u) > 0 && !u.st.frozen && !u.st.stun &&
-    u.atkCount < (u.d.multi || 1) && (u.summonTurn < G.turnNo || u.d.rush);
+    u.atkCount < (u.d.multi || 1) && G.turnNo > 1;   // như Yu-Gi-Oh: tấn công được ngay lượt triệu hồi, chỉ lượt đầu tiên của ván là không ai tấn công
 }
 export async function attack(u, t){
   u.atkCount++; G.attackNegated = false;
@@ -301,7 +301,7 @@ export async function startTurn(){
   if (G.turnNo > 1) drawCard(pi);
   render(); await processTriggers();
   if (G.over) return;
-  if (pi === 0) { tip('start'); if (G.turnNo >= 3) tip('attack'); if (p.maxMana >= 4) tip('bond'); if (p.hand.some(c => c.d.kind === 'counter')) tip('counter'); }
+  if (pi === 0) { tip('start'); if (G.turnNo >= 2 && p.fam.length) tip('attack'); if (p.maxMana >= 4) tip('bond'); if (p.hand.some(c => c.d.kind === 'counter')) tip('counter'); }
   if (p.ai) { await aiTurn(); if (!G.over) await endTurn(); }
 }
 export async function endTurn(){

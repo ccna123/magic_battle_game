@@ -25,10 +25,12 @@
 Khi một phép được niệm, linh thú được triệu hồi hoặc tấn công, đối thủ có quyền đáp trả bằng phản chú. Hai bên lần lượt đáp trả cho tới khi cả hai bỏ qua. Sau đó chuỗi được giải quyết **từ lá sau cùng ngược về lá đầu tiên**.
 
 ## Linh thú
-- Tấn công từ lượt sau khi triệu hồi, mỗi lượt 1 lần (trừ các lá có ghi khác).
+- Như Yu-Gi-Oh: tấn công được **ngay lượt triệu hồi**, mỗi lượt 1 lần (trừ các lá có ghi khác). Riêng **lượt đầu tiên của ván** thì chưa ai tấn công được.
+- **Tấn công trực tiếp:** chỉ khi sân đối thủ không còn linh thú. Còn linh thú thì phải đánh linh thú.
 - Linh thú đánh nhau thì cả hai cùng mất máu bằng công của đối phương.
+- **Phần chênh lệch:** đòn đánh hoặc phép của đối phương vượt quá máu còn lại của linh thú thì phần dư trừ vào sinh lực chủ của nó (kể cả phản đòn).
 - **Hộ vệ:** đối thủ phải tấn công lá này trước.
-- **Xung phong:** tấn công được ngay lượt triệu hồi.
+- **Bay:** được tấn công trực tiếp pháp sư dù đối thủ còn linh thú (Hippogriff, Thiên Mã).
 - **Kênh phép:** khi bạn niệm phép cùng hệ, linh thú cộng thêm sát thương cho phép đó và nhận 1 dấu ấn ◆.
 - **Tiến hoá:** đủ 2 dấu ấn thì linh thú biến thành dạng mạnh hơn ngay trên sân.
 - **Khế ước:** gọi bằng ô khế ước cạnh sinh lực. Bị hạ thì quay về ô, nghỉ 2 lượt rồi gọi lại được.
@@ -66,5 +68,10 @@ Khi một phép được niệm, linh thú được triệu hồi hoặc tấn c
 | Mạch ma lực | Mỗi người +1 ma lực đầu lượt |
 
 ## Bộ bài khởi đầu
-- **Thuỷ – Lôi** (người chơi), khế ước **Wyvern Bão**: làm Ướt bằng phép Nước rồi kích Giật lan bằng phép Sét. Nhân Ngư tiến hoá thành Kraken.
-- **Hoả – Băng** (máy), khế ước **Phượng Hoàng Lửa**: Đóng băng rồi đánh Lửa để ra Hơi nước. Bóng Ma tiến hoá thành Nữ Thần Than Khóc.
+Mỗi bộ gồm 2 trường phái. Phép nhắm pháp sư hay chỉ linh thú, đơn hay diện rộng là tuỳ hiệu ứng từng lá.
+- **Thuỷ – Lôi**, khế ước **Wyvern Bão**: làm Ướt bằng phép Nước rồi kích Giật lan bằng phép Sét. Nhân Ngư tiến hoá thành Kraken.
+- **Hoả – Băng**, khế ước **Phượng Hoàng Lửa**: Đóng băng rồi đánh Lửa để ra Hơi nước. Bóng Ma tiến hoá thành Nữ Thần Than Khóc.
+- **Thổ – Quang** (Đất + Ánh sáng), khế ước **Nhân Sư Đá**: Tường Đá và linh thú Hộ vệ, phép Ánh sáng vừa đánh vừa hồi máu, Phán Quyết phá huỷ linh thú mạnh. Thằn Lằn Đá tiến hoá thành Rồng Đất.
+- **Ám – Tâm** (Hắc ám + Tâm trí), khế ước **Bá Tước Ma Cà Rồng**: hút máu, Reducio làm teo nhỏ vĩnh viễn, Leviosa trả linh thú về tay, Điều Khiển Tâm Trí chiếm linh thú. Rắn Bóng Đêm tiến hoá thành Tử Xà Basilisk.
+
+Hệ Đất, Ánh sáng, Bóng tối, Tâm trí hiện chưa có phản ứng nguyên tố và chưa chịu ảnh hưởng của thời tiết.

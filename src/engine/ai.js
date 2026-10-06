@@ -1,5 +1,5 @@
 import { MAXF, MAXS, START_LP, sleep } from '../config.js';
-import { G, P, alive, atk, attack, canAttack, canPlay, enemies, legalAttackTargets, opp, playSpell, summon, targetsFor } from './core.js';
+import { G, P, alive, atk, attack, canAttack, canPlay, enemies, enemyUnits, legalAttackTargets, opp, playSpell, summon, targetsFor } from './core.js';
 import { W, weatherMod } from './weather.js';
 
 /* ---------- Máy: chấm điểm từng hành động, làm hành động tốt nhất ---------- */
@@ -44,6 +44,23 @@ export function aiPlan(c){
     case 'callrain': case 'callsun': {
       const want = id === 'callrain' ? 'rain' : 'heat', mine = p.hand.filter(h => h !== c && (h.d.el === (id === 'callrain' ? 'storm' : 'fire'))).length;
       return W() !== want ? {score:2 + mine * .8 + (W() === (id === 'callrain' ? 'heat' : 'rain') ? 2 : 0)} : null; }
+    // ----- Thổ – Quang / Ám – Tâm -----
+    case 'lightray': case 'shadowbolt': {
+      const base = id === 'shadowbolt' ? 4 : 2;
+      const ts = targetsFor(c).map(t => ({t, s:scoreTarget(c, t, base) + (id === 'lightray' ? 1 : 0)})).sort((a, b) => b.s - a.s);
+      return ts.length ? {score:ts[0].s, t:ts[0].t} : null; }
+    case 'earthspike': case 'drain': {
+      const ts = targetsFor(c).map(t => ({t, s:scoreTarget(c, t, 3) + (id === 'drain' ? 1.5 : 0)})).sort((a, b) => b.s - a.s);
+      return ts.length && ts[0].s >= 2 ? {score:ts[0].s, t:ts[0].t} : null; }
+    case 'quake': { const s = enemyUnits(pi).reduce((n, e) => n + (e.hp <= 2 + bonusFor(c) ? 3 + unitValue(e) : 1), 0); return s >= 3 ? {score:s} : null; }
+    case 'judgement': { const n = enemyUnits(pi).filter(u => atk(u) >= 4); return n.length ? {score:3 + n.reduce((a, u) => a + unitValue(u), 0)} : null; }
+    case 'stonewall': return P(o).fam.length ? {score:2.5} : {score:1};
+    case 'dawnbell': return {score:2 + p.fam.filter(u => u.hp < u.d.hp).length + (p.lp <= START_LP - 6 ? 2 : 0)};
+    case 'reducio': { const ts = targetsFor(c).filter(t => atk(t) >= 2).sort((a, b) => atk(b) - atk(a)); return ts.length ? {score:1.5 + atk(ts[0]) * .5, t:ts[0]} : null; }
+    case 'leviosa': { const ts = targetsFor(c).sort((a, b) => b.d.cost - a.d.cost); return ts.length && ts[0].d.cost >= 3 ? {score:1 + ts[0].d.cost * .7, t:ts[0]} : null; }
+    case 'mindcontrol': { const ts = targetsFor(c).sort((a, b) => unitValue(b) - unitValue(a)); return ts.length ? {score:4 + unitValue(ts[0]), t:ts[0]} : null; }
+    case 'nightmare': { const n = Math.min(5, P(o).hand.length); return n >= 2 ? {score:n * (n >= P(o).lp ? 30 : .9)} : null; }
+    case 'callmoon': return W() !== 'moon' && p.fam.length > P(o).fam.length ? {score:2 + p.fam.length * .6} : null;
     case 'episkey': return p.lp <= START_LP - 6 ? {score:4} : null;
     case 'tempus': return p.hand.length <= 4 ? {score:3} : {score:1};
     case 'accio': return p.hand.filter(h => h.d.kind === 'creature').length < 2 ? {score:2.5} : null;

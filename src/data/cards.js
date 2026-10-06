@@ -1,5 +1,5 @@
 import { $, MAXF } from '../config.js';
-import { G, P, addSt, amt, atk, destroySpell, drawCard, enemies, enemyUnits, evolve, heal, hero, hit, kill, log, onField, opp, spawnToken, toHand } from '../engine/core.js';
+import { G, P, addSt, allyUnits, amt, atk, damageHero, destroySpell, drawCard, enemies, enemyUnits, evolve, floatText, heal, hero, hit, kill, log, onField, opp, place, remove, spawnToken, toHand } from '../engine/core.js';
 import { changeWeather } from '../engine/weather.js';
 import { FX } from '../fx/three-fx.js';
 
@@ -32,12 +32,53 @@ export const DB = {
     text:'Chỉ có qua tiến hoá. Kênh Băng +1. Khi tiến hoá: Đóng băng mọi linh thú địch.',
     onEvolve(c){ for (const e of enemyUnits(c.owner)) addSt(e, 'frozen', c); }},
   werewolf:{name:'Người Sói',kind:'creature',el:'none',cost:3,atk:3,hp:3,art:'werewolf',text:'Khi bị hạ: rút 1 lá.',onDeath(c){ drawCard(c.owner); }},
-  hippogriff:{name:'Hippogriff',kind:'creature',el:'none',cost:3,atk:3,hp:2,art:'hippogriff',rush:true,text:'Xung phong: tấn công được ngay lượt triệu hồi.'},
+  hippogriff:{name:'Hippogriff',kind:'creature',el:'none',cost:3,atk:3,hp:2,art:'hippogriff',direct:true,text:'Bay: được tấn công trực tiếp pháp sư dù đối thủ còn linh thú.'},
   troll:{name:'Troll Núi',kind:'creature',el:'none',cost:4,atk:3,hp:6,art:'troll',guard:true,text:'Hộ vệ: đối thủ phải tấn công lá này trước.'},
   cerberus:{name:'Chó Ba Đầu',kind:'creature',el:'fire',cost:5,atk:3,hp:5,art:'cerberus',multi:2,channel:{el:'fire',bonus:1},
     text:'Kênh Lửa +1. Tấn công được 2 lần mỗi lượt.'},
   phoenix:{name:'Phượng Hoàng Lửa',kind:'creature',el:'fire',cost:5,atk:4,hp:4,art:'phoenix',channel:{el:'fire',bonus:1},bond:true,
     text:'Khế ước. Kênh Lửa +1. Khi bị hạ: mọi kẻ địch bị Cháy.',onDeath(c){ for (const e of enemies(c.owner)) addSt(e, 'burn', c); }},
+
+  // ===== Linh thú Thổ – Quang (Đất + Ánh sáng): phòng thủ, hồi phục, trừng phạt kẻ mạnh =====
+  mandrake:{name:'Nhân Sâm Gào',kind:'creature',el:'earth',cost:1,atk:1,hp:2,art:'mandrake',
+    text:'Khi triệu hồi: tiếng gào làm 1 linh thú địch ngẫu nhiên bị Choáng.',
+    onSummon(c){ const us = enemyUnits(c.owner); if (us.length) addSt(us[Math.random() * us.length | 0], 'stun', c); }},
+  rockling:{name:'Thằn Lằn Đá',kind:'creature',el:'earth',cost:2,atk:2,hp:3,channel:{el:'earth',bonus:1},evolve:'earthdragon',
+    text:'Kênh Đất: phép Đất của bạn +1 sát thương. Đủ 2 dấu ấn: tiến hoá thành Rồng Đất.'},
+  earthdragon:{name:'Rồng Đất',kind:'creature',el:'earth',cost:6,atk:5,hp:7,art:'dragon',channel:{el:'earth',bonus:1},guard:true,noDeck:true,
+    text:'Chỉ có qua tiến hoá. Hộ vệ. Kênh Đất +1. Khi tiến hoá: mọi linh thú địch bị Choáng.',
+    onEvolve(c){ for (const e of enemyUnits(c.owner)) addSt(e, 'stun', c); }},
+  wisp:{name:'Tinh Linh Ánh Sáng',kind:'creature',el:'light',cost:2,atk:1,hp:2,art:'anima',channel:{el:'light',bonus:1},
+    text:'Kênh Ánh sáng: phép Ánh sáng của bạn +1 sát thương/hồi phục.'},
+  pegasus:{name:'Thiên Mã',kind:'creature',el:'light',cost:3,atk:2,hp:2,direct:true,
+    text:'Bay: được tấn công trực tiếp pháp sư dù đối thủ còn linh thú.'},
+  treant:{name:'Thần Rừng',kind:'creature',el:'earth',cost:4,atk:1,hp:7,guard:true,
+    text:'Hộ vệ. Rễ cây vững chãi.'},
+  sphinxstone:{name:'Nhân Sư Đá',kind:'creature',el:'earth',cost:5,atk:4,hp:6,art:'sphinx',channel:{el:'earth',bonus:1},bond:true,
+    text:'Khế ước. Kênh Đất +1. Khi triệu hồi: mọi linh thú của bạn hồi đầy máu.',
+    onSummon(c){ for (const u of allyUnits(c.owner)) u.hp = Math.max(u.hp, u.d.hp); }},
+  rockwall:{name:'Tường Đá',kind:'creature',el:'earth',cost:0,atk:0,hp:4,token:true,ttl:3,guard:true,noDeck:true,text:'Token Hộ vệ 0/4. Tan sau 3 lượt, không tốn phí duy trì.'},
+
+  // ===== Linh thú Ám – Tâm (Hắc ám + Tâm trí): hút máu, làm yếu, khống chế =====
+  bat:{name:'Dơi Hút Máu',kind:'creature',el:'dark',cost:1,atk:1,hp:2,
+    text:'Khi tấn công: hồi 1 sinh lực.',onAttack(c){ heal(c.owner, 1); }},
+  shadowsnake:{name:'Rắn Bóng Đêm',kind:'creature',el:'dark',cost:2,atk:2,hp:3,channel:{el:'dark',bonus:1},evolve:'basilisk',
+    text:'Kênh Bóng tối: phép Bóng tối của bạn +1 sát thương. Đủ 2 dấu ấn: tiến hoá thành Tử Xà Basilisk.'},
+  basilisk:{name:'Tử Xà Basilisk',kind:'creature',el:'dark',cost:6,atk:5,hp:6,art:'basilisk',channel:{el:'dark',bonus:1},noDeck:true,
+    text:'Chỉ có qua tiến hoá. Kênh Bóng tối +1. Khi tấn công: ánh mắt làm mục tiêu Đóng băng (hoá đá).',
+    onAttack(c, t){ addSt(t, 'frozen', c); }},
+  mindimp:{name:'Tiểu Quỷ Tâm Trí',kind:'creature',el:'mind',cost:1,atk:1,hp:2,channel:{el:'mind',bonus:1},
+    text:'Kênh Tâm trí: phép Tâm trí của bạn +1 sát thương.'},
+  clockgolem:{name:'Golem Đồng Hồ',kind:'creature',el:'mind',cost:3,atk:1,hp:5,art:'clockgolem',guard:true,
+    text:'Hộ vệ. Khi bị hạ: rút 1 lá.',onDeath(c){ drawCard(c.owner); }},
+  sphinx:{name:'Nhân Sư Câu Đố',kind:'creature',el:'mind',cost:4,atk:3,hp:4,
+    text:'Khi triệu hồi: rút 1 lá, đối thủ bỏ 1 lá ngẫu nhiên khỏi tay.',
+    onSummon(c){ drawCard(c.owner); const h = P(opp(c.owner)).hand; if (h.length) { const x = h[Math.random() * h.length | 0]; h.splice(h.indexOf(x), 1); P(x.owner).grave.push(x); log(`${P(x.owner).name} bỏ ${x.d.name}`); } }},
+  hydra:{name:'Hydra Đầm Lầy',kind:'creature',el:'dark',cost:5,atk:4,hp:5,art:'hydra',
+    text:'Khi bị hạ: phun độc gây 1 sát thương Bóng tối lên mọi linh thú địch.',
+    onDeath(c){ for (const u of [...enemyUnits(c.owner)]) hit(u, 1, c, 'dark'); }},
+  vampire:{name:'Bá Tước Ma Cà Rồng',kind:'creature',el:'dark',cost:5,atk:4,hp:5,art:'vampire',channel:{el:'dark',bonus:1},bond:true,
+    text:'Khế ước. Kênh Bóng tối +1. Khi tấn công: hồi 2 sinh lực.',onAttack(c){ heal(c.owner, 2); }},
 
   // ===== Token =====
   birdtoken:{name:'Chim Phép',kind:'creature',el:'none',cost:0,atk:1,hp:1,art:'birdtoken',token:true,ttl:2,noDeck:true,text:'Token. Tan sau 2 lượt, không tốn phí duy trì.'},
@@ -89,6 +130,56 @@ export const DB = {
   engorgio:{name:'Engorgio',kind:'charm',el:'none',cost:1,art:'engorgio',target:'allyUnit',
     text:'1 linh thú của bạn +2 công đến hết lượt.',op(c, L){ if (onField(L.t)) { L.t.tmp += 2; log(`${L.t.d.name} phình to: +2 công`); } }},
 
+  // ===== Phép Thổ – Quang =====
+  earthspike:{name:'Gai Đất',kind:'charm',el:'earth',cost:2,target:'enemyUnit',cat:['DAMAGE'],
+    text:'Gây 3 sát thương Đất lên 1 linh thú.',op(c, L){ hit(L.t, amt(L, 3), c, 'earth'); }},
+  quake:{name:'Động Đất',kind:'charm',el:'earth',cost:4,cat:['DAMAGE'],
+    text:'Gây 2 sát thương Đất lên mọi linh thú địch.',op(c, L){ for (const u of [...enemyUnits(c.owner)]) hit(u, amt(L, 2), c, 'earth'); }},
+  stonewall:{name:'Tường Đá',kind:'charm',el:'earth',cost:2,
+    text:'Dựng 1 Tường Đá (0/4, Hộ vệ, tan sau 3 lượt).',cond:c => P(c.owner).fam.length < MAXF, op(c){ spawnToken('rockwall', c.owner); }},
+  lightray:{name:'Tia Sáng',kind:'charm',el:'light',cost:2,target:'enemy',cat:['DAMAGE'],
+    text:'Gây 2 sát thương Ánh sáng lên 1 kẻ địch (linh thú hoặc pháp sư) và hồi cho bạn 1 sinh lực.',
+    op(c, L){ hit(L.t, amt(L, 2), c, 'light'); heal(c.owner, 1); }},
+  dawnbell:{name:'Chuông Bình Minh',kind:'charm',el:'light',cost:4,
+    text:'Mọi linh thú của bạn hồi đầy máu, bạn hồi 2 sinh lực và rút 1 lá.',
+    op(c, L){ for (const u of allyUnits(c.owner)) u.hp = Math.max(u.hp, u.d.hp); heal(c.owner, amt(L, 2)); drawCard(c.owner); }},
+  lightcage:{name:'Lồng Ánh Sáng',kind:'counter',el:'light',cost:2,
+    text:'Phản chú (2 ma lực): khi linh thú đối thủ tấn công, huỷ đòn đánh và gây 2 sát thương Ánh sáng cho nó.',
+    cond:(c, x) => x.type === 'attack' && x.attacker.owner !== c.owner,
+    op(c, L){ G.attackNegated = true; if (onField(L.ctx.attacker)) hit(L.ctx.attacker, 2, c, 'light'); }},
+  judgement:{name:'Phán Quyết',kind:'charm',el:'light',cost:6,legend:true,
+    text:'Huyền thoại. Phá huỷ mọi linh thú địch có công từ 4 trở lên, rồi hồi 3 sinh lực.',
+    op(c){ for (const u of [...enemyUnits(c.owner)]) if (atk(u) >= 4) kill(u); heal(c.owner, 3); }},
+
+  // ===== Phép Ám – Tâm =====
+  shadowbolt:{name:'Tia Bóng Tối',kind:'charm',el:'dark',cost:3,target:'enemy',cat:['DAMAGE'],
+    text:'Gây 4 sát thương Bóng tối lên 1 kẻ địch (linh thú hoặc pháp sư). Cái giá: bạn mất 2 sinh lực.',
+    op(c, L){ hit(L.t, amt(L, 4), c, 'dark'); damageHero(c.owner, 2); }},
+  drain:{name:'Hút Hồn',kind:'charm',el:'dark',cost:3,target:'enemyUnit',cat:['DAMAGE'],
+    text:'Gây 3 sát thương Bóng tối lên 1 linh thú và hồi cho bạn 1 sinh lực.',op(c, L){ hit(L.t, amt(L, 3), c, 'dark'); heal(c.owner, 1); }},
+  reducio:{name:'Reducio',kind:'charm',el:'dark',cost:2,art:'reducio',target:'enemyUnit',
+    text:'1 linh thú địch bị teo nhỏ: −2 công vĩnh viễn.',
+    op(c, L){ if (onField(L.t)) { L.t.mod = (L.t.mod || 0) - 2; floatText(L.t, '−2 công', 'var(--bad)'); log(`${L.t.d.name} bị teo nhỏ: −2 công`); } }},
+  darkchains:{name:'Xích Bóng Tối',kind:'counter',el:'dark',cost:2,
+    text:'Phản chú (2 ma lực): khi đối thủ triệu hồi linh thú, trói nó: Choáng và −1 công vĩnh viễn.',
+    cond:(c, x) => x.type === 'summon' && x.card.owner !== c.owner,
+    op(c, L){ const u = L.ctx.card; if (onField(u)) { addSt(u, 'stun', c); u.mod = (u.mod || 0) - 1; } }},
+  leviosa:{name:'Wingardium Leviosa',kind:'charm',el:'mind',cost:3,art:'leviosa',target:'enemyUnit',
+    text:'Nhấc bổng 1 linh thú địch về tay chủ của nó (linh thú khế ước về ô khế ước, nghỉ 1 lượt).',
+    op(c, L){ const u = L.t; if (!onField(u)) return; const p = P(u.owner);
+      if (u === p.bond.card) { remove(u); p.bond.cd = 1; log(`${u.d.name} bị đưa về ô khế ước`); }
+      else if (u.d.token) { remove(u); log(`${u.d.name} tan biến`); }
+      else { remove(u); toHand(u, u.owner); log(`${u.d.name} bị nhấc về tay ${p.name}`); } }},
+  mindcontrol:{name:'Điều Khiển Tâm Trí',kind:'charm',el:'mind',cost:7,legend:true,target:'enemyUnit',targetFilter:u => !u.d.bond,
+    text:'Huyền thoại. Chiếm vĩnh viễn 1 linh thú địch (không phải khế ước). Cần còn ô linh thú trống.',
+    cond:c => P(c.owner).fam.length < MAXF,
+    op(c, L){ const u = L.t; if (!onField(u) || P(c.owner).fam.length >= MAXF) return; place(u, c.owner); log(`${P(c.owner).name} chiếm quyền điều khiển ${u.d.name}`); }},
+  nightmare:{name:'Ác Mộng',kind:'charm',el:'mind',cost:3,cat:['DAMAGE'],
+    text:'Gây sát thương Tâm trí lên pháp sư đối thủ bằng số lá trên tay họ (tối đa 5).',
+    op(c, L){ const n = Math.min(5, P(opp(c.owner)).hand.length); if (n) hit(hero(opp(c.owner)), amt(L, n), c, 'mind'); }},
+  callmoon:{name:'Gọi Trăng Tròn',kind:'charm',el:'dark',cost:2,art:'nebula',
+    text:'Đổi thời tiết thành Trăng tròn ngay (3 vòng) và rút 1 lá.',op(c){ changeWeather('moon', true); drawCard(c.owner); }},
+
   // ===== Phép đổi thời tiết =====
   callrain:{name:'Gọi Mưa',kind:'charm',el:'water',cost:2,art:'muffliato',
     text:'Đổi thời tiết thành Mưa giông ngay (3 vòng) và rút 1 lá.',op(c){ changeWeather('rain', true); drawCard(c.owner); }},
@@ -115,7 +206,7 @@ export const DB = {
     cond:(c, x) => x.type === 'attack' && x.attacker.owner !== c.owner, op(c, L){ G.attackNegated = true; if (onField(L.ctx.attacker)) addSt(L.ctx.attacker, 'stun', c); }},
 };
 
-/* ---------- Hai bộ bài khởi đầu (30 lá) ---------- */
+/* ---------- Bộ bài khởi đầu (30 lá, mỗi bộ 2 trường phái) ---------- */
 export const DECKS = {
   thuyloi:{name:'Thuỷ – Lôi', bond:'wyvern', els:['water','storm'],
     desc:'Làm kẻ địch Ướt rồi giật Sét lan khắp sân. Gọi Mưa để tăng sức phép Sét; linh thú Nhân Ngư tiến hoá thành Kraken.',
@@ -125,5 +216,13 @@ export const DECKS = {
     desc:'Đóng băng rồi thiêu bằng Lửa để gây Hơi nước gấp đôi sát thương. Nhiều linh thú hung hãn và phép phá huỷ.',
     list:{incendio:2, confringo:2, ignis:1, bombarda:1, glacius:2, petrificus:1, callsun:1, engorgio:1, vincula:1, tempus:1,
     episkey:1, reducto:1, protego:1, expelliarmus:2, accio:2, gnome:1, spider:2, ghost:2, werewolf:2, hippogriff:1, troll:1, cerberus:1}},
+  thoquang:{name:'Thổ – Quang', bond:'sphinxstone', els:['earth','light'],
+    desc:'Dựng tường đá và linh thú Hộ vệ, hồi phục bằng ánh sáng rồi trừng phạt kẻ mạnh bằng Phán Quyết. Thiên Mã bay qua hàng phòng thủ.',
+    list:{earthspike:2, quake:1, stonewall:2, lightray:2, dawnbell:1, lightcage:2, judgement:1, vincula:1, fiantoduri:1, episkey:1, accio:2, reducto:1, protego:1, expelliarmus:1,
+    mandrake:2, rockling:2, wisp:2, pegasus:2, treant:1, unicorn:1, troll:1}},
+  amtam:{name:'Ám – Tâm', bond:'vampire', els:['dark','mind'],
+    desc:'Hút máu để sống dai, làm teo nhỏ và trói linh thú đối thủ, xoá bài trên tay họ rồi chiếm luôn linh thú mạnh nhất.',
+    list:{shadowbolt:2, drain:2, reducio:2, darkchains:1, leviosa:2, mindcontrol:1, nightmare:1, callmoon:1, obliviate:1, tempus:1, protego:1, expelliarmus:1, accio:1, episkey:1, reducto:1,
+    bat:2, shadowsnake:2, mindimp:2, sphinx:1, clockgolem:1, hydra:1, spider:2}},
 };
 export const TUTORIAL_HAND = ['pixie', 'aguamenti', 'fulmen', 'merfolk'];

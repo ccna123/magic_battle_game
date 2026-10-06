@@ -6,7 +6,7 @@ import { UI } from './state.js';
 
 /* ---------- Chọn bộ bài trước ván đấu ---------- */
 const keys = () => Object.keys(DECKS);
-const otherDeck = k => keys().find(x => x !== k) || k;
+const otherDeck = k => { const o = keys().filter(x => x !== k); return o[Math.random() * o.length | 0] || k; };   // 'auto': một bộ khác ngẫu nhiên
 try { const s = JSON.parse(localStorage.getItem('dp-deck') || 'null'); if (s && DECKS[s.me]) UI.deck = {me:s.me, ai:DECKS[s.ai] || s.ai === 'auto' ? s.ai : 'auto'}; } catch (e) {}
 if (!UI.deck) UI.deck = {me:keys()[0], ai:'auto'};
 
@@ -28,7 +28,7 @@ export function renderDeckPick(){
         <span class="meta">Khế ước: <b>${b.name}</b> (${b.cost} ma lực, ⚔${b.atk} ♥${b.hp})</span></span>
     </button>`; };
   const list = k => Object.entries(DECKS[k].list).map(([id, n]) => `${DB[id].name}${n > 1 ? ' ×' + n : ''}`).join(', ');
-  const aiOpts = [['auto', 'Bộ còn lại'], ...keys().map(k => [k, DECKS[k].name])];
+  const aiOpts = [['auto', 'Ngẫu nhiên'], ...keys().map(k => [k, DECKS[k].name])];
   el.innerHTML = `<div class="dp-in">
     <div class="lib-top"><h2>Chọn bộ bài</h2>${inGame() ? '<button class="btn" data-dp="close">Huỷ</button>' : ''}</div>
     <div class="deck-grid">${keys().map(tile).join('')}</div>
