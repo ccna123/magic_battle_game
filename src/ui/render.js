@@ -140,9 +140,11 @@ export function menuFor(c){
     acts.push({label:'Gọi khế ước', primary:true, dis:!ok, fn:() => run(() => summon(c, true))});
     if (!ok) note = me.bond.cd ? `Đang nghỉ ${me.bond.cd} lượt.` : d.cost > me.mana ? `Thiếu ma lực: còn ${me.mana}.` : 'Đã đủ 3 linh thú.';
   } else if (me.fam.includes(c) && canAttack(c)) {
-    acts.push({label:`Tấn công · ⚔${atk(c)}`, primary:true, fn:() => run(async () => {
-      const ts = legalAttackTargets(c);
-      const r = await humanPick(`${c.d.name} (⚔${atk(c)}): chọn mục tiêu${ts.length && !ts.some(t => t.hero) ? ' — phải đánh Hộ vệ trước' : ''}.`, ts, [{label:'Huỷ', v:null}]);
+    const ts0 = legalAttackTargets(c), direct = ts0.length === 1 && ts0[0].hero;
+    acts.push({label:`${direct ? 'Tấn công trực tiếp' : 'Tấn công'} · ⚔${atk(c)}`, primary:true, fn:() => run(async () => {
+      const ts = legalAttackTargets(c), o = P(1 - c.owner);
+      const why = ts.some(t => t.hero) ? '' : o.fam.some(f => f.d.guard) ? ' — phải đánh Hộ vệ trước' : ' — đối thủ còn linh thú nên chưa thể tấn công trực tiếp';
+      const r = await humanPick(`${c.d.name} (⚔${atk(c)}): chọn mục tiêu${why}. Sát thương vượt quá máu mục tiêu sẽ trừ vào sinh lực đối thủ.`, ts, [{label:'Huỷ', v:null}]);
       if (r && r.uid) await attack(c, r);
     })});
   }

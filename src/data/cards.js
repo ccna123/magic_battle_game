@@ -4,7 +4,7 @@ import { changeWeather } from '../engine/weather.js';
 import { FX } from '../fx/three-fx.js';
 
 /* ---------- Dữ liệu lá bài ----------
-   Linh thú: cost, atk, hp, guard (hộ vệ), channel {el, bonus} (kênh phép), evolve (tiến hoá khi đủ 3 dấu ấn)
+   Linh thú: cost, atk, hp, guard (hộ vệ), direct (được tấn công trực tiếp dù đối thủ còn linh thú), channel {el, bonus} (kênh phép), evolve (tiến hoá khi đủ 3 dấu ấn)
    Phép: cost, el, target ('enemy' | 'enemyUnit' | 'allyUnit' | 'oppSpell'), op(c, L) */
 export const DB = {
   // ===== Linh thú Thuỷ – Lôi =====
@@ -45,12 +45,12 @@ export const DB = {
 
   // ===== Phép Thuỷ – Lôi =====
   aguamenti:{name:'Aguamenti',kind:'charm',el:'water',cost:1,art:'aguamenti',target:'enemy',cat:['DAMAGE'],
-    text:'Gây 1 sát thương Nước và làm mục tiêu Ướt.',op(c, L){ hit(L.t, amt(L, 1), c, 'water'); addSt(L.t, 'wet', c); }},
+    text:'Gây 1 sát thương Nước lên 1 kẻ địch (linh thú hoặc pháp sư) và làm nó Ướt.',op(c, L){ hit(L.t, amt(L, 1), c, 'water'); addSt(L.t, 'wet', c); }},
   unda:{name:'Sóng Triều',kind:'charm',el:'water',cost:3,art:'aguamenti',cat:['DAMAGE'],
     text:'Mọi kẻ địch bị Ướt. Gây 1 sát thương Nước lên mỗi linh thú địch.',
     op(c, L){ for (const e of enemies(c.owner)) addSt(e, 'wet', c); for (const u of [...enemyUnits(c.owner)]) hit(u, amt(L, 1), c, 'water'); }},
   fulmen:{name:'Fulmen',kind:'charm',el:'storm',cost:2,art:'fulmen',target:'enemy',cat:['DAMAGE'],
-    text:'Gây 3 sát thương Sét.',op(c, L){ hit(L.t, amt(L, 3), c, 'storm'); }},
+    text:'Gây 3 sát thương Sét lên 1 kẻ địch (linh thú hoặc pháp sư).',op(c, L){ hit(L.t, amt(L, 3), c, 'storm'); }},
   stupefy:{name:'Stupefy',kind:'charm',el:'storm',cost:2,art:'stupefy',target:'enemyUnit',cat:['DAMAGE'],
     text:'Gây 2 sát thương Sét lên 1 linh thú và làm nó Choáng (không tấn công lượt tới).',op(c, L){ hit(L.t, amt(L, 2), c, 'storm'); addSt(L.t, 'stun', c); }},
   tempestas:{name:'Mưa Giông',kind:'charm',el:'storm',cost:5,art:'reducto',legend:true,cat:['DAMAGE'],
@@ -69,7 +69,7 @@ export const DB = {
 
   // ===== Phép Hoả – Băng =====
   incendio:{name:'Incendio',kind:'charm',el:'fire',cost:2,art:'incendio',target:'enemy',cat:['DAMAGE'],
-    text:'Gây 2 sát thương Lửa và làm mục tiêu Cháy (1 sát thương đầu lượt, 2 lượt).',op(c, L){ const r = hit(L.t, amt(L, 2), c, 'fire'); if (!r.noBurn) addSt(L.t, 'burn', c); }},
+    text:'Gây 2 sát thương Lửa lên 1 kẻ địch (linh thú hoặc pháp sư) và làm nó Cháy (1 sát thương đầu lượt, 2 lượt).',op(c, L){ const r = hit(L.t, amt(L, 2), c, 'fire'); if (!r.noBurn) addSt(L.t, 'burn', c); }},
   confringo:{name:'Confringo',kind:'charm',el:'fire',cost:4,art:'confringo',target:'enemyUnit',cat:['DAMAGE'],
     text:'Gây 5 sát thương Lửa lên 1 linh thú.',op(c, L){ hit(L.t, amt(L, 5), c, 'fire'); }},
   ignis:{name:'Ignis Serpens',kind:'charm',el:'fire',cost:5,art:'ignis',legend:true,cat:['DAMAGE'],

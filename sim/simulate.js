@@ -1,9 +1,11 @@
 /* Cho máy tự đấu với máy để cân bằng bộ bài.
    Chạy: npm run sim            (60 ván)
          npm run sim -- 200     (200 ván)
+         npm run sim -- 200 swap   (đổi chỗ: Hoả – Băng đi trước)
    Engine chạy thật, chỉ thay trình duyệt bằng một DOM giả tối giản. */
 
-const N = +(process.argv[2] || 60);
+const N = +(process.argv[2] || 60), SWAP = process.argv[3] === 'swap';
+const DK = SWAP ? ['hoabang', 'thuyloi'] : ['thuyloi', 'hoabang'];
 
 // ---- DOM giả (đủ cho engine và giao diện chạy không lỗi) ----
 const el = () => ({ innerHTML: '', textContent: '', hidden: true, value: '', className: '', style: {},
@@ -23,7 +25,7 @@ const core = await import('../src/engine/core.js');
 
 const stats = { games: 0, wins: [0, 0], turns: 0, reactions: {}, evolve: 0, weather: {} };
 for (let i = 0; i < N; i++) {
-  core.newGame();
+  core.newGame(...DK);
   core.G.p[0].ai = true;            // cả hai bên đều là máy
   await core.startTurn();
   const G = core.G;
@@ -35,7 +37,7 @@ for (let i = 0; i < N; i++) {
   }
 }
 console.log(`Số ván: ${stats.games}`);
-console.log(`Thắng: Thuỷ – Lôi ${stats.wins[0]} · Hoả – Băng ${stats.wins[1]}`);
+console.log(`Thắng: ${core.G.p[0].deckName} (đi trước) ${stats.wins[0]} · ${core.G.p[1].deckName} ${stats.wins[1]}`);
 console.log(`Trung bình ${(stats.turns / stats.games).toFixed(1)} lượt/ván`);
 console.log('Phản ứng nguyên tố:', stats.reactions);
 console.log('Số lần tiến hoá:', stats.evolve);

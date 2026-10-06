@@ -91,7 +91,10 @@ export function hit(t, n, src, el = 'none', o = {}){
   if (t.hero) damageHero(t.owner, n);
   else {
     t.hp -= n; floatText(t, '−' + n); log(`${t.d.name} mất ${n} máu`, 'dmg');
+    // Như Yu-Gi-Oh: đòn của đối phương (linh thú hoặc phép) vượt quá máu còn lại thì phần chênh lệch trừ vào sinh lực chủ lá
+    const over = -t.hp;
     if (t.hp <= 0) kill(t);
+    if (over > 0 && src && src.owner !== t.owner) { log(`Chênh lệch ${over} xuyên qua ${t.d.name}`, 'dmg'); damageHero(t.owner, over); }
   }
   return o;
 }
@@ -243,8 +246,11 @@ export async function playSpell(c, presetTarget){
   return true;
 }
 export function legalAttackTargets(u){
-  const o = opp(u.owner), guards = P(o).fam.filter(f => f.d.guard);
-  const ts = guards.length ? guards : [hero(o), ...P(o).fam];
+  // Như Yu-Gi-Oh: đối thủ còn linh thú thì phải đánh linh thú (có Hộ vệ thì phải đánh Hộ vệ trước);
+  // chỉ tấn công trực tiếp pháp sư khi sân đối thủ trống, hoặc khi linh thú có hiệu ứng direct
+  const o = opp(u.owner), fam = P(o).fam, guards = fam.filter(f => f.d.guard);
+  let ts = guards.length ? guards : fam.length ? [...fam] : [hero(o)];
+  if (u.d.direct && !ts.includes(hero(o))) ts = [hero(o), ...ts];
   return W() === 'fog' ? ts.filter(t => !t.hero) : ts;
 }
 export function canAttack(u){
