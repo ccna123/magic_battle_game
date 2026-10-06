@@ -8,12 +8,17 @@ import { TIPS, tip } from './tutorial.js';
 /* ---------- Giao diện ---------- */
 export function run(fn){ if (UI.busy) return; UI.busy = true; UI.sel = null; render(); Promise.resolve(fn()).finally(() => { UI.busy = false; render(); }); }
 export function chips(t){ return Object.keys(t.st).map(k => `<span class="chip st-${k}">${STN[k]}</span>`).join(''); }
+export const FLIP_MS = 650;
 export function cardHTML(c, zone){
-  const hidden = c.owner === 1 && (c.set || P(1).hand.includes(c));
+  // Lá úp (của cả hai bên) và bài trên tay đối thủ hiện mặt sau; lá úp của bạn vẫn xem được bằng chuột phải
+  const hidden = c.set || (c.owner === 1 && P(1).hand.includes(c));
   const pick = UI.pick && UI.pick.cands.has(c.uid);
-  if (hidden) return `<div class="card back ${c.set ? 'set' : ''} ${pick ? 'pick' : ''}" data-uid="${c.uid}" tabindex="0" aria-label="Lá úp"></div>`;
+  if (hidden) return `<div class="card back ${c.set ? 'set' : ''} ${pick ? 'pick' : ''}" data-uid="${c.uid}" tabindex="0" aria-label="${c.owner === 0 ? 'Lá úp: ' + c.d.name : 'Lá úp'}"></div>`;
   const d = c.d, onF = P(c.owner).fam.includes(c), myTurn = G.active === 0 && !UI.busy && !G.over;
   const cls = ['card', 'face', 'k-' + d.kind];
+  // Vừa lật ngửa: chạy hiệu ứng lật, giữ đúng tiến độ qua các lần vẽ lại
+  const flipT = c.flipAt ? Date.now() - c.flipAt : Infinity, flip = flipT < FLIP_MS;
+  if (flip) cls.push('flip');
   if (pick) cls.push('pick');
   else if (myTurn && c.owner === 0 && onF && canAttack(c)) cls.push('can-atk');
   else if (myTurn && zone === 'hand' && canPlay(c)) cls.push('playable');
@@ -26,8 +31,8 @@ export function cardHTML(c, zone){
     stats = `<div class="cstats"><span class="a"><b class="${da > 0 ? 'up' : da < 0 ? 'down' : ''}">⚔${a}</b></span><span class="h ${onF && c.hp < d.hp ? 'down' : ''}">♥${onF ? c.hp : d.hp}</span></div>`;
   } else stats = `<div class="cstats"><span style="color:${EL[d.el].c}">${EL[d.el].n}</span></div>`;
   const marks = onF && d.evolve ? `<span class="marks">${'◆'.repeat(c.marks)}${'◇'.repeat(Math.max(0, EVOLVE_AT - c.marks))}</span>` : '';
-  const tagT = c.set ? '<span class="tag">ÚP</span>' : d.guard ? '<span class="tag">HỘ VỆ</span>' : d.token ? `<span class="tag">${c.ttl}L</span>` : '';
-  return `<div class="${cls.join(' ')}" data-uid="${c.uid}" tabindex="0" aria-label="${d.name}" style="--elc:${EL[d.el].c}">
+  const tagT = d.guard ? '<span class="tag">HỘ VỆ</span>' : d.token ? `<span class="tag">${c.ttl}L</span>` : '';
+  return `<div class="${cls.join(' ')}" data-uid="${c.uid}" tabindex="0" aria-label="${d.name}" style="--elc:${EL[d.el].c}${flip ? `;animation-delay:-${flipT}ms` : ''}">
     <span class="cost">${d.cost}</span>${tagT}<div class="cname">${d.name}</div><div class="cart art art-${c.id}"></div>${stats}
     <div class="stchips">${chips(c)}${marks}</div></div>`;
 }
@@ -56,12 +61,19 @@ export function heroHTML(pi){
     <span class="meta">Bài ${p.deck.length} · Tay ${p.hand.length}</span>
     <button class="grave" data-grave="${pi}">Mộ · ${p.grave.length}</button>`;
 }
+export function graveHTML(pi){
+  const g = P(pi).grave, top = g[g.length - 1];
+  return `<button class="gy" data-grave="${pi}" aria-label="Mộ của ${P(pi).name}: ${g.length} lá">
+    ${top ? `<span class="gytop art art-${top.id} k-${top.d.kind}"></span>` : ''}<span class="gylbl">MỘ</span><b class="gyn">${g.length}</b></button>`;
+}
 export function render(){
   const me = P(0), ai = P(1);
   $('#oppInfo').innerHTML = heroHTML(1);
   $('#oppHand').innerHTML = ai.hand.map(() => '<div class="card back mini"></div>').join('');
   $('#oppST').innerHTML = rowHTML(ai.st, MAXS); $('#oppFam').innerHTML = rowHTML(ai.fam, MAXF);
   $('#myFam').innerHTML = rowHTML(me.fam, MAXF); $('#myST').innerHTML = rowHTML(me.st, MAXS);
+  $('#oppGY').innerHTML = graveHTML(1); $('#myGY').innerHTML = graveHTML(0);
+  if (UI.graveView !== null) renderGraveView();
   // Bài trên tay xoè hình quạt: --i là vị trí so với giữa, --ov là độ chồng (càng nhiều lá càng chồng)
   const n = me.hand.length, mid = (n - 1) / 2, ov = n <= 4 ? .08 : n <= 6 ? .28 : .42;
   $('#myHand').innerHTML = me.hand.map((c, i) => cardHTML(c, 'hand').replace('style="', `style="--i:${i - mid};--a:${Math.abs(i - mid)};--ov:${ov};`)).join('');
@@ -169,13 +181,17 @@ export function showInfo(c, x, y){
   el.style.left = Math.min(Math.max(8, x + 12), vw - m.width - 8) + 'px';
   el.style.top = Math.min(Math.max(8, y + 12), vh - m.height - 8) + 'px';
 }
-export function showGrave(pi, x, y){
-  const el = $('#cardinfo'), g = P(pi).grave;
-  el.className = 'cardinfo';
-  el.innerHTML = `<div class="iname">Mộ của ${P(pi).name}</div>` + (g.length ? `<p>${g.map(c => c.d.name).join(', ')}</p>` : '<p class="meta">Chưa có lá nào.</p>');
+/* ---------- Xem mộ: danh sách lá trong mộ, mới nhất trước ---------- */
+export function openGrave(pi){ UI.graveView = pi; UI.sel = null; render(); }
+export function closeGrave(){ UI.graveView = null; $('#gravebox').hidden = true; }
+export function renderGraveView(){
+  const pi = UI.graveView, g = [...P(pi).grave].reverse(), el = $('#gravebox');
+  el.innerHTML = `<div class="dp-in">
+    <div class="lib-top"><h2>Mộ của ${P(pi).name} · ${g.length} lá</h2>
+      <button class="btn sm" data-gv="${1 - pi}">Xem mộ ${P(1 - pi).name}</button><button class="btn" data-gv="close">Đóng</button></div>
+    ${g.length ? `<div class="gv-grid">${g.map(c => cardHTML(c, 'grave')).join('')}</div>` : '<p class="meta">Chưa có lá nào.</p>'}
+    <p class="meta">Nhấp chuột phải (hoặc giữ lâu) vào một lá để xem công dụng.</p>
+  </div>`;
   el.hidden = false;
-  const m = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
-  el.style.left = Math.min(Math.max(8, x - m.width / 2), vw - m.width - 8) + 'px';
-  el.style.top = Math.min(Math.max(8, y + 12), vh - m.height - 8) + 'px';
 }
 export function hideInfo(){ const el = $('#cardinfo'); if (el && !el.hidden) el.hidden = true; }

@@ -20,9 +20,10 @@
     <div class="hud top">
       <div class="info" id="oppInfo"></div>
       <div class="opphand" id="oppHand"></div>
+      <div class="phases" id="turnline"></div>
     </div>
-    <div class="phases" id="turnline"></div>
     <div class="field3d"><div class="plane">
+      <span id="oppGY" class="gyslot opp"></span><span id="myGY" class="gyslot me"></span>
       <div class="zone opp"><span class="zlabel">Phép</span><span id="oppST" style="display:contents"></span></div>
       <div class="zone z3 opp"><span class="zlabel">Linh thú</span><span id="oppFam" style="display:contents"></span></div>
       <div class="midline"></div>
@@ -42,6 +43,7 @@
 <div id="cardmenu" class="cardmenu" role="menu" hidden></div>
 <div id="cardinfo" class="cardinfo" hidden></div>
 <div id="deckpick" class="lib" hidden></div>
+<div id="gravebox" class="lib" hidden></div>
 <div id="lib" class="lib" hidden></div>
 <input type="file" id="artFile" accept="image/*" hidden>
 <script type="module" src="/src/main.js"></script>

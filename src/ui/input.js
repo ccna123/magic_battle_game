@@ -3,7 +3,7 @@ import { G, P, allTargets, hero, resolvePick } from '../engine/core.js';
 import { ART, applyArt, saveArt } from './art.js';
 import { loadArt, renderLib } from './library.js';
 import { canNewGame, closeDeckPick, openDeckPick, renderDeckPick, startWithDeck } from './deckpick.js';
-import { canMenu, fitField, hideInfo, placeMenu, render, showGrave, showInfo } from './render.js';
+import { canMenu, closeGrave, fitField, hideInfo, openGrave, placeMenu, render, showInfo } from './render.js';
 import { UI } from './state.js';
 import { dismissTip } from './tutorial.js';
 
@@ -46,7 +46,9 @@ export function bindInput(){
     if (ac) { const f = ac.dataset.act === 'close' ? null : UI.acts[+ac.dataset.act]; UI.sel = null; if (f) f(); else render(); return; }
     if (e.target.closest('#cardmenu')) return;
     const b = e.target.closest('[data-btn]'); if (b) { const f = UI.btns[+b.dataset.btn]; if (f) f(); return; }
-    const gv = e.target.closest('[data-grave]'); if (gv) { const r = gv.getBoundingClientRect(); if (UI.sel) { UI.sel = null; render(); } showGrave(+gv.dataset.grave, r.left + r.width / 2, r.bottom); return; }
+    const gv = e.target.closest('[data-grave]'); if (gv) { openGrave(+gv.dataset.grave); return; }
+    const gvb = e.target.closest('[data-gv]'); if (gvb) { if (gvb.dataset.gv === 'close') closeGrave(); else openGrave(+gvb.dataset.gv); return; }
+    if (e.target.id === 'gravebox') { closeGrave(); return; }
     const bd = e.target.closest('[data-bond]');
     if (bd) {
       const bc = P(+bd.dataset.bond).bond.card;
@@ -85,6 +87,7 @@ export function bindInput(){
     if (e.key === 'Escape') {
       hideInfo();
       if (!$('#lib').hidden) $('#lib').hidden = true;
+      else if (UI.graveView !== null) closeGrave();
       else if (UI.sel) { UI.sel = null; render(); }
       else if (UI.deckPick && UI.started && !G.over) closeDeckPick();
     }

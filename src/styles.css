@@ -7,7 +7,7 @@
   --good:#7cc49b; --bad:#e2766b;
   --font-display:'Grenze Gotisch', 'Times New Roman', Georgia, serif;
   --font-body:'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
-  --cw: clamp(48px, min(14vw, 11.5vh), 132px);
+  --cw: clamp(48px, min(14vw, 12.5vh), 150px);
   color-scheme: dark;
 }
 *{box-sizing:border-box}
@@ -227,11 +227,11 @@ img{max-width:100%}
 .hud .info{flex:0 1 auto}
 
 /* Sân đấu: mặt phẳng nghiêng, lá ngửa đứng thẳng trên sân, lá úp nằm sấp */
-.field3d{perspective:1000px;perspective-origin:50% 100%;pointer-events:none}   /* khung bao không chặn chuột lên HUD đối thủ phía trên */
+.field3d{perspective:1400px;perspective-origin:50% 100%;pointer-events:none}   /* khung bao không chặn chuột lên HUD đối thủ phía trên */
 .field3d .plane{pointer-events:auto}
-.plane{display:flex;flex-direction:column;gap:6px;padding:10px 8px;border-radius:14px;max-width:calc(var(--cw) * 7.5 + 80px);margin:0 auto;transition:transform .5s ease}
+.plane{position:relative;display:flex;flex-direction:column;gap:6px;padding:10px 8px;border-radius:14px;max-width:calc(var(--cw) * 8 + 80px);margin:0 auto;transition:transform .5s ease}
 .midline{height:2px;margin:4px 6%;background:linear-gradient(90deg,transparent,var(--brass),transparent);opacity:.6}
-.view-3d{--tilt:34deg}
+.view-3d{--tilt:30deg}
 .view-3d .plane{transform:rotateX(var(--tilt));transform-origin:50% 100%;transform-style:preserve-3d;gap:calc(var(--cw) * .38);padding:calc(var(--cw) * .3) 12px 12px;
   background:
     linear-gradient(180deg,rgb(191 76 67 / .10),transparent 48%,transparent 52%,rgb(74 150 230 / .12)),
@@ -244,7 +244,7 @@ img{max-width:100%}
 .view-3d .plane .slot{border-color:color-mix(in srgb,var(--brass) 30%,var(--rail));background:rgb(0 0 0 / .18)}
 .view-3d .plane .zlabel{color:color-mix(in srgb,var(--brass) 60%,var(--mute))}
 .view-3d .plane .card{--stand:rotateX(calc(-1 * var(--tilt)));transform-origin:50% 100%;transform:var(--stand);box-shadow:0 12px 14px -4px rgb(0 0 0 / .6)}
-.view-3d .plane .card.back.set{--stand:none}
+.view-3d .plane .card.back.set{--stand:translateZ(1px)}   /* lá úp nằm sấp; nhích 1px khỏi mặt sân để nhận chuột */
 .view-3d .plane .card:hover{transform:var(--stand) translateY(-6px)}
 .view-3d .plane .card.sel,.view-3d .plane .card.pick{transform:var(--stand) translateY(-14px)}
 .view-3d .plane .card.can-atk{box-shadow:0 0 0 2px var(--bad),0 12px 14px -4px rgb(0 0 0 / .6)}
@@ -263,6 +263,36 @@ img{max-width:100%}
   .strip .prompt{flex-direction:column;align-items:stretch}
   .strip .prompt p{flex:none}
   .hand{margin-top:calc(var(--hw) * -.35)}
+  /* HUD của bạn nằm ở góc dưới trái màn chơi như Tag Force, nhường chiều cao cho sân */
+  .hud.bottom{position:absolute;left:12px;bottom:10px;z-index:3;max-width:min(360px,30%)}
+  .hud.bottom .info{background:color-mix(in srgb,var(--felt) 88%,transparent);border:1px solid var(--rail);border-radius:12px;padding:6px 10px;gap:6px 10px}
+  .hud.bottom .grave{margin-left:0}
 }
 @media (max-width:560px){.view-3d{--tilt:26deg}}
 @media (prefers-reduced-motion:reduce){.plane{transition:none}}
+
+/* Lật lá úp lên: mặt sau quay đi, mặt trước hiện ra kèm chớp sáng */
+.card.flip{animation:flipin .65s ease-out both}
+.card.flip::after{content:"";position:absolute;inset:0;background:url(/ui/back.png) center/100% 100% no-repeat;border-radius:inherit;animation:flipback .65s linear both;z-index:3}
+@keyframes flipin{
+  0%{transform:var(--stand,) rotateY(180deg) scale(1.05)}
+  60%{transform:var(--stand,) rotateY(20deg) scale(1.12);box-shadow:0 0 0 2px var(--brass),0 0 28px var(--brass)}
+  100%{transform:var(--stand,) rotateY(0) scale(1)}}
+@keyframes flipback{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* Mộ bài trên sân: chồng lá, hiện lá mới nhất + số lượng (của bạn góc phải dưới, đối thủ góc trái trên) */
+.gyslot{position:absolute;z-index:1}
+.view-3d .gyslot{transform:translateZ(1px)}   /* cùng mặt phẳng với sân thì sân sẽ nhận chuột thay mộ */
+.gyslot.me{right:14px;bottom:14px}
+.gyslot.opp{left:14px;top:14px}
+.gy{position:relative;display:block;width:var(--cw);aspect-ratio:5/7;padding:0;border-radius:7px;cursor:pointer;
+  border:1px solid color-mix(in srgb,var(--brass) 55%,var(--rail));background:#0d171b;
+  box-shadow:2px 2px 0 #1c2a30,4px 4px 0 #142026,6px 6px 10px rgb(0 0 0 / .5)}
+.gy:hover,.gy:focus-visible{border-color:var(--brass);outline:none;box-shadow:2px 2px 0 #1c2a30,4px 4px 0 #142026,0 0 16px color-mix(in srgb,var(--brass) 55%,transparent)}
+.gytop{position:absolute;inset:7%;border-radius:4px;opacity:.55;filter:grayscale(.4);background-color:color-mix(in srgb,var(--table) 70%,var(--k))}
+.gylbl{position:absolute;top:6%;left:0;right:0;text-align:center;font-family:var(--font-display);font-size:calc(var(--cw) * .17);color:var(--brass);text-shadow:0 1px 3px #000}
+.gyn{position:absolute;bottom:6%;left:0;right:0;text-align:center;font-size:calc(var(--cw) * .2);font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #000}
+@media (max-width:700px){.gyslot{display:none}}
+
+/* Hộp xem mộ */
+.gv-grid{display:flex;flex-wrap:wrap;gap:10px;--cw:clamp(76px,18vw,112px)}

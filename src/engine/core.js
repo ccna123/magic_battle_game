@@ -43,7 +43,7 @@ export function newGame(myDeck = 'thuyloi', aiDeck = 'hoabang'){
   else for (const id of TUTORIAL_HAND) { const i = me.deck.findIndex(c => c.id === id); if (i >= 0) me.hand.push(me.deck.splice(i, 1)[0]); }
   for (let i = 0; i < 5; i++) P(1).hand.push(P(1).deck.pop());   // người đi sau thêm 1 lá
   FX.setWeather('clear'); document.querySelector('.board')?.setAttribute('data-weather', 'clear');
-  UI.pick = null; UI.sel = null;
+  UI.pick = null; UI.sel = null; UI.graveView = null;
   log('Ván đấu bắt đầu. Bạn đi trước, Máy được thêm 1 lá và 1 ma lực tạm ở lượt đầu.', 'turnl');
 }
 
@@ -176,7 +176,8 @@ export async function responseWindow(ctx, actor){
       }
     }
     if (pick) {
-      pick.set = false; P(p).mana -= pick.d.cost;
+      pick.set = false; pick.flipAt = Date.now(); P(p).mana -= pick.d.cost;   // flipAt: giao diện chạy hiệu ứng lật lá
+      render(); await sleep(650);
       const L = {card:pick, eff:pick.d, player:p, ctx};
       await pushLink(L); ctx = {type:'activate', link:L}; passes = 0;
     } else passes++;
