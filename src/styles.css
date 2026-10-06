@@ -225,3 +225,32 @@ img{max-width:100%}
 .dp-ai{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .dp-ai .btn.on{border-color:var(--brass);color:var(--brass)}
 .dp-in .row,.over .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---- Sân đấu nghiêng kiểu Yu-Gi-Oh! Tag Force: chỉ mặt sân nghiêng, tay bài & thông tin vẫn phẳng ---- */
+.field3d{perspective:1000px;perspective-origin:50% 100%;pointer-events:none}   /* khung bao không chặn chuột lên hàng thông tin đối thủ phía trên */
+.field3d .plane{pointer-events:auto}
+.plane{display:flex;flex-direction:column;gap:6px;padding:10px 8px;border-radius:14px;transition:transform .5s ease, margin .5s ease}
+.midline{height:2px;margin:4px 6%;background:linear-gradient(90deg,transparent,var(--brass),transparent);opacity:.6}
+.view-3d .field3d{margin-top:calc(var(--cw) * -2.2)}
+.view-3d .plane{transform:rotateX(34deg);transform-origin:50% 100%;transform-style:preserve-3d;
+  background:
+    linear-gradient(180deg,rgb(191 76 67 / .10),transparent 48%,transparent 52%,rgb(74 150 230 / .12)),
+    repeating-linear-gradient(0deg,rgb(209 169 79 / .05) 0 1px,transparent 1px 28px),
+    repeating-linear-gradient(90deg,rgb(209 169 79 / .05) 0 1px,transparent 1px 28px),
+    radial-gradient(120% 90% at 50% 50%,color-mix(in srgb,var(--felt) 85%,#2a4a58),var(--table));
+  border:1px solid color-mix(in srgb,var(--brass) 55%,var(--rail));
+  box-shadow:0 0 0 4px rgb(0 0 0 / .35),0 30px 60px rgb(0 0 0 / .55),inset 0 0 40px rgb(0 0 0 / .45)}
+.view-3d .plane .zone{transform-style:preserve-3d}
+.view-3d .plane .slot{border-color:color-mix(in srgb,var(--brass) 30%,var(--rail));background:rgb(0 0 0 / .18)}
+.view-3d .plane .zlabel{color:color-mix(in srgb,var(--brass) 60%,var(--mute))}
+/* Lá trên sân nổi lên khỏi mặt sân khi được chọn / là mục tiêu */
+.view-3d .plane .card{box-shadow:0 6px 10px rgb(0 0 0 / .45)}
+.view-3d .plane .card:hover{transform:translateZ(8px)}
+.view-3d .plane .card.sel,.view-3d .plane .card.pick{transform:translateZ(18px)}
+.view-3d .plane .card.can-atk{box-shadow:0 0 0 2px var(--bad),0 6px 10px rgb(0 0 0 / .45)}
+.view-3d .plane .card.pick{box-shadow:0 0 0 2px var(--brass),0 0 16px color-mix(in srgb,var(--brass) 60%,transparent)}
+@media (max-width:560px){
+  .view-3d .plane{transform:rotateX(26deg)}
+  .view-3d .field3d{margin-top:calc(var(--cw) * -1.5)}
+}
+@media (prefers-reduced-motion:reduce){.plane{transition:none}}

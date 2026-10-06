@@ -8,7 +8,14 @@ import { UI } from './state.js';
 import { dismissTip } from './tutorial.js';
 
 /* ---------- Thao tác chuột / bàn phím ---------- */
+/* Góc nhìn sân: nghiêng 3D (mặc định) hoặc phẳng, nhớ theo trình duyệt */
+function setView(tilt){
+  document.body.classList.toggle('view-3d', tilt);
+  const b = $('#viewBtn'); b.textContent = `Góc nhìn: ${tilt ? 'Nghiêng' : 'Phẳng'}`; b.setAttribute('aria-pressed', tilt);
+  try { localStorage.setItem('dp-view', tilt ? '3d' : '2d'); } catch (e) {}
+}
 export function bindInput(){
+  try { if (localStorage.getItem('dp-view') === '2d') setView(false); } catch (e) {}
   let press = null, pressed = false;
   document.addEventListener('click', e => {
     if (pressed) { pressed = false; if (e.target.closest('.card,[data-bond]')) return; }   // vừa giữ lâu để xem công dụng: không tính là chạm
@@ -23,6 +30,7 @@ export function bindInput(){
       else if (dp.dataset.dp === 'close') closeDeckPick();
       return;
     }
+    if (e.target.id === 'viewBtn') { setView(!document.body.classList.contains('view-3d')); render(); return; }
     if (e.target.id === 'openLib') { renderLib(); $('#lib').hidden = false; return; }
     const tp = e.target.closest('[data-tip]');
     if (tp) { if (tp.dataset.tip === 'off') { UI.tutOff = true; UI.seen.__off = 1; UI.tipQueue = []; try { localStorage.setItem('dp-tut', JSON.stringify(UI.seen)); } catch (er) {} render(); } else dismissTip(); return; }

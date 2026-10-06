@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
   <style id="artcss"></style>
 </head>
-<body>
+<body class="view-3d">
 <div class="app">
   <main style="min-width:0">
     <div class="head">
@@ -17,27 +17,27 @@
         <h1>Đấu Trường <span>Phép Thuật</span></h1>
         <p class="sub">Bản thử luật mới: ma lực, linh thú khế ước, kênh phép, phản ứng nguyên tố và thời tiết sân đấu.</p>
       </div>
-      <div class="row"><button class="btn" data-newgame="1">Chọn bộ bài</button><button class="btn" id="openLib">Kho lá bài</button></div>
+      <div class="row"><button class="btn" id="viewBtn" aria-pressed="true">Góc nhìn: Nghiêng</button><button class="btn" data-newgame="1">Chọn bộ bài</button><button class="btn" id="openLib">Kho lá bài</button></div>
     </div>
     <div class="board">
-      <div class="side-block">
-        <div class="info" id="oppInfo"></div>
-        <div class="opphand" id="oppHand"></div>
-        <div class="zone"><span class="zlabel">Phép</span><span id="oppST" style="display:contents"></span></div>
-        <div class="zone z3"><span class="zlabel">Linh thú</span><span id="oppFam" style="display:contents"></span></div>
-      </div>
+      <div class="info" id="oppInfo"></div>
+      <div class="opphand" id="oppHand"></div>
+      <!-- Sân đấu: mặt phẳng nghiêng kiểu Tag Force (tắt bằng nút Góc nhìn) -->
+      <div class="field3d"><div class="plane">
+        <div class="zone opp"><span class="zlabel">Phép</span><span id="oppST" style="display:contents"></span></div>
+        <div class="zone z3 opp"><span class="zlabel">Linh thú</span><span id="oppFam" style="display:contents"></span></div>
+        <div class="midline"></div>
+        <div class="zone z3 me"><span class="zlabel">Linh thú</span><span id="myFam" style="display:contents"></span></div>
+        <div class="zone me"><span class="zlabel">Phép</span><span id="myST" style="display:contents"></span></div>
+      </div></div>
       <div class="strip">
         <div class="phases" id="turnline"></div>
         <div class="chain" id="chain"></div>
         <div id="tip"></div>
         <div class="prompt" id="prompt"></div>
       </div>
-      <div class="side-block">
-        <div class="zone z3"><span class="zlabel">Linh thú</span><span id="myFam" style="display:contents"></span></div>
-        <div class="zone"><span class="zlabel">Phép</span><span id="myST" style="display:contents"></span></div>
-        <div class="hand" id="myHand"></div>
-        <div class="info" id="myInfo"></div>
-      </div>
+      <div class="hand" id="myHand"></div>
+      <div class="info" id="myInfo"></div>
     </div>
   </main>
   <aside>
