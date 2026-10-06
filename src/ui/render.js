@@ -1,6 +1,6 @@
 import { $, EL, EVOLVE_AT, KIND, MAXF, MAXMANA, MAXS, STN } from '../config.js';
 import { WEATHER } from '../data/weather.js';
-import { G, P, atk, canAttack, canPlay, endTurn, hero, playSpell, resolvePick, summon, tag, uid, upkeep } from '../engine/core.js';
+import { G, P, atk, attack, canAttack, canPlay, endTurn, hero, humanPick, legalAttackTargets, playSpell, resolvePick, summon, upkeep } from '../engine/core.js';
 import { W } from '../engine/weather.js';
 import { UI } from './state.js';
 import { TIPS, tip } from './tutorial.js';
@@ -69,31 +69,24 @@ export function render(){
     <span class="meta">còn ${G.weather.left} vòng · kế tiếp: <span class="wnext"><span class="wdot w-${G.forecast}"></span>${WEATHER[G.forecast].name}</span></span></button>
     <span class="turn">Lượt ${G.turnNo} · ${P(G.active).name}</span>`;
   $('#chain').innerHTML = G.chain.length ? `<span class="lbl">Chuỗi</span>` + G.chain.map((L, i) => `<span class="link ${i === G.chain.length - 1 ? 'top' : ''} ${L.negated ? 'neg' : ''} ${L.res ? 'res' : ''}" style="--k:var(--${L.card.d.kind})">${L.n}. ${L.card.d.name}</span>`).join('<span class="meta">→</span>') : '';
-  renderTip(); renderPrompt(); renderInsp();
-  $('#log').innerHTML = G.log.map(l => `<div class="${l.cls}">${l.t}</div>`).join('');
-  $('#overlay').innerHTML = G.over ? `<div class="over"><div class="box"><h2>${G.winner === 0 ? 'Chiến thắng' : 'Thất bại'}</h2><p>${G.winner === 0 ? 'Pháp sư đối thủ đã gục.' : 'Bạn đã cạn sinh lực.'}</p><button class="btn primary" id="again">Đấu lại</button></div></div>` : '';
+  renderTip(); renderPrompt(); renderInsp(); renderMenu();
+  $('#overlay').innerHTML = G.over ? `<div class="over"><div class="box"><h2>${G.winner === 0 ? 'Chiến thắng' : 'Thất bại'}</h2><p>${G.winner === 0 ? 'Pháp sư đối thủ đã gục.' : 'Bạn đã cạn sinh lực.'}</p><div class="row" style="justify-content:center"><button class="btn primary" id="again">Đấu lại</button><button class="btn" data-newgame="1">Đổi bộ bài</button></div></div></div>` : '';
 }
 export function renderTip(){
   // gợi ý combo khi trên tay có đủ Aguamenti + Fulmen và đủ 3 ma lực
   const me = P(0);
   if (G.active === 0 && me.mana >= 3 && me.hand.some(c => c.id === 'aguamenti') && me.hand.some(c => c.id === 'fulmen')) tip('combo');
   const k = UI.tipQueue[0];
-  $('#tip').innerHTML = k ? `<div class="tipbox"><span class="tiplbl">Hướng dẫn</span><p>${TIPS[k]}</p><div class="row"><button class="btn sm primary" data-tip="ok">Đã hiểu</button><button class="btn sm" data-tip="off">Tắt hướng dẫn</button></div></div>` : '';
+  const t = k && TIPS[k];
+  $('#tip').innerHTML = k ? `<div class="tipbox"><span class="tiplbl">Hướng dẫn</span><p>${typeof t === 'function' ? t() : t}</p><div class="row"><button class="btn sm primary" data-tip="ok">Đã hiểu</button><button class="btn sm" data-tip="off">Tắt hướng dẫn</button></div></div>` : '';
 }
 export function renderPrompt(){
   let text = '', btns = [];
   const me = P(0);
   if (UI.pick) { text = UI.pick.text; btns = UI.pick.buttons.map(b => ({label:b.label, primary:b.primary, fn:() => resolvePick(b.v)})); }
   else if (G.over) text = 'Ván đấu đã kết thúc.';
-  else if (G.active === 0 && !UI.busy && UI.sel && me.hand.includes(UI.sel)) {
-    const c = UI.sel, d = c.d, ok = canPlay(c);
-    text = `${d.name} · ${d.cost} ma lực: ${d.text}`;
-    const label = d.kind === 'creature' ? 'Triệu hồi' : d.kind === 'counter' ? 'Úp xuống' : 'Niệm phép';
-    btns.push({label, primary:true, dis:!ok, fn:() => run(async () => { if (d.kind === 'creature') await summon(c, false); else await playSpell(c); })});
-    if (!ok) text += d.cost > me.mana ? ` (Thiếu ma lực: còn ${me.mana}.)` : d.kind === 'creature' && me.fam.length >= MAXF ? ' (Đã đủ 3 linh thú.)' : ' (Chưa có mục tiêu hợp lệ.)';
-    btns.push({label:'Đóng', fn:() => { UI.sel = null; render(); }});
-  } else if (G.active === 0 && !UI.busy) {
-    text = `Còn ${me.mana} ma lực. Chạm lá trên tay để dùng, chạm linh thú viền đỏ để tấn công.`;
+  else if (G.active === 0 && !UI.busy) {
+    text = `Còn ${me.mana} ma lực. Chạm một lá để hiện nút hành động, nhấp chuột phải (hoặc giữ lâu) để xem công dụng.`;
     btns.push({label:'Kết thúc lượt', primary:true, fn:() => run(endTurn)});
   } else text = G.active === 0 ? 'Đang xử lý…' : 'Máy đang niệm phép…';
   UI.btns = btns.map(b => b.fn);
@@ -107,15 +100,77 @@ export function renderInsp(){
     return;
   }
   const c = x && x.card;
-  if (!c || c.hero || (c.owner === 1 && (c.set || P(1).hand.includes(c)))) {
+  if (isHidden(c)) {
     el.className = 'panel insp empty';
-    el.innerHTML = `<h2>Xem lá bài</h2><p class="meta">Chạm vào một lá để đọc hiệu ứng. Lá úp của đối thủ thì không xem được.</p>`;
+    el.innerHTML = `<h2>Xem lá bài</h2><p class="meta">Chạm vào một lá hoặc nhấp chuột phải để đọc công dụng. Lá úp của đối thủ thì không xem được.</p>`;
     return;
   }
-  const d = c.d, onF = P(c.owner).fam.includes(c);
   el.className = 'panel insp';
+  el.innerHTML = cardDetailHTML(c);
+}
+/* Nội dung chi tiết một lá: dùng cho khung "Xem lá bài" và bảng công dụng khi nhấp chuột phải */
+export function cardDetailHTML(c){
+  const d = c.d, onF = P(c.owner).fam.includes(c);
   const st = d.kind === 'creature' ? `<div class="istats">⚔ ${atk(c)} · ♥ ${onF ? c.hp : d.hp}/${d.hp}${d.evolve ? ` · Dấu ấn ${c.marks}/${EVOLVE_AT}` : ''}</div>` : '';
-  el.innerHTML = `<div class="iart art art-${c.id} k-${d.kind}"></div><div><div class="iname">${d.name}</div>
+  return `<div class="iart art art-${c.id} k-${d.kind}"></div><div><div class="iname">${d.name}</div>
     <div class="itype">${KIND[d.kind]} · <span style="color:${EL[d.el].c}">${EL[d.el].n}</span> · ${d.cost} ma lực</div>${st}<p>${d.text}</p>
     ${Object.keys(c.st).length ? `<p class="meta">Đang: ${Object.keys(c.st).map(k => STN[k]).join(', ')}</p>` : ''}</div>`;
 }
+export function isHidden(c){ return !c || c.hero || (c.owner === 1 && (c.set || P(1).hand.includes(c))); }
+
+/* ---------- Nút hành động hiện ngay cạnh lá được chọn ---------- */
+export function menuFor(c){
+  const me = P(0), d = c.d, acts = [];
+  let note = '';
+  if (me.hand.includes(c)) {
+    const ok = canPlay(c);
+    acts.push({label:d.kind === 'creature' ? 'Triệu hồi' : d.kind === 'counter' ? 'Úp xuống' : 'Niệm phép', primary:true, dis:!ok,
+      fn:() => run(async () => { if (d.kind === 'creature') await summon(c, false); else await playSpell(c); })});
+    if (!ok) note = d.cost > me.mana ? `Thiếu ma lực: còn ${me.mana}.` : d.kind === 'creature' && me.fam.length >= MAXF ? 'Đã đủ 3 linh thú.' : 'Chưa có mục tiêu hợp lệ.';
+  } else if (c === me.bond.card && !me.fam.includes(c)) {
+    const ok = me.bond.cd === 0 && d.cost <= me.mana && me.fam.length < MAXF;
+    acts.push({label:'Gọi khế ước', primary:true, dis:!ok, fn:() => run(() => summon(c, true))});
+    if (!ok) note = me.bond.cd ? `Đang nghỉ ${me.bond.cd} lượt.` : d.cost > me.mana ? `Thiếu ma lực: còn ${me.mana}.` : 'Đã đủ 3 linh thú.';
+  } else if (me.fam.includes(c) && canAttack(c)) {
+    acts.push({label:`Tấn công · ⚔${atk(c)}`, primary:true, fn:() => run(async () => {
+      const ts = legalAttackTargets(c);
+      const r = await humanPick(`${c.d.name} (⚔${atk(c)}): chọn mục tiêu${ts.length && !ts.some(t => t.hero) ? ' — phải đánh Hộ vệ trước' : ''}.`, ts, [{label:'Huỷ', v:null}]);
+      if (r && r.uid) await attack(c, r);
+    })});
+  }
+  return {acts, note};
+}
+export function canMenu(c){ return G.active === 0 && !UI.busy && !UI.pick && !G.over && menuFor(c).acts.length > 0; }
+export function renderMenu(){
+  const el = $('#cardmenu'), c = UI.sel;
+  if (!c || !canMenu(c)) { el.hidden = true; el.innerHTML = ''; UI.acts = []; return; }
+  const {acts, note} = menuFor(c);
+  UI.acts = acts.map(a => a.fn);
+  el.innerHTML = `<div class="cm-name">${c.d.name} <span class="meta">· ${c.d.cost} ma lực</span></div>${note ? `<div class="cm-note">${note}</div>` : ''}
+    <div class="row">${acts.map((a, i) => `<button class="btn sm ${a.primary ? 'primary' : ''}" data-act="${i}" ${a.dis ? 'disabled' : ''}>${a.label}</button>`).join('')}
+    <button class="btn sm" data-act="close">Đóng</button></div>`;
+  el.hidden = false;
+  placeMenu();
+}
+export function anchorOf(c){ return c === P(0).bond.card && !P(0).fam.includes(c) ? document.querySelector('[data-bond="0"]') : document.querySelector(`[data-uid="${c.uid}"]`); }
+export function placeMenu(){
+  const el = $('#cardmenu'); if (el.hidden || !UI.sel) return;
+  const a = anchorOf(UI.sel); if (!a) { el.hidden = true; return; }
+  const r = a.getBoundingClientRect(), m = el.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+  let top = r.top - m.height - 8;
+  if (top < 8) top = r.bottom + 8;
+  const left = Math.min(Math.max(8, r.left + r.width / 2 - m.width / 2), vw - m.width - 8);
+  el.style.top = top + 'px'; el.style.left = left + 'px';
+}
+
+/* ---------- Bảng công dụng khi nhấp chuột phải / giữ lâu ---------- */
+export function showInfo(c, x, y){
+  const el = $('#cardinfo');
+  el.className = 'cardinfo insp';
+  el.innerHTML = isHidden(c) ? '<div><div class="iname">Lá úp</div><p class="meta">Không xem được lá úp của đối thủ.</p></div>' : cardDetailHTML(c);
+  el.hidden = false;
+  const m = el.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = document.documentElement.clientHeight;
+  el.style.left = Math.min(Math.max(8, x + 12), vw - m.width - 8) + 'px';
+  el.style.top = Math.min(Math.max(8, y + 12), vh - m.height - 8) + 'px';
+}
+export function hideInfo(){ const el = $('#cardinfo'); if (el && !el.hidden) el.hidden = true; }

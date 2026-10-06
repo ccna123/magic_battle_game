@@ -1,5 +1,5 @@
 /* Đấu Trường Phép Thuật — giao diện */
-/* Layout: bàn đấu dọc 5 ô mỗi hàng (đối thủ trên, bạn dưới, dải chuỗi ở giữa) + cột sổ ghi engine bên phải */
+/* Layout: bàn đấu dọc 5 ô mỗi hàng (đối thủ trên, bạn dưới, dải chuỗi ở giữa) + cột thông tin bên phải */
 :root{
   --table:#0e1517; --felt:#15222a; --card:#1c2b33; --rail:#2a3d45;
   --ink:#ece5d1; --mute:#8fa19d; --brass:#d1a94f;
@@ -97,13 +97,6 @@ aside{display:flex;flex-direction:column;gap:14px;min-width:0}
 .insp .istats{font-variant-numeric:tabular-nums;font-weight:700;margin-bottom:6px}
 .insp p{margin:0 0 6px}
 .src{display:inline-block;font-size:11px;border:1px solid var(--rail);border-radius:4px;padding:0 6px;color:var(--mute)}
-.log{max-height:300px;overflow-y:auto;font-size:13px;display:flex;flex-direction:column;gap:3px}
-.log div{padding-left:8px;border-left:2px solid transparent}
-.log .evt{color:var(--mute);font-size:12px}
-.log .evt code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px;color:var(--enchant)}
-.log .chain{border-left-color:var(--brass)}
-.log .dmg{color:var(--bad)} .log .good{color:var(--good)}
-.log .turnl{color:var(--brass);font-family:var(--font-display);font-size:16px;margin-top:4px}
 details summary{cursor:pointer;font-family:var(--font-display);font-size:18px}
 details ol{padding-left:18px;margin:8px 0 0;font-size:14px;display:flex;flex-direction:column;gap:4px}
 code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
@@ -175,7 +168,6 @@ code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
 .tipbox p{margin:0;max-width:72ch}
 .tiplbl{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--brass)}
 .row{display:flex;gap:8px;flex-wrap:wrap}
-.log .react{color:var(--brass)}
 .react-table{width:100%;border-collapse:collapse;font-size:13px}
 .react-table td{padding:5px 0;border-top:1px solid var(--rail);vertical-align:top}
 .react-table td:first-child{white-space:nowrap;padding-right:10px;font-weight:700}
@@ -208,3 +200,28 @@ html,body{margin:0}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 img{max-width:100%}
 [hidden]{display:none!important}
+
+/* Nút hành động hiện cạnh lá được chọn */
+.cardmenu{position:fixed;z-index:4;background:var(--felt);border:1px solid var(--brass);border-radius:10px;padding:8px 10px;box-shadow:0 8px 24px rgb(0 0 0 / .5);display:flex;flex-direction:column;gap:6px;max-width:min(320px,calc(100vw - 16px))}
+.cardmenu[hidden],.cardinfo[hidden]{display:none}
+.cm-name{font-family:var(--font-display);font-size:17px;line-height:1.1}
+.cm-note{font-size:12.5px;color:var(--bad)}
+.cardmenu .row{display:flex;gap:6px;flex-wrap:wrap}
+
+/* Bảng công dụng khi nhấp chuột phải / giữ lâu */
+.cardinfo{position:fixed;z-index:7;width:min(340px,calc(100vw - 16px));background:var(--felt);border:1px solid var(--rail);border-radius:12px;padding:12px 14px;box-shadow:0 10px 30px rgb(0 0 0 / .55);pointer-events:none}
+
+/* Chọn bộ bài */
+.dp-in{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.deck{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;text-align:left;background:var(--card);border:1px solid var(--rail);border-radius:12px;padding:12px;cursor:pointer}
+.deck:hover,.deck:focus-visible{border-color:var(--brass);outline:none}
+.deck.on{border-color:var(--brass);box-shadow:0 0 0 2px var(--brass)}
+.dart{width:84px;aspect-ratio:5/7;border-radius:8px;border:1px solid var(--rail);background-color:color-mix(in srgb,var(--table) 70%,var(--k))}
+.dbody{display:flex;flex-direction:column;gap:4px;min-width:0}
+.dname{font-family:var(--font-display);font-size:24px;line-height:1}
+.dels{font-size:13px;font-weight:700}
+.ddesc{font-size:14px}
+.dp-ai{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.dp-ai .btn.on{border-color:var(--brass);color:var(--brass)}
+.dp-in .row,.over .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}

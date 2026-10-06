@@ -117,9 +117,13 @@ export const DB = {
 
 /* ---------- Hai bộ bài khởi đầu (30 lá) ---------- */
 export const DECKS = {
-  thuyloi:{name:'Thuỷ – Lôi', bond:'wyvern', list:{aguamenti:2, unda:2, fulmen:2, stupefy:2, tempestas:1, expecto:1, avis:1, episkey:1, accio:2, callrain:1,
+  thuyloi:{name:'Thuỷ – Lôi', bond:'wyvern', els:['water','storm'],
+    desc:'Làm kẻ địch Ướt rồi giật Sét lan khắp sân. Gọi Mưa để tăng sức phép Sét; linh thú Nhân Ngư tiến hoá thành Kraken.',
+    list:{aguamenti:2, unda:2, fulmen:2, stupefy:2, tempestas:1, expecto:1, avis:1, episkey:1, accio:2, callrain:1,
     fiantoduri:1, protego:2, speculum:1, expelliarmus:2, pixie:2, merfolk:2, owl:2, golem:1, unicorn:1, centaur:1}},
-  hoabang:{name:'Hoả – Băng', bond:'phoenix', list:{incendio:2, confringo:2, ignis:1, bombarda:1, glacius:2, petrificus:1, callsun:1, engorgio:1, vincula:1, tempus:1,
+  hoabang:{name:'Hoả – Băng', bond:'phoenix', els:['fire','ice'],
+    desc:'Đóng băng rồi thiêu bằng Lửa để gây Hơi nước gấp đôi sát thương. Nhiều linh thú hung hãn và phép phá huỷ.',
+    list:{incendio:2, confringo:2, ignis:1, bombarda:1, glacius:2, petrificus:1, callsun:1, engorgio:1, vincula:1, tempus:1,
     episkey:1, reducto:1, protego:1, expelliarmus:2, accio:2, gnome:1, spider:2, ghost:2, werewolf:2, hippogriff:1, troll:1, cerberus:1}},
 };
 export const TUTORIAL_HAND = ['pixie', 'aguamenti', 'fulmen', 'merfolk'];

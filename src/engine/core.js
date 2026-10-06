@@ -32,14 +32,15 @@ export function mkPlayer(name, idx, ai, deckKey){
   return {name, idx, ai, deckName:D.name, lp:START_LP, maxMana:0, mana:0, deck, hand:[], fam:[], st:[], grave:[], fatigue:0,
     bond:{card:mk(D.bond, idx), cd:0}};
 }
-export function newGame(){
+export function newGame(myDeck = 'thuyloi', aiDeck = 'hoabang'){
   uid = 0;
-  G = {p:[mkPlayer('Bạn', 0, false, 'thuyloi'), mkPlayer('Máy', 1, true, 'hoabang')], heroes:[], active:0, turnNo:0, chain:[], log:[], trig:[], over:false, attackNegated:false};
+  G = {p:[mkPlayer('Bạn', 0, false, myDeck), mkPlayer('Máy', 1, true, aiDeck)], heroes:[], active:0, turnNo:0, chain:[], log:[], trig:[], over:false, attackNegated:false};
   G.weather = {id:'clear', left:WEATHER_ROUNDS}; G.forecast = 'rain';
   G.heroes = [0, 1].map(i => ({uid:'h' + i, hero:true, owner:i, st:{}, d:{name:i ? 'Máy' : 'Bạn', kind:'hero'}}));
-  // Ván hướng dẫn: đưa sẵn combo Ướt → Sét lên tay
+  // Ván hướng dẫn (chỉ với bộ Thuỷ – Lôi): đưa sẵn combo Ướt → Sét lên tay; bộ khác rút 4 lá như thường
   const me = P(0);
-  for (const id of TUTORIAL_HAND) { const i = me.deck.findIndex(c => c.id === id); if (i >= 0) me.hand.push(me.deck.splice(i, 1)[0]); }
+  if (myDeck !== 'thuyloi') for (let i = 0; i < 4; i++) me.hand.push(me.deck.pop());
+  else for (const id of TUTORIAL_HAND) { const i = me.deck.findIndex(c => c.id === id); if (i >= 0) me.hand.push(me.deck.splice(i, 1)[0]); }
   for (let i = 0; i < 5; i++) P(1).hand.push(P(1).deck.pop());   // người đi sau thêm 1 lá
   FX.setWeather('clear'); document.querySelector('.board')?.setAttribute('data-weather', 'clear');
   UI.pick = null; UI.sel = null; UI.insp = null;

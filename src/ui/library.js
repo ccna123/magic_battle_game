@@ -1,5 +1,5 @@
 import { $, EL, KIND } from '../config.js';
-import { DB } from '../data/cards.js';
+import { DB, DECKS } from '../data/cards.js';
 import { ART, applyArt, saveArt } from './art.js';
 import { render } from './render.js';
 import { UI } from './state.js';
@@ -11,7 +11,7 @@ export function renderLib(){
   const fl = [['all','Tất cả'], ['creature','Linh thú'], ['charm','Bùa chú'], ['enchant','Phép duy trì'], ['counter','Phản chú']];
   $('#lib').innerHTML = `<div class="lib-in">
     <div class="lib-top"><h2>Kho lá bài</h2><button class="btn" data-lib="close">Đóng</button></div>
-    <p class="lib-note">Bộ khởi đầu của bạn: Thuỷ – Lôi (khế ước Wyvern Bão). Máy: Hoả – Băng (khế ước Phượng Hoàng). Bấm “Đổi hình” để thay sprite bằng ảnh của bạn.</p>
+    <p class="lib-note">Các bộ bài: ${Object.values(DECKS).map(D => `${D.name} (khế ước ${DB[D.bond].name})`).join(', ')}. Chọn bộ bài bằng nút “Chọn bộ bài”. Bấm “Đổi hình” để thay sprite bằng ảnh của bạn.</p>
     <div class="lib-filter">${fl.map(([k, l]) => `<button class="btn sm ${f === k ? 'on' : ''}" data-libf="${k}">${l}</button>`).join('')}</div>
     <div class="lib-grid">${ids.map(id => { const d = DB[id];
       return `<div class="entry"><div class="iart art art-${id} k-${d.kind}"></div><div style="min-width:0"><h3>${d.name}</h3>

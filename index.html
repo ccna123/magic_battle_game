@@ -17,7 +17,7 @@
         <h1>Đấu Trường <span>Phép Thuật</span></h1>
         <p class="sub">Bản thử luật mới: ma lực, linh thú khế ước, kênh phép, phản ứng nguyên tố và thời tiết sân đấu.</p>
       </div>
-      <button class="btn" id="openLib">Kho lá bài</button>
+      <div class="row"><button class="btn" data-newgame="1">Chọn bộ bài</button><button class="btn" id="openLib">Kho lá bài</button></div>
     </div>
     <div class="board">
       <div class="side-block">
@@ -52,10 +52,12 @@
         <tr><td><span class="st-wet">Ướt</span> + <span class="st-frozen">Đóng băng</span></td><td>Đóng băng sâu: kéo dài thêm 1 lượt</td></tr>
       </tbody></table>
     </div>
-    <div class="panel"><h2>Diễn biến</h2><div class="log" id="log"></div></div>
   </aside>
 </div>
 <div id="overlay"></div>
+<div id="cardmenu" class="cardmenu" role="menu" hidden></div>
+<div id="cardinfo" class="cardinfo" hidden></div>
+<div id="deckpick" class="lib" hidden></div>
 <div id="lib" class="lib" hidden></div>
 <input type="file" id="artFile" accept="image/*" hidden>
 <script type="module" src="/src/main.js"></script>
