@@ -77,3 +77,15 @@ Nếu đổi số khung hay fps thì cập nhật JSON cho khớp (tối đa 6 k
 3. Hàng thiếu thì ghi `"missing": true` trong JSON: game tự lấy hoạt ảnh gần giống (`power`/`guard`/`buff` → `release`). Có thể thêm hàng `power` (tụ lực) cho phép tấn công từ 5 ma lực.
 
 Game chọn động tác như sau: đứng yên → `idle`; đang niệm → `cast_start` rồi lặp `cast_loop`; niệm xong phép tấn công → `release` (hoặc `power`), phép khiên/gương/né/rào chắn/xoá phép → `guard`, phép hỗ trợ khác → `buff`; trúng đòn → `hit`; hết máu → `ko`.
+
+### Dàn nhân vật hiện tại
+| Sách | Nhân vật (`hero`) |
+|---|---|
+| Thuỷ – Lôi | `fox` – cáo pháp sư sét |
+| Hoả – Băng | `icewitch` – phù thuỷ băng |
+| Sách Wyvern | `stag` – hươu pháp sư sét xanh |
+| Sách Phượng Hoàng | `firemage` – pháp sư lửa |
+| Sách Ma Cà Rồng | `crow` – quạ pháp sư bóng tối |
+| Sách Chimera | chưa có, dùng ảnh tĩnh |
+
+Gắn nhân vật cho sách bằng trường `hero` trong `src/duel/data.js`. Ngoài 8 hàng chuẩn, sheet có thể có thêm `summon` (gọi linh thú), `power` (phép tấn công từ 5 ma lực) và `aura` (khiên, rào chắn, xoá phép).

@@ -1,10 +1,10 @@
 /* Hoạt ảnh đấu sĩ theo sprite sheet: public/sprites/anim/<id>-sheet.png + <id>.json.
-   Mỗi hàng của sheet là một hoạt ảnh (idle, cast_start, cast_loop, release, guard, buff, hit, ko, power).
+   Mỗi hàng của sheet là một hoạt ảnh (idle, cast_start, cast_loop, release, guard, buff, hit, ko; tuỳ chọn: summon, power, aura).
    Nhân vật chưa có sheet thì vẫn dùng ảnh tĩnh như cũ. Thêm nhân vật mới: thả file vào thư mục rồi thêm id vào IDS. */
-const IDS = ['phoenix'];
+const IDS = ['firemage', 'icewitch', 'stag', 'crow', 'fox'];
 const SHEETS = {};
 const COLS = 6;
-const FALLBACK = {power:'release', guard:'release', buff:'release', cast_loop:'cast_start'};
+const FALLBACK = {power:'release', guard:'release', buff:'release', aura:'guard', summon:'buff', cast_loop:'cast_start'};
 
 export function loadSheets(){
   return Promise.all(IDS.map(id => fetch(`/sprites/anim/${id}.json`).then(r => r.json()).then(m => {

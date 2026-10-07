@@ -20,7 +20,7 @@ for (const [bk, b] of Object.entries(BOOKS)) for (const [key, s] of Object.entri
 // 6 bộ: 2 trường phái gốc + 4 sách theo linh thú (mỗi phép 2 bản, phép từ 5 ma lực 1 bản)
 const DECKS = {...DUEL_DECKS};
 for (const [bk, b] of Object.entries(BOOKS))
-  DECKS[bk] = {name:b.name, portrait:b.portrait, tip:b.desc, list:Object.fromEntries(Object.entries(b.spells).map(([k, s]) => [`${bk}.${k}`, s.cost >= 5 ? 1 : 2]))};
+  DECKS[bk] = {name:b.name, portrait:b.portrait, hero:b.hero, tip:b.desc, list:Object.fromEntries(Object.entries(b.spells).map(([k, s]) => [`${bk}.${k}`, s.cost >= 5 ? 1 : 2]))};
 const TYPE = {atk:'Tấn công', counter:'Phản chú', support:'Hỗ trợ'};
 const COL = {water:[.4,.7,1], storm:[1,.95,.4], fire:[1,.5,.1], ice:[.7,.9,1], earth:[.75,.55,.3], light:[1,.95,.6], dark:[.6,.35,.95], mind:[.95,.45,.8]};
 const IMPACT = {fire:'fire', storm:'bolt', ice:'petrify', earth:'shatter'};
@@ -54,7 +54,7 @@ function mkSide(i, deck, chosen){
     cast:null, next:null, drawing:null, pick:null, st:{}, shield:0, mirror:0, evade:0, barrier:null, pets:[], lastCast:-9, hand:[], queue:[]};
   for (const id of chosen) for (let k = 0; k < D.list[id]; k++) s.queue.push(id);
   shuffle(s.queue); s.hand = s.queue.splice(0, R.HAND);
-  s.anim = sheetOf(D.portrait) ? makeAnimator(sheetOf(D.portrait)) : null;
+  s.anim = sheetOf(D.hero) ? makeAnimator(sheetOf(D.hero)) : null;   // nhân vật có hoạt ảnh của sách
   return s;
 }
 function newDuel(){
@@ -123,9 +123,9 @@ function finishCast(s){
     if (sp.volley) for (let k = 1; k < sp.volley.n; k++) S.pending.push({at:S.t + k * sp.volley.gap, s, sp, bonus});
   }
 }
-// Động tác khi phóng phép: phép thủ → thủ thế, hỗ trợ → toả sáng, phép tấn công lớn → tụ lực
+// Động tác khi phóng phép: tấn công lớn → tụ lực, khiên/rào chắn/xoá phép → hào quang, gương/né → thủ thế, gọi linh thú → triệu hồi, còn lại → toả sáng
 const castAnim = sp => !sp.self ? (sp.cost >= 5 ? 'power' : 'release')
-  : sp.shield || sp.mirror || sp.evade || sp.barrier || sp.nullify ? 'guard' : 'buff';
+  : sp.shield || sp.barrier || sp.nullify ? 'aura' : sp.mirror || sp.evade ? 'guard' : sp.pet ? 'summon' : 'buff';
 function launch(s, sp, bonus, fromCast, fromPet){
   const o = S.side[1 - s.i];
   const p = {from:s.i, to:o.i, sp, bonus, k:0, travel:sp.travel || R.TRAVEL, reflected:false, pet:!!fromPet,
@@ -525,7 +525,8 @@ function draw(){
 }
 function showStart(){
   const tile = (k, attr, on) => { const D = DECKS[k];
-    return `<button class="d-bookbtn ${on ? 'on' : ''}" ${attr}="${k}"><span class="art art-${D.portrait} k-creature"></span><span><b>${D.name}</b><span class="meta">${D.tip}</span></span></button>`; };
+    const pic = sheetOf(D.hero) ? `<span class="art sheet" style="${frameStyle(sheetOf(D.hero), 'idle')}"></span>` : `<span class="art art-${D.portrait} k-creature"></span>`;
+    return `<button class="d-bookbtn ${on ? 'on' : ''}" ${attr}="${k}">${pic}<span><b>${D.name}</b><span class="meta">${D.tip}</span></span></button>`; };
   const btn = (attr, k, label, on) => `<button class="btn sm ${on ? 'on' : ''}" ${attr}="${k}">${label}</button>`;
   $('#dOverlay').innerHTML = `<div class="over"><div class="box d-box">
     <h2>Đấu Trường Phép Thuật</h2><p class="meta">Đấu phép thời gian thực, không có lượt. Ma lực tự hồi, có 4 ô phép, không có hồi chiêu: đủ ma lực là niệm được. Niệm xong phải tự rút phép mới. Mỗi phép có thời gian niệm mà đối thủ nhìn thấy được.</p>
@@ -612,6 +613,6 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 applyArt();
-loadSheets();
+loadSheets().then(() => { if (!S) showStart(); });   // có hoạt ảnh thì vẽ lại màn chọn sách với hình nhân vật
 showStart();
 requestAnimationFrame(frame);

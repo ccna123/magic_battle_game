@@ -1,5 +1,5 @@
 {
-  "id": "phoenix",
+  "id": "stag",
   "frame": {
     "w": 192,
     "h": 192
@@ -20,7 +20,7 @@
     },
     "cast_loop": {
       "row": 2,
-      "frames": 4,
+      "frames": 6,
       "fps": 10,
       "loop": true
     },
@@ -39,7 +39,7 @@
     },
     "buff": {
       "row": 5,
-      "frames": 5,
+      "frames": 4,
       "fps": 10,
       "loop": false
     },
@@ -56,11 +56,24 @@
       "loop": false,
       "hold": true
     },
-    "power": {
+    "summon": {
       "row": 8,
-      "frames": 5,
+      "frames": 6,
       "fps": 10,
       "loop": false
+    },
+    "power": {
+      "row": 9,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "aura": {
+      "row": 10,
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "hold": true
     }
   }
 }

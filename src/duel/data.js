@@ -21,9 +21,9 @@ export const SPELLS = {
 };
 
 export const DUEL_DECKS = {
-  thuyloi:{name:'Thuỷ – Lôi', portrait:'kraken', list:{aguamenti:3, fulmen:2, stupefy:2, tempestas:1, protego:2, speculum:1, episkey:1, callrain:1},
+  thuyloi:{name:'Thuỷ – Lôi', portrait:'kraken', hero:'fox', list:{aguamenti:3, fulmen:2, stupefy:2, tempestas:1, protego:2, speculum:1, episkey:1, callrain:1},
     tip:'Aguamenti làm Ướt rồi nối Fulmen để Giật lan. Stupefy ngắt phép lớn của đối thủ.'},
-  hoabang:{name:'Hoả – Băng', portrait:'banshee', list:{incendio:3, glacius:2, confringo:2, ignis:1, petrificus:2, protego:2, episkey:1, callsun:1},
+  hoabang:{name:'Hoả – Băng', portrait:'banshee', hero:'icewitch', list:{incendio:3, glacius:2, confringo:2, ignis:1, petrificus:2, protego:2, episkey:1, callsun:1},
     tip:'Glacius Đóng băng rồi nối phép Lửa để ra Hơi nước gấp đôi. Petrificus ngắt phép lớn.'},
 };
 
@@ -76,7 +76,7 @@ export const BOOKS = {
     WEE:{name:'Thiên Thạch', type:'atk', art:'confringo', cost:4, cast:.7, el:'fire', dmg:1, burn:true, volley:{n:3, gap:.35}, text:'Loạt 3 thiên thạch, mỗi quả 1 sát thương Lửa và gây Cháy.'},
     EEE:{name:'Thiên Hoả', type:'atk', art:'incendio', cost:4, cast:.3, el:'fire', dmg:7, travel:1.7, noClash:true, text:'Báo trước 1,7 giây rồi giáng 7 sát thương Lửa. Kịp dựng khiên thì chặn được.'},
   }},
-  wyvern:{name:'Sách Wyvern', beast:'Wyvern Bão', portrait:'wyvern',
+  wyvern:{name:'Sách Wyvern', beast:'Wyvern Bão', portrait:'wyvern', hero:'stag',
     desc:'Bão tố trên biển: làm Ướt rồi giật Sét lan, gọi Wyvern lao xuống.', spells:{
     QQQ:{name:'Sóng Thần', type:'atk', art:'aguamenti', cost:2, cast:.5, el:'water', dmg:2, wet:true, text:'2 sát thương Nước, làm Ướt 6 giây.'},
     QQW:{name:'Mưa Giông', type:'support', art:'muffliato', self:true, cost:1, cast:.4, weather:'rain', manaGain:2, text:'Đổi thời tiết thành Mưa giông (Sét +1) và nhận 2 ma lực.'},
@@ -89,7 +89,7 @@ export const BOOKS = {
     WEE:{name:'Băng Tiễn', type:'atk', art:'finite', cost:3, cast:.5, el:'ice', dmg:1, freeze:1, volley:{n:3, gap:.3}, text:'Loạt 3 mũi băng, mỗi mũi 1 sát thương và Đóng băng 1 giây.'},
     EEE:{name:'Băng Hồn', type:'support', art:'episkey', self:true, cost:3, cast:.6, regen:{rate:1, dur:6}, cleanse:true, text:'Xoá trạng thái xấu, hồi 1 sinh lực mỗi giây trong 6 giây.'},
   }},
-  phoenix:{name:'Sách Phượng Hoàng', beast:'Phượng Hoàng Lửa', portrait:'phoenix',
+  phoenix:{name:'Sách Phượng Hoàng', beast:'Phượng Hoàng Lửa', portrait:'phoenix', hero:'firemage',
     desc:'Lửa thiêng và ánh sáng hồi sinh: thiêu đốt, chống chịu, gục rồi vẫn tái sinh.', spells:{
     QQQ:{name:'Hoả Long Quyển', type:'atk', art:'ignis', cost:4, cast:1.2, el:'fire', dmg:5, burn:true, text:'5 sát thương Lửa và gây Cháy.'},
     QQW:{name:'Phượng Hoàng Con', type:'support', art:'phoenix', self:true, cost:4, cast:.6, pet:{art:'phoenix', name:'Phượng Hoàng Con', every:1.6, dur:9, el:'fire', dmg:1, burn:true}, text:'Gọi Phượng Hoàng Con 9 giây, cứ 1,6 giây phun lửa gây Cháy.'},
@@ -102,7 +102,7 @@ export const BOOKS = {
     WEE:{name:'Thánh Thuẫn', type:'counter', art:'fiantoduri', self:true, cost:2, cast:.25, mirror:2.5, text:'Thuẫn 2,5 giây: phản phép gây sát thương kế tiếp.'},
     EEE:{name:'Thiên Thạch Đá', type:'atk', art:'bombarda', cost:4, cast:.4, el:'earth', dmg:7, travel:1.6, noClash:true, text:'Báo trước 1,6 giây rồi giáng 7 sát thương Đất.'},
   }},
-  vampire:{name:'Sách Ma Cà Rồng', beast:'Bá Tước Ma Cà Rồng', portrait:'vampire',
+  vampire:{name:'Sách Ma Cà Rồng', beast:'Bá Tước Ma Cà Rồng', portrait:'vampire', hero:'crow',
     desc:'Đêm lạnh và máu: hút máu để sống dai, nguyền rủa rồi kết liễu.', spells:{
     QQQ:{name:'Huyết Thương', type:'atk', art:'vampire', cost:4, cast:.9, el:'dark', dmg:4, drain:1, text:'4 sát thương Bóng tối, hồi máu bằng sát thương gây ra.'},
     QQW:{name:'Hồn Ma Đêm', type:'support', art:'ghost', self:true, cost:4, cast:.6, pet:{art:'ghost', name:'Hồn Ma Đêm', every:1.1, dur:8, el:'dark', dmg:1, drain:1}, text:'Gọi hồn ma 8 giây, cứ 1,1 giây cắn 1 sát thương và hút máu.'},

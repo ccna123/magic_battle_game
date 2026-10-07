@@ -78,7 +78,7 @@ a.btn{text-decoration:none;color:var(--ink)}
 .hit .f-sprite.sheet{animation:hitk .3s ease-out} .opp.hit .f-sprite.sheet{animation:hitk2 .3s ease-out}
 .ko .f-sprite.sheet{animation:none;filter:brightness(.8)}
 .stun .f-sprite.sheet{animation:wobble .5s infinite alternate}
-.h-pic.sheet{background-repeat:no-repeat;image-rendering:pixelated}
+.h-pic.sheet,.d-bookbtn .art.sheet{background-repeat:no-repeat;image-rendering:pixelated}
 
 /* Vòng phép dưới chân khi niệm: lớn dần theo tiến độ */
 .f-circle{position:absolute;left:50%;bottom:-8%;width:150%;aspect-ratio:3;translate:-50% 0;opacity:0;transition:opacity .15s;z-index:1;pointer-events:none}
