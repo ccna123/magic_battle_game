@@ -1,13 +1,13 @@
 # Đấu Trường Phép Thuật
 
-Game đấu bài một người chơi với máy, chạy trên trình duyệt. Lấy cảm hứng từ Yu-Gi-Oh, nhưng phép thuật là trung tâm, còn linh thú chỉ hỗ trợ:
+Game đấu phép thời gian thực một người chơi với máy, chạy trên trình duyệt. Hiển thị kiểu game đối kháng: hai đấu sĩ trên sân khấu ngang, phép bay qua lại.
 
-- **Ma lực** tăng dần mỗi lượt. Linh thú trên sân tốn phí duy trì.
-- **Linh thú khế ước** nằm ngoài bộ bài và gọi lại được sau khi bị hạ.
-- **Kênh phép & tiến hoá:** linh thú cùng hệ làm phép mạnh hơn, nhận dấu ấn rồi tiến hoá.
-- **Phản ứng nguyên tố:** Ướt + Sét = Giật lan, Đóng băng + Lửa = Hơi nước…
-- **Thời tiết sân đấu** đổi mỗi 3 vòng, có dự báo trước.
-- **Chuỗi phản chú** dạng stack giống Yu-Gi-Oh, trả ma lực khi kích hoạt.
+- **Không có lượt:** ma lực tự hồi liên tục. Lối chơi kiểu Asuka R♯: chọn phép mang vào sách, trong trận có 4 ô phép, niệm xong phải tự rút (rút 1, xem 3 chọn 1, thay cả tay).
+- **Thời gian niệm:** đối thủ nhìn thấy vòng phép và tên phép bạn đang niệm, nên có thể dựng khiên, phản phép hoặc ngắt phép.
+- **Niệm chuẩn:** bấm đúng vạch vàng trên thanh niệm để phép mạnh hơn.
+- **Đấu Đũa:** hai phép sát thương va nhau giữa sân, ai bấm nhanh hơn thì đẩy được luồng phép về phía đối thủ.
+- **Phản ứng nguyên tố** (Ướt + Sét = Giật lan, Đóng băng + Lửa = Hơi nước…) và **thời tiết** đổi mỗi 30 giây.
+- **6 sách phép:** Thuỷ – Lôi, Hoả – Băng, Chimera, Wyvern, Phượng Hoàng, Ma Cà Rồng; máy có 3 độ khó.
 
 Luật chi tiết: [docs/LUAT-CHOI.md](docs/LUAT-CHOI.md) · Việc sắp làm: [docs/LO-TRINH.md](docs/LO-TRINH.md)
 
@@ -25,65 +25,45 @@ npm run dev        # mở http://localhost:5173
 | `npm run dev` | Chạy bản phát triển, sửa code là trang tự tải lại |
 | `npm run build` | Đóng gói vào `dist/`, mở được ở bất kỳ web tĩnh nào |
 | `npm run preview` | Xem thử bản đã build |
-| `npm run sim` | Cho máy tự đấu 60 ván và in thống kê cân bằng (`npm run sim -- 200` để chạy 200 ván) |
 
 Thư mục `dist/` sau khi build có thể đưa thẳng lên GitHub Pages, Netlify, Vercel hoặc itch.io (dạng HTML5).
 
 ## Cấu trúc thư mục
 
 ```
-index.html              Khung trang (bàn đấu, cột bên phải)
+index.html              Khung trang: HUD, sân khấu, thanh niệm, tay 4 lá
 src/
-  main.js               Điểm khởi động
-  config.js             Hằng số luật: sinh lực, số ô, ma lực tối đa, số dấu ấn để tiến hoá…
-  styles.css            Toàn bộ giao diện
-  data/
-    cards.js            ★ Dữ liệu và hiệu ứng của mọi lá bài + 2 bộ bài khởi đầu
-    weather.js          Danh sách thời tiết
-    sprites.js          Danh sách sprite có trong public/sprites
-  engine/
-    core.js             Luật chơi: trạng thái, sát thương, phản ứng, chuỗi phản chú, lượt
-    weather.js          Đổi thời tiết, cộng trừ sát thương theo thời tiết
-    ai.js               Máy: chấm điểm từng hành động rồi chọn cái tốt nhất
-  ui/
-    render.js           Vẽ bàn đấu, lá bài, bảng pháp sư
-    input.js            Xử lý chạm / chuột / bàn phím
-    tutorial.js         Gợi ý hướng dẫn hiện theo tình huống
-    library.js          Màn "Kho lá bài" (xem lá, đổi hình)
-    art.js, state.js    Sprite theo lá, trạng thái giao diện
-  fx/
-    three-fx.js         Lớp hiệu ứng three.js: hạt, tia phép, flipbook, thời tiết
-    card-fx.js          Hiệu ứng hình ảnh riêng của từng lá
-    sprite.js           Sprite pixel tự sinh (dự phòng khi lá chưa có hình)
+  duel/
+    data.js             ★ Dữ liệu phép, sách phép, thời tiết, độ khó, hằng số luật
+    duel.js             Vòng lặp thời gian thực, sát thương/phản ứng, máy (AI), giao diện, điều khiển
+    duel.css            Giao diện màn đấu (HUD, sân khấu, đấu sĩ, hình phép, Đấu Đũa)
+    base.css            Nền dùng chung: màu, nút, khung lá phép, chip trạng thái
+    art.js, sprites.js  Sinh class .art-<tên> cho từng sprite trong public/sprites
+    config.js           Hệ nguyên tố (tên, màu)
+  fx/three-fx.js        Lớp hiệu ứng three.js: hạt, flipbook, rung màn hình, hạt thời tiết
 public/
-  sprites/<id>.png      Hình từng lá (tên file = id lá)
-  fx/<tên>.png          Dải hiệu ứng 8 khung (lửa, khiên, triệu hồi…)
-  ui/                   Khung bài và mặt sau
+  sprites/<tên>.png     Hình linh thú và phép
+  fx/<tên>.png          Dải hiệu ứng 8 khung (lửa, sét, khiên, gương, triệu hồi…)
+  ui/                   Khung lá phép
 tools/
   slice_sheet.py        Cắt sprite sheet nền magenta thành từng PNG
-  sprite-prompts.html   304 prompt Gemini để tạo thêm sprite (mở bằng trình duyệt)
-sim/simulate.js         Máy đấu máy để cân bằng
+  sprite-prompts.html   Prompt Gemini để tạo thêm sprite (mở bằng trình duyệt)
 ```
 
-## Thêm một lá bài mới
+## Thêm một phép mới
 
-Mở `src/data/cards.js` và thêm một mục vào `DB`. Ví dụ một bùa chú Sét gây 4 sát thương và làm Choáng:
+Thêm vào một sách trong `BOOKS` ở `src/duel/data.js`. Ví dụ phép Sét gây 4 sát thương và ngắt phép:
 
 ```js
-fulgur:{name:'Tia Sét Cầu',kind:'charm',el:'storm',cost:3,art:'fulgur',target:'enemy',cat:['DAMAGE'],
-  text:'Gây 4 sát thương Sét và làm mục tiêu Choáng.',
-  op(c, L){ hit(L.t, amt(L, 4), c, 'storm'); addSt(L.t, 'stun', c); }},
+XYZ:{name:'Tia Sét Cầu', type:'atk', art:'fulmen', cost:3, cast:.8, cd:9, el:'storm', dmg:4, interrupt:true,
+  text:'4 sát thương Sét. Trúng lúc đối thủ đang niệm thì ngắt phép.'},
 ```
 
-- `kind`: `charm` (bùa chú), `enchant` (phép duy trì), `counter` (phản chú), `creature` (linh thú)
-- `el`: `fire`, `water`, `storm`, `ice`, `none`
-- `target`: `enemy` (pháp sư hoặc linh thú địch), `enemyUnit`, `allyUnit`, `oppSpell`; bỏ trống nếu không cần chọn
-- `amt(L, 4)` tự cộng thêm sức mạnh từ linh thú đang kênh phép
-- `hit(mục tiêu, sát thương, nguồn, hệ)` tự xử lý phản ứng nguyên tố và thời tiết
-- Linh thú dùng `atk`, `hp`, `guard`, `rush`, `multi`, `channel:{el, bonus}`, `evolve:'id'`, cùng các hook `onSummon`, `onDeath`, `onAttack`, `onEvolve`
-- Phản chú dùng `cond(c, ctx)` để quyết định khi nào được đáp trả (ctx.type là `activate`, `summon` hoặc `attack`)
-
-Sau đó thêm lá vào một bộ bài trong `DECKS` (cuối file), thêm hiệu ứng hình ảnh trong `src/fx/card-fx.js` nếu muốn, và nếu máy cần biết cách dùng lá này thì thêm một `case` trong `aiPlan` ở `src/engine/ai.js`.
+- `type`: `atk` (tấn công), `counter` (phản chú), `support` (hỗ trợ) · `cost` ma lực · `cast` giây niệm · `cd` hồi chiêu
+- `el`: `fire`, `water`, `storm`, `ice`, `earth`, `light`, `dark`, `mind`
+- Phép lên đối thủ: `dmg`, `wet`, `burn`, `freeze`, `stun`, `interrupt`, `drain`, `curse`, `weaken`, `slow`, `manaBurn`, `manaSteal`, `travel`, `volley`
+- Phép lên bản thân (`self:true`): `shield`, `mirror`, `evade`, `nullify`, `barrier`, `heal`, `regen`, `haste`, `cleanse`, `rebirth`, `manaGain`, `weather`, `pet`
+- Ghi chú đầy đủ từng trường nằm ở đầu phần sách phép trong `data.js`. Máy tự dùng phép mới theo loại, không cần viết thêm AI.
 
 ## Thêm sprite
 
@@ -91,11 +71,9 @@ Sau đó thêm lá vào một bộ bài trong `DECKS` (cuối file), thêm hiệ
 2. Cắt ảnh:
    ```bash
    pip install pillow numpy scipy
-   python3 tools/slice_sheet.py dot-01.png --grid 4x4 --ids treant_sapling,oak_guardian,... --out public/sprites
+   python3 tools/slice_sheet.py dot-01.png --grid 4x4 --ids ten_1,ten_2,... --out public/sprites
    ```
-3. Thêm id vào `src/data/sprites.js`. Lá có `art:'id'` sẽ tự dùng hình đó.
-
-Trong game cũng có thể bấm **Kho lá bài → Đổi hình** để thay hình một lá ngay trên trình duyệt (lưu trong trình duyệt của bạn).
+3. Thêm tên vào `src/duel/sprites.js`, rồi dùng `art:'ten'` trong dữ liệu phép.
 
 ## Ghi chú
 

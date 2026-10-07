@@ -1,21 +1,17 @@
 # Lộ trình
 
 ## Đã có
-- [x] Engine chuỗi phản ứng dạng stack, sự kiện, hiệu ứng liên tục
-- [x] Ma lực, phí duy trì, linh thú khế ước
-- [x] Kênh phép, dấu ấn, tiến hoá
-- [x] 5 phản ứng nguyên tố và 4 trạng thái
-- [x] Thời tiết sân đấu (7 loại, dự báo, lá đổi thời tiết)
-- [x] 2 bộ bài khởi đầu 30 lá, AI chấm điểm hành động
-- [x] Hướng dẫn theo tình huống cho ván đầu
-- [x] Sprite, khung bài và hiệu ứng flipbook từ Gemini, hạt three.js
-- [x] Script máy đấu máy để cân bằng
+- [x] Vòng lặp thời gian thực: ma lực hồi liên tục, thời gian niệm, hồi chiêu, phép bay
+- [x] Lối chơi kiểu Asuka: 4 ô phép, tự rút (rút 1 / xem 3 chọn 1 / thay cả tay), chọn 5–8 phép mang vào trận, 6 sách phép
+- [x] Phản chú (khiên, gương, né, rào chắn, xoá phép), ngắt phép, Niệm chuẩn, Đấu Đũa
+- [x] Phản ứng nguyên tố, trạng thái theo giây, thời tiết đổi mỗi 30 giây, Cuồng phong
+- [x] Linh thú triệu hồi bay cạnh chủ và tự bắn
+- [x] Máy phản ứng có độ trễ theo 3 độ khó
+- [x] Hiển thị kiểu game đối kháng: sân khấu ngang, đấu sĩ có hoạt ảnh, vòng phép, HUD có vệt sát thương trễ, hình phép theo hệ, hạt three.js, flipbook, chữ lớn, K.O.
 
 ## Sắp làm
-- [ ] **Đấu Đũa:** khi phản chú chặn một phép, hai bên úp ma lực đặt cược, bên cao hơn thắng
-- [ ] **Phép niệm 2 lượt:** phép cấp cao đặt ngửa trên sân một lượt trước khi nổ, đối thủ có cơ hội phá
-- [ ] **Màn xây bộ bài:** chọn lá, đường cong ma lực, kiểm tra luật 2 bản và 2 trường phái
-- [ ] **Thêm lá từ bộ 304 sprite** (tools/sprite-prompts.html): các trường phái Đất, Ánh sáng, Hắc ám, Tâm trí
-- [ ] **Chế độ Học viện** kiểu roguelike: bản đồ nhiều nút, chọn phép sau mỗi trận, trùm cuối tầng
+- [ ] Cân bằng 6 sách phép
+- [ ] Đổi sách giữa trận, niệm quá sức khi thiếu ma lực
+- [ ] Phản ứng nguyên tố cho Đất, Ánh sáng, Bóng tối, Tâm trí
 - [ ] Âm thanh và nhạc nền
-- [ ] Lưu tiến trình
+- [ ] Chế độ nhiều trận liên tiếp (chọn phép mới sau mỗi trận), lưu tiến trình

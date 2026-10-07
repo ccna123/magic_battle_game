@@ -3,12 +3,11 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Game đấu bài phép thuật: ma lực, linh thú khế ước, phản ứng nguyên tố, thời tiết sân đấu.",
+  "description": "Game đấu phép thời gian thực: sách phép, thời gian niệm, phản chú, phản ứng nguyên tố, thời tiết, Đấu Đũa.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "sim": "node sim/simulate.js"
+    "preview": "vite preview"
   },
   "dependencies": {
     "three": "^0.169.0"
