@@ -21,9 +21,9 @@ export const SPELLS = {
 };
 
 export const DUEL_DECKS = {
-  thuyloi:{name:'Thuỷ – Lôi', portrait:'wyvern', list:{aguamenti:3, fulmen:2, stupefy:2, tempestas:1, protego:2, speculum:1, episkey:1, callrain:1},
+  thuyloi:{name:'Thuỷ – Lôi', portrait:'kraken', list:{aguamenti:3, fulmen:2, stupefy:2, tempestas:1, protego:2, speculum:1, episkey:1, callrain:1},
     tip:'Aguamenti làm Ướt rồi nối Fulmen để Giật lan. Stupefy ngắt phép lớn của đối thủ.'},
-  hoabang:{name:'Hoả – Băng', portrait:'phoenix', list:{incendio:3, glacius:2, confringo:2, ignis:1, petrificus:2, protego:2, episkey:1, callsun:1},
+  hoabang:{name:'Hoả – Băng', portrait:'banshee', list:{incendio:3, glacius:2, confringo:2, ignis:1, petrificus:2, protego:2, episkey:1, callsun:1},
     tip:'Glacius Đóng băng rồi nối phép Lửa để ra Hơi nước gấp đôi. Petrificus ngắt phép lớn.'},
 };
 
@@ -34,12 +34,11 @@ export const DUEL_WEATHER = {
   blizzard:{name:'Bão tuyết', desc:'Băng +1, Lửa −1', mod:{ice:1, fire:-1}},
 };
 
-// Độ khó của máy: độ trễ phản xạ (giây), tỉ lệ dựng khiên kịp, tỉ lệ niệm chuẩn, tốc độ dồn lực khi Đấu Đũa (lần/giây),
-// step: thời gian giữa 2 lần bấm cầu / kết ấn của Kết ấn sư
+// Độ khó của máy: độ trễ phản xạ (giây), tỉ lệ dựng khiên kịp, tỉ lệ niệm chuẩn, tốc độ dồn lực khi Đấu Đũa (lần/giây)
 export const DIFF = {
-  easy:{name:'Dễ', delay:.9, block:.4, perfect:.2, mash:4.5, step:.28},
-  normal:{name:'Thường', delay:.6, block:.7, perfect:.45, mash:6.5, step:.18},
-  hard:{name:'Khó', delay:.35, block:.92, perfect:.7, mash:8.5, step:.11},
+  easy:{name:'Dễ', delay:.9, block:.4, perfect:.2, mash:4.5},
+  normal:{name:'Thường', delay:.6, block:.7, perfect:.45, mash:6.5},
+  hard:{name:'Khó', delay:.35, block:.92, perfect:.7, mash:8.5},
 };
 
 export const RULES = {
@@ -48,28 +47,21 @@ export const RULES = {
   PERFECT:[.62, .84],                                    // vùng "niệm chuẩn" trên thanh niệm
   WET:6, BURN:4.5, BURN_TICK:1.5, STUN:1.5,
   WEATHER_EVERY:30, FRENZY_AT:120,                       // sau 2 phút: Cuồng phong, ma lực hồi gấp đôi
-  CLASH:1.8,                                             // thời gian dồn lực Đấu Đũa
-  INVOKE_CD:.35,                                         // hồi chiêu của nút Kết ấn
+  CLASH:1.8, INTRO:1.8,                                  // thời gian dồn lực Đấu Đũa · màn "Sẵn sàng… Đấu!"
 };
 
-/* ---------- Kết ấn sư: nạp 3 cầu nguyên tố rồi kết ấn thành phép ----------
-   Mỗi Ấn thư (chủ đề một linh thú) có 3 cầu [Q, W, E] và 10 phép, khoá là tổ hợp đã sắp xếp: 'QQQ', 'QQW', … 'EEE'.
-   type: 'atk' tấn công · 'counter' phản chú · 'support' hỗ trợ.  cd: hồi chiêu (giây).
+/* ---------- Sách phép theo linh thú (lối chơi kiểu Asuka: 4 lá xoay vòng từ sách) ----------
+   Mỗi sách gồm 10 phép: type 'atk' tấn công · 'counter' phản chú · 'support' hỗ trợ.  cd: hồi chiêu (giây).
    Trường hiệu ứng mới (ngoài các trường của SPELLS):
-     travel: thời gian bay riêng (phép giáng chậm có cảnh báo) · noClash: không gây Đấu Đũa · volley {n, gap}: loạt n quả
+     travel: thời gian bay riêng (phép giáng từ trời có cảnh báo) · noClash: không gây Đấu Đũa · volley {n, gap}: loạt n quả
      stun: Choáng (giây) · manaBurn: đốt ma lực · manaSteal: đốt và hút ma lực · drain: hồi máu theo tỉ lệ sát thương gây ra
      curse: đối thủ nhận thêm 50% sát thương (giây) · weaken: phép đối thủ −2 sát thương (giây) · slow: đối thủ niệm chậm gấp đôi
      evade: né mọi phép bay tới (giây) · nullify: xoá phép đang bay tới + ngắt phép đối thủ đang niệm
      barrier {hp, dur}: rào chắn hút sát thương · regen {rate, dur}: hồi máu theo giây · haste: niệm nhanh gấp đôi (giây)
      cleanse: xoá trạng thái xấu · rebirth: trong thời gian này nếu gục thì sống lại với 8 sinh lực
      pet {art, name, every, dur, dmg, el, …}: linh thú bay cạnh bạn, tự bắn phép theo nhịp */
-export const ORB_PASSIVE = {
-  fire:{text:'+12% sát thương mỗi cầu'}, storm:{text:'niệm nhanh hơn 10% mỗi cầu'}, ice:{text:'hồi ma lực nhanh hơn 10% mỗi cầu'},
-  water:{text:'hồi 0,2 sinh lực/giây mỗi cầu'}, earth:{text:'nhận ít hơn 8% sát thương mỗi cầu'}, light:{text:'hồi máu mạnh hơn 15% mỗi cầu'},
-  dark:{text:'hút máu 5% sát thương gây ra mỗi cầu'}, mind:{text:'hồi chiêu nhanh hơn 10% mỗi cầu'},
-};
 export const BOOKS = {
-  chimera:{name:'Ấn thư Chimera', beast:'Chimera Tam Đầu', portrait:'cerberus', orbs:['ice', 'storm', 'fire'],
+  chimera:{name:'Sách Chimera', beast:'Chimera Tam Đầu', portrait:'cerberus',
     desc:'Ba cái đầu Băng, Sét, Lửa. Đóng băng rồi giáng Thiên Hoả để nổ Hơi nước.', spells:{
     QQQ:{name:'Băng Giá', type:'atk', art:'glacius', cost:2, cast:.35, cd:8, el:'ice', dmg:1, freeze:3, travel:.5, text:'1 sát thương Băng, Đóng băng 3 giây.'},
     QQW:{name:'Lốc Xoáy', type:'counter', art:'tempestas', cost:2, cast:.3, cd:12, el:'storm', dmg:0, interrupt:true, stun:1.8, travel:.5, text:'Nhấc bổng đối thủ: ngắt phép đang niệm, Choáng 1,8 giây.'},
@@ -82,7 +74,7 @@ export const BOOKS = {
     WEE:{name:'Thiên Thạch', type:'atk', art:'confringo', cost:4, cast:.7, cd:10, el:'fire', dmg:1, burn:true, volley:{n:3, gap:.35}, text:'Loạt 3 thiên thạch, mỗi quả 1 sát thương Lửa và gây Cháy.'},
     EEE:{name:'Thiên Hoả', type:'atk', art:'incendio', cost:4, cast:.3, cd:11, el:'fire', dmg:7, travel:1.7, noClash:true, text:'Báo trước 1,7 giây rồi giáng 7 sát thương Lửa. Kịp dựng khiên thì chặn được.'},
   }},
-  wyvern:{name:'Ấn thư Wyvern', beast:'Wyvern Bão', portrait:'wyvern', orbs:['water', 'storm', 'ice'],
+  wyvern:{name:'Sách Wyvern', beast:'Wyvern Bão', portrait:'wyvern',
     desc:'Bão tố trên biển: làm Ướt rồi giật Sét lan, gọi Wyvern lao xuống.', spells:{
     QQQ:{name:'Sóng Thần', type:'atk', art:'unda', cost:2, cast:.5, cd:6, el:'water', dmg:2, wet:true, text:'2 sát thương Nước, làm Ướt 6 giây.'},
     QQW:{name:'Mưa Giông', type:'support', art:'callrain', self:true, cost:1, cast:.4, cd:20, weather:'rain', manaGain:2, text:'Đổi thời tiết thành Mưa giông (Sét +1) và nhận 2 ma lực.'},
@@ -95,31 +87,30 @@ export const BOOKS = {
     WEE:{name:'Băng Tiễn', type:'atk', art:'glacius', cost:3, cast:.5, cd:9, el:'ice', dmg:1, freeze:1, volley:{n:3, gap:.3}, text:'Loạt 3 mũi băng, mỗi mũi 1 sát thương và Đóng băng 1 giây.'},
     EEE:{name:'Băng Hồn', type:'support', art:'episkey', self:true, cost:3, cast:.6, cd:16, regen:{rate:1, dur:6}, cleanse:true, text:'Xoá trạng thái xấu, hồi 1 sinh lực mỗi giây trong 6 giây.'},
   }},
-  phoenix:{name:'Ấn thư Phượng Hoàng', beast:'Phượng Hoàng Lửa', portrait:'phoenix', orbs:['fire', 'light', 'earth'],
+  phoenix:{name:'Sách Phượng Hoàng', beast:'Phượng Hoàng Lửa', portrait:'phoenix',
     desc:'Lửa thiêng và ánh sáng hồi sinh: thiêu đốt, chống chịu, gục rồi vẫn tái sinh.', spells:{
     QQQ:{name:'Hoả Long Quyển', type:'atk', art:'ignis', cost:4, cast:1.2, cd:9, el:'fire', dmg:5, burn:true, text:'5 sát thương Lửa và gây Cháy.'},
     QQW:{name:'Phượng Hoàng Con', type:'support', art:'phoenix', self:true, cost:4, cast:.6, cd:18, pet:{art:'phoenix', name:'Phượng Hoàng Con', every:1.6, dur:9, el:'fire', dmg:1, burn:true}, text:'Gọi Phượng Hoàng Con 9 giây, cứ 1,6 giây phun lửa gây Cháy.'},
     QQE:{name:'Núi Lửa', type:'atk', art:'bombarda', cost:3, cast:.8, cd:10, el:'fire', dmg:3, interrupt:true, stun:1, text:'3 sát thương Lửa. Trúng lúc đối thủ đang niệm thì ngắt phép.'},
     QWW:{name:'Tái Sinh', type:'support', art:'phoenix', self:true, cost:4, cast:.5, cd:30, rebirth:10, text:'Trong 10 giây, nếu gục thì tái sinh với 8 sinh lực.'},
-    QWE:{name:'Nhật Viêm', type:'atk', art:'lightray', cost:3, cast:.7, cd:10, el:'light', dmg:3, weaken:5, text:'3 sát thương Ánh sáng, làm chói mắt: phép đối thủ −2 sát thương trong 5 giây.'},
-    QEE:{name:'Giáp Dung Nham', type:'counter', art:'stonewall', self:true, cost:3, cast:.3, cd:15, barrier:{hp:7, dur:7}, text:'Rào chắn đá nóng hút 7 sát thương trong 7 giây.'},
-    WWW:{name:'Thánh Quang', type:'support', art:'dawnbell', self:true, cost:4, cast:1, cd:14, heal:6, cleanse:true, text:'Hồi 6 sinh lực và xoá trạng thái xấu.'},
-    WWE:{name:'Lồng Ánh Sáng', type:'counter', art:'lightcage', cost:2, cast:.3, cd:11, el:'light', dmg:0, interrupt:true, stun:2, travel:.45, text:'Nhốt đối thủ: ngắt phép đang niệm, Choáng 2 giây.'},
+    QWE:{name:'Nhật Viêm', type:'atk', art:'callsun', cost:3, cast:.7, cd:10, el:'light', dmg:3, weaken:5, text:'3 sát thương Ánh sáng, làm chói mắt: phép đối thủ −2 sát thương trong 5 giây.'},
+    QEE:{name:'Giáp Dung Nham', type:'counter', art:'vincula', self:true, cost:3, cast:.3, cd:15, barrier:{hp:7, dur:7}, text:'Rào chắn đá nóng hút 7 sát thương trong 7 giây.'},
+    WWW:{name:'Thánh Quang', type:'support', art:'expecto', self:true, cost:4, cast:1, cd:14, heal:6, cleanse:true, text:'Hồi 6 sinh lực và xoá trạng thái xấu.'},
+    WWE:{name:'Lồng Ánh Sáng', type:'counter', art:'petrificus', cost:2, cast:.3, cd:11, el:'light', dmg:0, interrupt:true, stun:2, travel:.45, text:'Nhốt đối thủ: ngắt phép đang niệm, Choáng 2 giây.'},
     WEE:{name:'Thánh Thuẫn', type:'counter', art:'fiantoduri', self:true, cost:2, cast:.25, cd:12, mirror:2.5, text:'Thuẫn 2,5 giây: phản phép gây sát thương kế tiếp.'},
-    EEE:{name:'Thiên Thạch Đá', type:'atk', art:'quake', cost:4, cast:.4, cd:12, el:'earth', dmg:7, travel:1.6, noClash:true, text:'Báo trước 1,6 giây rồi giáng 7 sát thương Đất.'},
+    EEE:{name:'Thiên Thạch Đá', type:'atk', art:'bombarda', cost:4, cast:.4, cd:12, el:'earth', dmg:7, travel:1.6, noClash:true, text:'Báo trước 1,6 giây rồi giáng 7 sát thương Đất.'},
   }},
-  vampire:{name:'Ấn thư Ma Cà Rồng', beast:'Bá Tước Ma Cà Rồng', portrait:'vampire', orbs:['dark', 'mind', 'ice'],
+  vampire:{name:'Sách Ma Cà Rồng', beast:'Bá Tước Ma Cà Rồng', portrait:'vampire',
     desc:'Đêm lạnh và máu: hút máu để sống dai, nguyền rủa rồi kết liễu.', spells:{
-    QQQ:{name:'Huyết Thương', type:'atk', art:'drain', cost:4, cast:.9, cd:9, el:'dark', dmg:4, drain:1, text:'4 sát thương Bóng tối, hồi máu bằng sát thương gây ra.'},
-    QQW:{name:'Đàn Dơi Đêm', type:'support', art:'bat', self:true, cost:4, cast:.6, cd:18, pet:{art:'bat', name:'Đàn Dơi', every:1.1, dur:8, el:'dark', dmg:1, drain:1}, text:'Gọi đàn dơi 8 giây, cứ 1,1 giây cắn 1 sát thương và hút máu.'},
+    QQQ:{name:'Huyết Thương', type:'atk', art:'vampire', cost:4, cast:.9, cd:9, el:'dark', dmg:4, drain:1, text:'4 sát thương Bóng tối, hồi máu bằng sát thương gây ra.'},
+    QQW:{name:'Hồn Ma Đêm', type:'support', art:'ghost', self:true, cost:4, cast:.6, cd:18, pet:{art:'ghost', name:'Hồn Ma Đêm', every:1.1, dur:8, el:'dark', dmg:1, drain:1}, text:'Gọi hồn ma 8 giây, cứ 1,1 giây cắn 1 sát thương và hút máu.'},
     QQE:{name:'Lời Nguyền', type:'atk', art:'reducio', cost:2, cast:.5, cd:14, el:'dark', dmg:1, curse:6, text:'1 sát thương, nguyền 6 giây: đối thủ nhận thêm 50% sát thương.'},
     QWW:{name:'Ảo Ảnh', type:'counter', art:'obliviate', self:true, cost:2, cast:.2, cd:14, evade:2, text:'Hoá ảo ảnh 2 giây: mọi phép bay tới đều trượt.'},
-    QWE:{name:'Bóng Tối Nuốt Chửng', type:'atk', art:'shadowbolt', cost:5, cast:1.6, cd:12, el:'dark', dmg:6, drain:.5, text:'6 sát thương Bóng tối, hồi máu bằng nửa sát thương gây ra. Niệm lâu.'},
-    QEE:{name:'Hút Hồn Băng', type:'support', art:'nightmare', cost:2, cast:.4, cd:12, el:'ice', dmg:0, manaSteal:3, text:'Hút 3 ma lực của đối thủ về cho bạn.'},
+    QWE:{name:'Bóng Tối Nuốt Chửng', type:'atk', art:'callmoon', cost:5, cast:1.6, cd:12, el:'dark', dmg:6, drain:.5, text:'6 sát thương Bóng tối, hồi máu bằng nửa sát thương gây ra. Niệm lâu.'},
+    QEE:{name:'Hút Hồn Băng', type:'support', art:'obliviate', cost:2, cast:.4, cd:12, el:'ice', dmg:0, manaSteal:3, text:'Hút 3 ma lực của đối thủ về cho bạn.'},
     WWW:{name:'Tâm Loạn', type:'counter', art:'leviosa', cost:2, cast:.3, cd:11, el:'mind', dmg:0, interrupt:true, stun:1.5, slow:4, travel:.45, text:'Ngắt phép đang niệm, Choáng 1,5 giây rồi niệm chậm gấp đôi 4 giây.'},
     WWE:{name:'Phản Tâm', type:'counter', art:'speculum', self:true, cost:2, cast:.25, cd:12, mirror:2.5, text:'Gương tâm trí 2,5 giây: phản phép gây sát thương kế tiếp.'},
     WEE:{name:'Màn Đêm', type:'support', art:'callmoon', self:true, cost:3, cast:.6, cd:16, regen:{rate:1, dur:6}, cleanse:true, text:'Xoá trạng thái xấu, hồi 1 sinh lực mỗi giây trong 6 giây.'},
     EEE:{name:'Đêm Băng Giá', type:'atk', art:'glacius', cost:3, cast:.6, cd:9, el:'ice', dmg:2, freeze:3, text:'2 sát thương Băng, Đóng băng 3 giây.'},
   }},
 };
-export const ORB_KEYS = ['Q', 'W', 'E'];
