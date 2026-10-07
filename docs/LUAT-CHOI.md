@@ -13,11 +13,12 @@
 | W | Xem 3 lá trên cùng, chọn 1 (5 giây; Esc huỷ, hoàn ma lực) | 1 ma lực |
 | E | Thay cả tay: trả hết về đáy sách, rút 4 lá mới | 2 ma lực, mất 0,8 giây |
 
-- Trong lúc rút hoặc đang chọn thì không niệm được, nên phải tính lúc nào rút cho an toàn.
+- Rút và niệm chạy song song được. Chỉ cần **đủ ma lực và có phép trên tay** là niệm được, không có hồi chiêu.
+- Mỗi lúc chỉ niệm 1 phép. Bấm lá khi đang niệm dở hoặc chưa đủ ma lực thì lá đó được xếp làm **phép tiếp theo**, đủ điều kiện là tự niệm (bấm lại để bỏ).
 
 ## Ma lực và niệm phép
 - Không có lượt. Ma lực tự hồi **1 viên mỗi 1,4 giây**, tối đa 10, bắt đầu với 3.
-- Mỗi phép tốn ma lực, có **thời gian niệm**; một số phép có **hồi chiêu**.
+- Mỗi phép tốn ma lực và có **thời gian niệm**. Ma lực bắt đầu 4, hồi 1 điểm mỗi 1,1 giây.
 - Trong lúc niệm, đối thủ thấy vòng phép dưới chân và tên phép trên đầu bạn.
 - Niệm xong, phép bay khoảng 0,75 giây mới trúng. Phép giáng từ trời bay lâu hơn và có vòng cảnh báo dưới chân mục tiêu.
 - **Niệm chuẩn:** bấm Space (hoặc chạm thanh niệm) đúng lúc thanh chạy qua vạch vàng thì phép mạnh hơn (sát thương +1, hồi máu +2, khiên lâu hơn…). Mỗi lần niệm chỉ được bấm 1 lần.

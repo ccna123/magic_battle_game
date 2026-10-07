@@ -1,7 +1,7 @@
 # Lộ trình
 
 ## Đã có
-- [x] Vòng lặp thời gian thực: ma lực hồi liên tục, thời gian niệm, hồi chiêu, phép bay
+- [x] Vòng lặp thời gian thực: ma lực hồi liên tục, thời gian niệm, phép bay (bỏ hồi chiêu: chỉ giới hạn bằng ma lực)
 - [x] Lối chơi kiểu Asuka: 4 ô phép, tự rút (rút 1 / xem 3 chọn 1 / thay cả tay), chọn 5–8 phép mang vào trận, 6 sách phép
 - [x] Phản chú (khiên, gương, né, rào chắn, xoá phép), ngắt phép, Niệm chuẩn, Đấu Đũa
 - [x] Phản ứng nguyên tố, trạng thái theo giây, thời tiết đổi mỗi 30 giây, Cuồng phong

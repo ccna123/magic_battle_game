@@ -59,7 +59,7 @@ XYZ:{name:'Tia Sét Cầu', type:'atk', art:'fulmen', cost:3, cast:.8, cd:9, el:
   text:'4 sát thương Sét. Trúng lúc đối thủ đang niệm thì ngắt phép.'},
 ```
 
-- `type`: `atk` (tấn công), `counter` (phản chú), `support` (hỗ trợ) · `cost` ma lực · `cast` giây niệm · `cd` hồi chiêu
+- `type`: `atk` (tấn công), `counter` (phản chú), `support` (hỗ trợ) · `cost` ma lực · `cast` giây niệm
 - `el`: `fire`, `water`, `storm`, `ice`, `earth`, `light`, `dark`, `mind`
 - Phép lên đối thủ: `dmg`, `wet`, `burn`, `freeze`, `stun`, `interrupt`, `drain`, `curse`, `weaken`, `slow`, `manaBurn`, `manaSteal`, `travel`, `volley`
 - Phép lên bản thân (`self:true`): `shield`, `mirror`, `evade`, `nullify`, `barrier`, `heal`, `regen`, `haste`, `cleanse`, `rebirth`, `manaGain`, `weather`, `pet`
