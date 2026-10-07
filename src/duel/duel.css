@@ -1,5 +1,6 @@
-/* Đấu phép tốc độ (bản thử) — cột đơn tối đa 900px: HUD máy, sân phép, HUD bạn, 4 lá trên tay */
-.duel{max-width:900px;margin:0 auto;min-height:calc(100vh - 24px);display:grid;grid-template-rows:auto auto minmax(180px,1fr) auto auto;gap:10px}
+/* Đấu phép tốc độ (bản thử) — cột chính tối đa 900px: HUD máy, sân phép, HUD bạn, bảng điều khiển; bảng Ấn thư bên phải trên màn rộng */
+.d-wrap{display:flex;gap:16px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+.duel{flex:1 1 640px;max-width:900px;min-height:calc(100vh - 24px);display:grid;grid-template-rows:auto auto minmax(180px,1fr) auto auto;gap:10px}
 .d-top{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .d-top .weather{flex:1 1 260px}
 .d-time{font-variant-numeric:tabular-nums}
@@ -59,3 +60,57 @@ a.btn{text-decoration:none;color:var(--ink)}
 .d-how{margin:8px 0 14px;padding-left:18px;display:flex;flex-direction:column;gap:5px;font-size:14px}
 .d-box .btn.primary{width:100%}
 @media (max-width:560px){.d-name b{font-size:18px}.d-next{display:none}}
+
+/* HUD bổ sung: rào chắn, linh thú bay cạnh, cảnh báo phép giáng, cầu/ô phép của máy */
+.d-bar .bar-b{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(45deg,rgb(217 192 138 / .75) 0 4px,rgb(217 192 138 / .35) 4px 8px);z-index:1}
+.d-bar span{z-index:2}
+.chip.d-cu{color:#c58cf0} .chip.d-good{color:var(--good)} .chip.d-ba{color:#d9c08a}
+.d-pets{grid-column:1 / -1;display:flex;gap:6px;min-height:0}
+.d-pets:empty{display:none}
+.pet{display:flex;align-items:center;gap:4px;font-size:12px;background:var(--card);border:1px solid var(--rail);border-radius:99px;padding:2px 8px 2px 2px}
+.pet i{width:26px;height:26px;border-radius:50%;display:block;background-color:var(--table)}
+.d-side.warned .d-portrait{box-shadow:0 0 0 4px var(--bad),0 0 26px var(--bad);animation:warn .5s infinite alternate}
+@keyframes warn{to{box-shadow:0 0 0 2px var(--bad),0 0 8px var(--bad)}}
+.d-oinv{display:flex;align-items:center;gap:5px;flex-wrap:wrap;font-size:12px}
+.oslot{font-size:11.5px;border:1px solid var(--rail);border-radius:5px;padding:0 6px;background:var(--card)}
+.od{display:inline-block;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--c) 60%);box-shadow:0 0 6px var(--c);vertical-align:middle}
+.od.empty{background:none;border:1px dashed var(--rail);box-shadow:none}
+.orb.slow{width:calc(var(--s) * 1.6);height:calc(var(--s) * 1.6);opacity:.9;filter:blur(.5px)}
+.dcard .dcd{position:absolute;inset:0;display:grid;place-items:center;font-size:calc(var(--cw) * .28);font-weight:700;color:#fff;text-shadow:0 2px 4px #000;z-index:4;pointer-events:none}
+
+/* Bảng điều khiển Kết ấn sư: Q W E | cầu hiện tại + R | ô D F */
+.d-hand.inv{display:grid;grid-template-columns:auto auto auto;gap:14px;align-items:center;justify-content:center}
+.inv-orbs{display:flex;gap:8px}
+.orbbtn{width:64px;height:64px;border-radius:50%;border:2px solid var(--c);background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--c) 70%,#fff),color-mix(in srgb,var(--c) 45%,var(--table)) 70%);
+  color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;text-shadow:0 1px 3px #000;box-shadow:0 0 12px color-mix(in srgb,var(--c) 50%,transparent)}
+.orbbtn b{font-size:20px} .orbbtn span{font-size:10.5px}
+.orbbtn:active{transform:scale(.94)}
+.inv-mid{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:120px}
+.inv-cur{display:flex;gap:6px}
+.inv-cur .od{width:22px;height:22px}
+.inv-prev{font-size:12.5px;min-height:1.2em;text-align:center}
+.inv-slots{display:flex;gap:10px}
+.dslot-empty{width:clamp(72px,19vw,118px);aspect-ratio:5/7;border:1px dashed var(--rail);border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+@media (max-width:640px){.d-hand.inv{grid-template-columns:1fr 1fr}.inv-orbs{grid-column:1 / -1;justify-content:center}.orbbtn{width:56px;height:56px}}
+
+/* Bảng Ấn thư */
+.d-bookp{flex:0 1 330px;max-width:100%;position:sticky;top:8px;max-height:calc(100vh - 24px);overflow-y:auto}
+.d-bookp h2{margin-bottom:2px}
+.d-bookp > p{margin:0 0 6px;font-size:13px}
+.bk{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.bk li{display:grid;grid-template-columns:54px minmax(0,1fr);gap:6px;align-items:start;padding:6px;border-radius:8px;border:1px solid var(--rail);border-left:4px solid var(--tc);font-size:13px}
+.bk li.cur{background:color-mix(in srgb,var(--brass) 18%,transparent);border-color:var(--brass)}
+.bk-k{display:flex;gap:2px;padding-top:2px}
+.bk-t{color:var(--mute);font-size:12.5px}
+.t-atk{--tc:#e2766b} .t-counter{--tc:#7fb3ff} .t-support{--tc:var(--good)}
+.tchip{font-size:10.5px;border:1px solid var(--tc);color:var(--tc);border-radius:4px;padding:0 4px}
+.d-books{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.d-bookbtn{display:grid;grid-template-columns:52px minmax(0,1fr);gap:8px;align-items:start;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--rail);border-radius:10px;padding:8px;cursor:pointer;font-size:13px}
+.d-bookbtn .art{width:52px;height:52px;border-radius:50%;display:block;background-color:var(--table)}
+.d-bookbtn.on{border-color:var(--brass);box-shadow:0 0 0 2px var(--brass)}
+.d-box{max-width:640px}
+@media (max-width:560px){.d-books{grid-template-columns:1fr}}
+/* Hộp bắt đầu có thể cao hơn màn hình: cho lớp phủ cuộn được, không cắt mất nút Bắt đầu */
+#dOverlay .over{overflow-y:auto;place-items:safe center}
+.d-box .d-how{font-size:13.5px;gap:3px}
+.d-bookbtn{font-size:12.5px;padding:6px}
