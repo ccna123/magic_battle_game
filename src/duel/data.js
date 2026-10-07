@@ -43,7 +43,9 @@ export const DIFF = {
 
 export const RULES = {
   HP:30, MANA_START:3, MANA_MAX:10, REGEN:1.4,          // 1 ma lực mỗi 1,4 giây
-  HAND:4, TRAVEL:.75,                                    // thời gian bay của phép
+  HAND:4, TRAVEL:.75,
+  DRAW_TIME:.4, PICK_COST:1, PICK_TIME:5, REFRESH_COST:2, REFRESH_TIME:.8,   // rút 1 lá · xem 3 chọn 1 · thay cả tay
+  LOADOUT_MIN:5, LOADOUT_MAX:8,                          // số phép được mang vào trận                                    // thời gian bay của phép
   PERFECT:[.62, .84],                                    // vùng "niệm chuẩn" trên thanh niệm
   WET:6, BURN:4.5, BURN_TICK:1.5, STUN:1.5,
   WEATHER_EVERY:30, FRENZY_AT:120,                       // sau 2 phút: Cuồng phong, ma lực hồi gấp đôi

@@ -184,3 +184,26 @@ a.btn{text-decoration:none;color:var(--ink)}
 .d-bookbtn b{display:block;font-size:13px;line-height:1.2;margin-bottom:2px}
 .d-bookbtn .meta{display:block;line-height:1.35}
 .d-box .d-how{text-align:left}
+
+/* ---- Rút phép kiểu Asuka: ô trống, nút rút, chọn 1 trong 3 ---- */
+.dslot-empty{width:clamp(72px,17vw,118px);aspect-ratio:5/7;border:2px dashed var(--rail);border-radius:7px;background:rgb(0 0 0 / .2);font:inherit;color:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-size:13px}
+.dslot-empty:hover{border-color:var(--brass)}
+.d-draw{flex:1 0 100%;display:flex;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap}
+.d-draw .btn b{color:var(--brass);margin-right:2px}
+.d-draw .btn.off{opacity:.4}
+.d-left{flex:1 0 100%;text-align:center}
+.d-castbar.drawing i{background:linear-gradient(90deg,#24505d,#7fd0e6)}
+.d-pick{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px;border:1px solid var(--brass);border-radius:12px;background:color-mix(in srgb,var(--brass) 8%,transparent)}
+.d-pick .row{justify-content:center}
+.h-hand{font-size:12px}
+/* Chọn phép mang vào trận */
+.d-load{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin:4px 0 8px}
+.d-lo{display:grid;grid-template-columns:34px minmax(0,1fr);gap:6px;align-items:center;text-align:left;font:inherit;color:inherit;font-size:12px;
+  background:var(--card);border:1px solid var(--rail);border-left:4px solid var(--tc);border-radius:8px;padding:4px 6px;cursor:pointer;opacity:.45}
+.d-lo.on{opacity:1;box-shadow:0 0 0 1px var(--tc)}
+.d-lo .art{width:34px;height:34px;border-radius:6px;display:block;background-color:var(--table);--k:transparent}
+.d-lo b{display:block;font-size:12.5px;line-height:1.2}
+.d-lo .meta{display:block;font-size:11px}
+.t-atk{--tc:#e2766b} .t-counter{--tc:#7fb3ff} .t-support{--tc:var(--good)}
+.d-pick .dcard{--cw:clamp(64px,12vw,96px)}

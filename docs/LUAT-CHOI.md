@@ -3,9 +3,17 @@
 ## Mục tiêu
 Đưa sinh lực pháp sư đối thủ về 0. Mỗi bên bắt đầu với **30 sinh lực**.
 
-## Sách phép và tay bài
-- Chọn 1 trong 6 sách phép trước trận. Máy dùng một sách khác (ngẫu nhiên hoặc tự chọn).
-- Luôn cầm **4 lá phép**. Dùng xong lá nào thì lá đó xuống đáy sách và rút lá kế tiếp (có ô xem trước lá kế).
+## Sách phép và tay bài (kiểu Asuka)
+- Chọn 1 trong 6 sách phép trước trận, rồi chọn **5–8 phép** trong sách để mang vào trận (lưu lại cho lần sau). Máy dùng một sách khác và tự chọn phép.
+- Trên tay có **4 ô phép**. Niệm xong ô đó **để trống**, lá vừa dùng xuống đáy sách. Phải tự rút:
+
+| Phím | Cách rút | Giá |
+|---|---|---|
+| Q | Rút 1 lá trên cùng vào ô trống | Miễn phí, mất 0,4 giây |
+| W | Xem 3 lá trên cùng, chọn 1 (5 giây; Esc huỷ, hoàn ma lực) | 1 ma lực |
+| E | Thay cả tay: trả hết về đáy sách, rút 4 lá mới | 2 ma lực, mất 0,8 giây |
+
+- Trong lúc rút hoặc đang chọn thì không niệm được, nên phải tính lúc nào rút cho an toàn.
 
 ## Ma lực và niệm phép
 - Không có lượt. Ma lực tự hồi **1 viên mỗi 1,4 giây**, tối đa 10, bắt đầu với 3.
@@ -66,4 +74,5 @@ Sau 2 phút vào **Cuồng phong**: ma lực hồi gấp đôi.
 | Phím | Việc làm |
 |---|---|
 | 1–4 hoặc chạm lá | Niệm phép |
+| Q / W / E | Rút 1 lá / Xem 3 chọn 1 / Thay cả tay |
 | Space hoặc chạm thanh niệm | Niệm chuẩn · dồn lực khi Đấu Đũa |

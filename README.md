@@ -2,7 +2,7 @@
 
 Game đấu phép thời gian thực một người chơi với máy, chạy trên trình duyệt. Hiển thị kiểu game đối kháng: hai đấu sĩ trên sân khấu ngang, phép bay qua lại.
 
-- **Không có lượt:** ma lực tự hồi liên tục, cầm 4 lá phép xoay vòng từ sách phép (lối chơi kiểu Asuka R♯).
+- **Không có lượt:** ma lực tự hồi liên tục. Lối chơi kiểu Asuka R♯: chọn phép mang vào sách, trong trận có 4 ô phép, niệm xong phải tự rút (rút 1, xem 3 chọn 1, thay cả tay).
 - **Thời gian niệm:** đối thủ nhìn thấy vòng phép và tên phép bạn đang niệm, nên có thể dựng khiên, phản phép hoặc ngắt phép.
 - **Niệm chuẩn:** bấm đúng vạch vàng trên thanh niệm để phép mạnh hơn.
 - **Đấu Đũa:** hai phép sát thương va nhau giữa sân, ai bấm nhanh hơn thì đẩy được luồng phép về phía đối thủ.

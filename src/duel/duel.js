@@ -27,22 +27,37 @@ const isDef = sp => !!(sp.shield || sp.mirror || sp.evade || sp.nullify || sp.ba
 const isHeal = sp => !!(sp.heal || sp.regen || sp.rebirth);
 
 let S = null;
-let cfg = {me:'chimera', opp:'random', diff:'normal'};
+let cfg = {me:'chimera', opp:'random', diff:'normal', loadout:{}};
 try { Object.assign(cfg, JSON.parse(localStorage.getItem('dp-duel') || '{}')); } catch (e) {}
+if (!cfg.loadout || typeof cfg.loadout !== 'object') cfg.loadout = {};
 if (!DECKS[cfg.me]) cfg.me = 'chimera';
 if (cfg.opp !== 'random' && !DECKS[cfg.opp]) cfg.opp = 'random';
 
+/* ---------- Phép mang vào trận: chọn 5–8 phép trong sách ---------- */
+const poolOf = deck => Object.keys(DECKS[deck].list);
+function defaultLoadout(deck){
+  // Mặc định: cả sách; sách nhiều hơn 8 phép thì bớt phép hỗ trợ ở cuối
+  const pool = poolOf(deck), drop = new Set();
+  for (const id of [...pool].reverse()) if (pool.length - drop.size > R.LOADOUT_MAX && SP[id].type === 'support') drop.add(id);
+  return pool.filter(id => !drop.has(id)).slice(0, R.LOADOUT_MAX);
+}
+function loadoutOf(deck){
+  const pool = poolOf(deck), l = (cfg.loadout[deck] || []).filter(id => pool.includes(id));
+  return l.length >= Math.min(R.LOADOUT_MIN, pool.length) && l.length <= R.LOADOUT_MAX ? l : defaultLoadout(deck);
+}
+const aiLoadout = deck => shuffle(poolOf(deck)).slice(0, R.LOADOUT_MAX);
+
 /* ---------- Tạo trận ---------- */
-function mkSide(i, deck){
+function mkSide(i, deck, chosen){
   const D = DECKS[deck], s = {i, deck, name:i ? 'Máy' : 'Bạn', label:D.name, portrait:D.portrait, hp:R.HP, mana:R.MANA_START, regen:0, hpAcc:0,
-    cast:null, st:{}, cd:{}, shield:0, mirror:0, evade:0, barrier:null, pets:[], lastCast:-9, hand:[], queue:[]};
-  for (const [id, n] of Object.entries(D.list)) for (let k = 0; k < n; k++) s.queue.push(id);
+    cast:null, drawing:null, pick:null, st:{}, cd:{}, shield:0, mirror:0, evade:0, barrier:null, pets:[], lastCast:-9, hand:[], queue:[]};
+  for (const id of chosen) for (let k = 0; k < D.list[id]; k++) s.queue.push(id);
   shuffle(s.queue); s.hand = s.queue.splice(0, R.HAND);
   return s;
 }
 function newDuel(){
   const opp = cfg.opp === 'random' ? pick(Object.keys(DECKS).filter(k => k !== cfg.me)) : cfg.opp;
-  S = {t:0, over:false, winner:null, side:[mkSide(0, cfg.me), mkSide(1, opp)], proj:[], pending:[], clash:null, stop:0, intro:R.INTRO,
+  S = {t:0, over:false, winner:null, side:[mkSide(0, cfg.me, loadoutOf(cfg.me)), mkSide(1, opp, aiLoadout(opp))], proj:[], pending:[], clash:null, stop:0, intro:R.INTRO,
     weather:'clear', wNext:R.WEATHER_EVERY, frenzy:false, aiNext:1.2, seen:new Set(), diff:DIFF[cfg.diff]};
   renderStatic(); renderHand();
   banner('Sẵn sàng…', 'var(--ink)');
@@ -52,12 +67,41 @@ function newDuel(){
 const castTime = (s, sp) => sp.cast * (s.st.frozen ? 2 : 1) * (s.st.slow ? 2 : 1) * (s.st.haste ? .5 : 1);
 function canBegin(s, id){
   const sp = SP[id];
-  return !!sp && !S.over && !S.clash && S.intro <= 0 && !s.cast && !s.st.stun && s.mana >= sp.cost && !(s.cd[id] > S.t);
+  return !!sp && free(s) && s.mana >= sp.cost && !(s.cd[id] > S.t);
+}
+// Rảnh tay: không đang niệm, không đang rút/chọn phép, không bị Choáng
+const free = s => !S.over && !S.clash && S.intro <= 0 && !s.cast && !s.drawing && !s.pick && !s.st.stun;
+const emptySlot = s => s.hand.indexOf(null);
+
+/* ---------- Rút phép kiểu Asuka: niệm xong ô để trống, tự chọn cách rút ---------- */
+const canDraw = s => free(s) && emptySlot(s) >= 0 && s.queue.length > 0;
+const canPick = s => canDraw(s) && s.mana >= R.PICK_COST;
+const canRefresh = s => free(s) && s.mana >= R.REFRESH_COST && s.queue.length > 0;
+function drawOne(s){ if (!canDraw(s)) return false; s.drawing = {kind:'one', t:0, dur:R.DRAW_TIME * (s.st.frozen ? 2 : 1)}; if (s.i === 0) renderHand(); return true; }
+function refreshHand(s){ if (!canRefresh(s)) return false; s.mana -= R.REFRESH_COST; s.drawing = {kind:'refresh', t:0, dur:R.REFRESH_TIME * (s.st.frozen ? 2 : 1)}; if (s.i === 0) renderHand(); return true; }
+function startPick(s){
+  if (!canPick(s)) return false;
+  s.mana -= R.PICK_COST; s.pick = {opts:s.queue.splice(0, 3), until:S.t + R.PICK_TIME};
+  if (s.i === 0) renderHand();
+  return true;
+}
+function choosePick(s, k){
+  const P = s.pick; if (!P || !P.opts[k]) return;
+  s.hand[emptySlot(s)] = P.opts[k];
+  s.queue.push(...P.opts.filter((_, j) => j !== k));     // lá không chọn xuống đáy sách
+  s.pick = null; if (s.i === 0) renderHand();
+}
+function cancelPick(s){ const P = s.pick; if (!P) return; s.queue.unshift(...P.opts); s.mana = Math.min(R.MANA_MAX, s.mana + R.PICK_COST); s.pick = null; renderHand(); }
+function finishDraw(s){
+  const d = s.drawing; s.drawing = null;
+  if (d.kind === 'one') { const k = emptySlot(s); if (k >= 0 && s.queue.length) s.hand[k] = s.queue.shift(); }
+  else { s.queue.push(...s.hand.filter(Boolean)); s.hand = s.queue.splice(0, R.HAND); while (s.hand.length < R.HAND) s.hand.push(null); }
+  if (s.i === 0) renderHand();
 }
 function castHand(s, hi){
   const id = s.hand[hi]; if (!id || !canBegin(s, id)) return false;
   const sp = SP[id];
-  s.hand.splice(hi, 1); s.queue.push(id); s.hand.push(s.queue.shift());   // lá vừa dùng xuống đáy sách, rút lá kế
+  s.hand[hi] = null; s.queue.push(id);                  // lá vừa dùng xuống đáy sách, ô để trống chờ tự rút
   s.mana -= sp.cost; if (sp.cd) s.cd[id] = S.t + sp.cd;
   s.cast = {id, t:0, dur:castTime(s, sp), perfect:false, tried:false, started:S.t};
   s.lastCast = S.t;
@@ -201,6 +245,8 @@ function step(dt){
       s.regen += dt * (S.frenzy ? 2 : 1);
       while (s.regen >= R.REGEN) { s.regen -= R.REGEN; s.mana = Math.min(R.MANA_MAX, s.mana + 1); }
     }
+    if (s.drawing && (s.drawing.t += dt) >= s.drawing.dur) finishDraw(s);
+    if (s.pick && S.t >= s.pick.until) choosePick(s, 0);   // hết giờ chọn: lấy lá đầu
     if (s.cast) {
       s.cast.t += dt;
       if (s.cast.aiPerfect !== undefined && !s.cast.tried && s.cast.t / s.cast.dur >= s.cast.aiPerfect) tryPerfect(s);
@@ -235,9 +281,9 @@ function stepClash(dt){
 /* ---------- Máy: phản ứng có độ trễ, chọn phép theo loại ---------- */
 function aiThink(dt){
   const me = S.side[1], you = S.side[0], D = S.diff;
-  if ((S.aiNext -= dt) > 0 || me.cast || me.st.stun) return;
+  if ((S.aiNext -= dt) > 0 || me.cast || me.drawing || me.st.stun) return;
   S.aiNext = .15 + Math.random() * .15;
-  const ready = me.hand.filter(id => canBegin(me, id));
+  const ready = me.hand.filter(id => id && canBegin(me, id));
   const cast = id => castHand(me, me.hand.indexOf(id));
   const sp = id => SP[id];
   // 1. Phép của bạn đang bay tới: phòng thủ nếu kịp (chỉ "thấy" sau độ trễ phản xạ)
@@ -257,6 +303,18 @@ function aiThink(dt){
     const intr = ready.filter(id => (sp(id).interrupt || sp(id).nullify) && castTime(me, sp(id)) + (sp(id).self ? 0 : sp(id).travel || R.TRAVEL) < yc.dur - yc.t - .05);
     if (intr.length) { cast(intr[0]); return; }
   }
+  // Tự rút phép: ô trống mà không còn phép niệm được, hoặc trống từ 2 ô
+  const empties = me.hand.filter(id => !id).length, held = me.hand.filter(Boolean);
+  if (empties && (!ready.length || empties >= 2)) {
+    if (me.mana >= 4 && Math.random() < .35 && startPick(me)) { aiChoose(me, held); return; }
+    if (drawOne(me)) return;
+  }
+  if (!ready.length && !empties && me.mana >= 7 && Math.random() < .15 && refreshHand(me)) return;
+  aiCast(me, you, ready, cast, sp);
+  // Không niệm gì mà còn ô trống thì tranh thủ rút cho đầy tay
+  if (free(me) && emptySlot(me) >= 0) drawOne(me);
+}
+function aiCast(me, you, ready, cast, sp){
   if (S.t - me.lastCast < .7) return;                // không xả phép liên tục
   // 3. Máu thấp: hồi
   if (me.hp <= 12) { const h = ready.find(id => isHeal(sp(id))); if (h) { cast(h); return; } }
@@ -271,13 +329,25 @@ function aiThink(dt){
   }
   // 6. Mở combo (Ướt / Đóng băng) nếu có phép nối, không thì phép tấn công mạnh nhất (đôi khi nhịn để dồn phép lớn)
   const setup = ready.find(id => !you.st.wet && !you.st.frozen && (sp(id).wet || sp(id).freeze >= 2)
-    && me.hand.some(f => f !== id && sp(f).dmg >= 2 && sp(f).el === (sp(id).wet ? 'storm' : 'fire')));
+    && me.hand.some(f => f && f !== id && sp(f).dmg >= 2 && sp(f).el === (sp(id).wet ? 'storm' : 'fire')));
   if (setup) { cast(setup); return; }
-  const big = me.hand.find(id => sp(id).cost >= 5 && sp(id).dmg);
+  const big = me.hand.find(id => id && sp(id).cost >= 5 && sp(id).dmg);
   if (big && me.mana < sp(big).cost && me.mana >= 3 && Math.random() < .55) return;
   const atk = ready.filter(id => sp(id).dmg > 0 && !sp(id).interrupt)
     .sort((a, b) => sp(b).dmg * (sp(b).volley ? sp(b).volley.n : 1) - sp(a).dmg * (sp(a).volley ? sp(a).volley.n : 1));
   if (atk.length) cast(atk[0]);
+}
+
+// Máy chọn 1 trong 3 lá: thiếu phòng thủ thì lấy phòng thủ, máu thấp thì lấy hồi máu, còn lại lấy phép mạnh nhất
+function aiChoose(me, held){
+  const o = me.pick.opts, score = id => {
+    const p = SP[id];
+    if (isDef(p) && !held.some(h => isDef(SP[h]))) return 50;
+    if (isHeal(p) && me.hp <= 14) return 40;
+    return (p.dmg || 0) * (p.volley ? p.volley.n : 1) + (p.pet ? 4 : 0) + (p.interrupt ? 3 : 0);
+  };
+  let best = 0; o.forEach((id, k) => { if (score(id) > score(o[best])) best = k; });
+  choosePick(me, best);
 }
 
 /* ---------- Giao diện: sân khấu, đấu sĩ, HUD ---------- */
@@ -309,7 +379,7 @@ function hudHTML(s){
       <div class="h-id"><b>${s.name}</b><span class="meta">${s.label}</span></div></div>
     <div class="h-hp"><i class="trail"></i><i class="fill"></i><span class="lp">${s.hp}</span></div>
     <div class="h-mana">${[...Array(R.MANA_MAX)].map(() => '<i></i>').join('')}<b></b></div>
-    <div class="h-st"></div>`;
+    <div class="h-st"></div><div class="h-hand meta"></div>`;
 }
 function fighterHTML(s){
   return `<div class="f-pets"></div><div class="f-spell"></div>
@@ -322,13 +392,28 @@ function renderStatic(){
   $('.d-stage').setAttribute('data-weather', S.weather); FX.setWeather(S.weather);
   $('#dCast').innerHTML = `<i></i><em class="zone" style="left:${R.PERFECT[0] * 100}%;width:${(R.PERFECT[1] - R.PERFECT[0]) * 100}%"></em><span></span>`;
 }
+const kindCls = sp => sp.type === 'counter' ? 'counter' : sp.type === 'support' ? 'enchant' : 'charm';
+function miniCard(id, attrs, key){
+  const sp = SP[id];
+  return `<button class="dcard card face k-${kindCls(sp)}" ${attrs} title="${sp.name}: ${sp.text}">
+    <span class="cost">${sp.cost}</span><div class="cname">${sp.name}</div><div class="cart art art-${sp.art}"></div>
+    <div class="cstats"><span>${TYPE[sp.type]} · ${sp.cast}s</span></div><span class="dkey">${key}</span><span class="dfill"></span><span class="dcd"></span></button>`;
+}
 function renderHand(){
   const s = S.side[0];
-  $('#dHand').innerHTML = s.hand.map((id, i) => { const sp = SP[id];
-    return `<button class="dcard card face k-${sp.type === 'counter' ? 'counter' : sp.type === 'support' ? 'enchant' : 'charm'}" data-hi="${i}" title="${sp.name}: ${sp.text}">
-      <span class="cost">${sp.cost}</span><div class="cname">${sp.name}</div><div class="cart art art-${sp.art}"></div>
-      <div class="cstats"><span>${TYPE[sp.type]} · ${sp.cast}s</span></div><span class="dkey">${i + 1}</span><span class="dfill"></span><span class="dcd"></span></button>`; }).join('')
-    + `<div class="d-next"><span class="meta">Kế tiếp</span><div class="cart art art-${SP[s.queue[0]].art}"></div><span class="meta">${SP[s.queue[0]].name}</span></div>`;
+  // Đang xem 3 chọn 1: thay tay bài bằng 3 lá để chọn
+  if (s.pick) {
+    $('#dHand').innerHTML = `<div class="d-pick"><div class="meta">Chọn 1 lá đưa lên tay (phím 1–3) · <b class="d-pickt"></b>s · Esc huỷ (hoàn ma lực)</div>
+      <div class="row">${s.pick.opts.map((id, k) => miniCard(id, `data-pk="${k}"`, k + 1)).join('')}</div></div>`;
+    return;
+  }
+  $('#dHand').innerHTML = s.hand.map((id, i) => id ? miniCard(id, `data-hi="${i}"`, i + 1)
+      : `<button class="dslot-empty" data-draw="one"><b>Ô trống</b><span class="meta">Q: rút phép</span></button>`).join('')
+    + `<div class="d-draw">
+      <button class="btn sm" data-draw="one"><b>Q</b> Rút 1 lá <span class="meta">· ${R.DRAW_TIME}s</span></button>
+      <button class="btn sm" data-draw="pick"><b>W</b> Xem 3 chọn 1 <span class="meta">· ${R.PICK_COST} ma lực</span></button>
+      <button class="btn sm" data-draw="refresh"><b>E</b> Thay cả tay <span class="meta">· ${R.REFRESH_COST} ma lực</span></button>
+      <span class="meta d-left">Sách còn ${s.queue.length} lá · trên cùng: ${s.queue[0] ? SP[s.queue[0]].name : '—'}</span></div>`;
 }
 function chips(s){
   const out = [], st = s.st, left = x => Math.max(0, x - S.t).toFixed(1);
@@ -372,6 +457,7 @@ function draw(){
     const part = s.mana < R.MANA_MAX ? s.regen / R.REGEN : 0;
     h.querySelectorAll('.h-mana i').forEach((g, k) => { g.className = k < s.mana ? 'on' : ''; g.style.setProperty('--f', k === s.mana ? part : 0); });
     h.querySelector('.h-mana b').textContent = s.mana;
+    h.querySelector('.h-hand').textContent = `Tay ${s.hand.filter(Boolean).length}/${R.HAND} · Sách ${s.queue.length}${s.drawing ? ' · đang rút…' : s.pick ? ' · đang chọn phép…' : ''}`;
     setHTML(h.querySelector('.h-st'), chips(s));
     // Đấu sĩ: trạng thái hiển thị bằng class
     const cls = {casting:!!s.cast, stun:!!st.stun, frozen:!!st.frozen, burn:!!st.burn, wet:!!st.wet, curse:!!(st.curse || st.weak),
@@ -391,8 +477,17 @@ function draw(){
   const me = S.side[0], cb = $('#dCast'), c = me.cast;
   cb.classList.toggle('on', !!c); cb.classList.toggle('perfect', !!(c && c.perfect));
   cb.querySelector('i').style.width = c ? (100 * c.t / c.dur) + '%' : '0';
-  cb.querySelector('span').textContent = c ? `Đang niệm ${SP[c.id].name}${!c.tried ? ' · bấm Space ở vạch vàng' : ''}` : me.st.stun ? 'Choáng!' : 'Chọn phép: phím 1–4 hoặc chạm lá';
+  const dr = me.drawing;
+  cb.classList.toggle('drawing', !!dr);
+  if (dr) cb.querySelector('i').style.width = (100 * dr.t / dr.dur) + '%';
+  cb.querySelector('span').textContent = c ? `Đang niệm ${SP[c.id].name}${!c.tried ? ' · bấm Space ở vạch vàng' : ''}`
+    : dr ? (dr.kind === 'one' ? 'Đang rút phép…' : 'Đang thay cả tay…') : me.pick ? 'Chọn 1 trong 3 lá bên dưới' : me.st.stun ? 'Choáng!'
+    : me.hand.some(id => !id) ? 'Niệm phép: 1–4 · ô trống: Q rút 1, W xem 3 chọn 1, E thay cả tay' : 'Niệm phép: phím 1–4 hoặc chạm lá';
+  if (me.pick) { const t = $('.d-pickt'); if (t) t.textContent = Math.max(0, me.pick.until - S.t).toFixed(1); }
+  const dbtn = {one:canDraw(me), pick:canPick(me), refresh:canRefresh(me)};
+  document.querySelectorAll('#dHand [data-draw]').forEach(b => b.classList.toggle('off', !dbtn[b.dataset.draw]));
   document.querySelectorAll('#dHand .dcard').forEach(b => {
+    if (b.dataset.hi === undefined) return;
     const id = me.hand[+b.dataset.hi]; if (!id) return;
     const sp = SP[id], cdLeft = Math.max(0, (me.cd[id] || 0) - S.t);
     b.classList.toggle('playable', canBegin(me, id)); b.classList.toggle('poor', me.mana < sp.cost || cdLeft > 0);
@@ -425,18 +520,34 @@ function showStart(){
     return `<button class="d-bookbtn ${on ? 'on' : ''}" ${attr}="${k}"><span class="art art-${D.portrait} k-creature"></span><span><b>${D.name}</b><span class="meta">${D.tip}</span></span></button>`; };
   const btn = (attr, k, label, on) => `<button class="btn sm ${on ? 'on' : ''}" ${attr}="${k}">${label}</button>`;
   $('#dOverlay').innerHTML = `<div class="over"><div class="box d-box">
-    <h2>Đấu Trường Phép Thuật</h2><p class="meta">Đấu phép thời gian thực, không có lượt. Ma lực tự hồi, cầm 4 lá phép xoay vòng từ sách. Mỗi phép có thời gian niệm mà đối thủ nhìn thấy được.</p>
+    <h2>Đấu Trường Phép Thuật</h2><p class="meta">Đấu phép thời gian thực, không có lượt. Ma lực tự hồi, có 4 ô phép, niệm xong phải tự rút phép mới. Mỗi phép có thời gian niệm mà đối thủ nhìn thấy được.</p>
     <p class="meta d-lbl">Chọn sách phép:</p>
     <div class="d-books">${Object.keys(DECKS).map(k => tile(k, 'data-dme', cfg.me === k)).join('')}</div>
+    ${loadoutHTML()}
     <div class="row d-choice"><span class="meta">Đối thủ:</span>${btn('data-dopp', 'random', 'Ngẫu nhiên', cfg.opp === 'random')}${Object.keys(DECKS).map(k => btn('data-dopp', k, DECKS[k].name, cfg.opp === k)).join('')}</div>
     <div class="row d-choice"><span class="meta">Độ khó:</span>${Object.keys(DIFF).map(k => btn('data-ddiff', k, DIFF[k].name, cfg.diff === k)).join('')}</div>
     <ul class="d-how">
-      <li><b>1–4</b> hoặc chạm lá: niệm phép. Dùng xong lá được rút lá kế tiếp. Có phép có hồi chiêu.</li>
+      <li><b>1–4</b> hoặc chạm lá: niệm phép. Niệm xong ô đó <b>để trống</b>, phải tự rút: <b>Q</b> rút 1 lá (${R.DRAW_TIME} giây), <b>W</b> xem 3 lá trên cùng chọn 1 (${R.PICK_COST} ma lực), <b>E</b> thay cả tay (${R.REFRESH_COST} ma lực). Trong lúc rút không niệm được.</li>
       <li><b>Space</b> (hoặc chạm thanh niệm) đúng lúc thanh chạy qua <span style="color:var(--brass)">vạch vàng</span>: Niệm chuẩn, phép mạnh hơn.</li>
       <li>Nhìn vòng phép dưới chân đối thủ để biết họ đang niệm gì. Phản chú (khiên, gương, né…) phải dựng <b>trước khi</b> phép bay tới; phép ngắt trúng lúc đối thủ đang niệm thì huỷ phép của họ.</li>
       <li>Hai phép sát thương va nhau: <b>Đấu Đũa</b>, bấm Space thật nhanh để đẩy luồng phép về phía đối thủ.</li>
     </ul>
-    <button class="btn primary" data-dstart="1">Bắt đầu</button></div></div>`;
+    <button class="btn primary" data-dstart="1" ${loadoutOk() ? '' : 'disabled'}>Bắt đầu</button></div></div>`;
+}
+// Chọn phép mang vào trận (lưu theo từng sách)
+const curLoadout = () => cfg.loadout[cfg.me] || (cfg.loadout[cfg.me] = loadoutOf(cfg.me));
+const loadoutOk = () => { const n = curLoadout().length; return n >= Math.min(R.LOADOUT_MIN, poolOf(cfg.me).length) && n <= R.LOADOUT_MAX; };
+function loadoutHTML(){
+  const pool = poolOf(cfg.me), cur = curLoadout();
+  return `<p class="meta d-lbl">Phép mang vào trận: <b>${cur.length}</b> / tối đa ${R.LOADOUT_MAX} (ít nhất ${Math.min(R.LOADOUT_MIN, pool.length)}) · bấm để bật/tắt</p>
+    <div class="d-load">${pool.map(id => { const sp = SP[id], on = cur.includes(id);
+      return `<button class="d-lo t-${sp.type} ${on ? 'on' : ''}" data-lo="${id}" title="${sp.text}"><span class="art art-${sp.art}"></span>
+        <span><b>${sp.name}</b><span class="meta">${TYPE[sp.type]} · ${sp.cost} ma lực · ×${DECKS[cfg.me].list[id]}</span></span></button>`; }).join('')}</div>`;
+}
+function toggleLoadout(id){
+  const cur = curLoadout(), k = cur.indexOf(id);
+  if (k >= 0) cur.splice(k, 1); else if (cur.length < R.LOADOUT_MAX) cur.push(id);
+  showStart();
 }
 function showEnd(){
   $('#dOverlay').innerHTML = `<div class="over"><div class="box"><h2>${S.winner === 0 ? 'Chiến thắng' : 'Thất bại'}</h2>
@@ -454,16 +565,27 @@ const playing = () => S && !S.over && !$('#dOverlay').innerHTML;
 document.addEventListener('click', e => {
   const set = (attr, key) => { const b = e.target.closest(`[${attr}]`); if (!b) return false; cfg[key] = b.getAttribute(attr); showStart(); return true; };
   if (set('data-dme', 'me') || set('data-dopp', 'opp') || set('data-ddiff', 'diff')) return;
+  const lo = e.target.closest('[data-lo]'); if (lo) { toggleLoadout(lo.dataset.lo); return; }
   if (e.target.closest('[data-dmenu]')) { showStart(); return; }
   if (e.target.closest('[data-dstart]')) { try { localStorage.setItem('dp-duel', JSON.stringify(cfg)); } catch (er) {} $('#dOverlay').innerHTML = ''; newDuel(); return; }
   if (!playing()) return;
-  const c = e.target.closest('.dcard'); if (c) { castHand(S.side[0], +c.dataset.hi); return; }
+  const me = S.side[0];
+  const pk = e.target.closest('[data-pk]'); if (pk) { choosePick(me, +pk.dataset.pk); return; }
+  const dw = e.target.closest('[data-draw]'); if (dw) { ({one:drawOne, pick:startPick, refresh:refreshHand})[dw.dataset.draw](me); return; }
+  const c = e.target.closest('.dcard'); if (c) { castHand(me, +c.dataset.hi); return; }
   if (e.target.closest('#dCast, #dClash')) press();
 });
 document.addEventListener('keydown', e => {
   if (!playing()) return;
   if (e.code === 'Space') { if (!e.repeat) press(); e.preventDefault(); return; }
-  if (e.key >= '1' && e.key <= '4') { castHand(S.side[0], +e.key - 1); e.preventDefault(); }
+  const me = S.side[0], k = e.key.toLowerCase();
+  if (me.pick) { if (k >= '1' && k <= '3') choosePick(me, +k - 1); else if (k === 'escape') cancelPick(me); else return; e.preventDefault(); return; }
+  if (k >= '1' && k <= '4') castHand(me, +k - 1);
+  else if (k === 'q') drawOne(me);
+  else if (k === 'w') startPick(me);
+  else if (k === 'e') refreshHand(me);
+  else return;
+  e.preventDefault();
 });
 
 let last = performance.now();
