@@ -4,7 +4,7 @@ Game đấu phép thời gian thực một người chơi với máy, chạy tr�
 
 - **Không có lượt:** ma lực tự hồi liên tục. Lối chơi kiểu Asuka R♯: chọn phép mang vào sách, trong trận có 4 ô phép, niệm xong phải tự rút (rút 1, xem 3 chọn 1, thay cả tay).
 - **Thời gian niệm:** đối thủ nhìn thấy vòng phép và tên phép bạn đang niệm, nên có thể dựng khiên, phản phép hoặc ngắt phép.
-- **Niệm chuẩn:** bấm đúng vạch vàng trên thanh niệm để phép mạnh hơn.
+- **Thanh niệm dưới chân:** đang niệm thì nhân vật có thanh tiến độ, đối thủ cũng nhìn thấy.
 - **Đấu Đũa:** hai phép sát thương va nhau giữa sân, ai bấm nhanh hơn thì đẩy được luồng phép về phía đối thủ.
 - **Phản ứng nguyên tố** (Ướt + Sét = Giật lan, Đóng băng + Lửa = Hơi nước…) và **thời tiết** đổi mỗi 30 giây.
 - **6 sách phép:** Thuỷ – Lôi, Hoả – Băng, Chimera, Wyvern, Phượng Hoàng, Ma Cà Rồng; máy có 3 độ khó.

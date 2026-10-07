@@ -108,21 +108,14 @@ function castHand(s, hi){
   const sp = SP[id];
   s.hand[hi] = null; s.queue.push(id);                  // lá vừa dùng xuống đáy sách, ô để trống chờ tự rút
   s.mana -= sp.cost; s.next = null;
-  s.cast = {id, t:0, dur:castTime(s, sp), perfect:false, tried:false, started:S.t};
+  s.cast = {id, t:0, dur:castTime(s, sp), started:S.t};
   s.lastCast = S.t;
-  if (s.i === 1 && Math.random() < S.diff.perfect) s.cast.aiPerfect = R.PERFECT[0] + Math.random() * (R.PERFECT[1] - R.PERFECT[0]);
   if (s.i === 0) renderHand();
   return true;
 }
-function tryPerfect(s){
-  const c = s.cast; if (!c || c.tried) return;
-  c.tried = true; const k = c.t / c.dur;
-  if (k >= R.PERFECT[0] && k <= R.PERFECT[1]) { c.perfect = true; float(s.i, 'Niệm chuẩn!', 'var(--brass)', true); FX.ring(at(s.i, .5), [1,.85,.4], 110, .5); }
-  else float(s.i, 'Hụt nhịp', 'var(--mute)');
-}
 function finishCast(s){
   const c = s.cast; s.cast = null;
-  const sp = SP[c.id], bonus = c.perfect ? 1 : 0;
+  const sp = SP[c.id], bonus = 0;
   play(s.anim, castAnim(sp));
   if (sp.self) applySelf(s, sp, bonus);
   else {
@@ -260,7 +253,6 @@ function step(dt){
     if (s.pick && S.t >= s.pick.until) choosePick(s, 0);   // hết giờ chọn: lấy lá đầu
     if (s.cast) {
       s.cast.t += dt;
-      if (s.cast.aiPerfect !== undefined && !s.cast.tried && s.cast.t / s.cast.dur >= s.cast.aiPerfect) tryPerfect(s);
       if (s.cast.t >= s.cast.dur) finishCast(s);
     }
     // Phép đã xếp hàng: niệm ngay khi rảnh và đủ ma lực; ô đó bị thay lá thì bỏ
@@ -413,7 +405,6 @@ function fighterHTML(s){
 function renderStatic(){
   for (const s of S.side) { $(s.i === 0 ? '#hMe' : '#hOpp').innerHTML = hudHTML(s); fighter(s.i).innerHTML = fighterHTML(s); fighter(s.i).className = 'fighter ' + (s.i ? 'opp' : 'me'); }
   $('.d-stage').setAttribute('data-weather', S.weather); FX.setWeather(S.weather);
-  $('#dCast').innerHTML = `<i></i><em class="zone" style="left:${R.PERFECT[0] * 100}%;width:${(R.PERFECT[1] - R.PERFECT[0]) * 100}%"></em><span></span>`;
 }
 const kindCls = sp => sp.type === 'counter' ? 'counter' : sp.type === 'support' ? 'enchant' : 'charm';
 function miniCard(id, attrs, key){
@@ -491,21 +482,15 @@ function draw(){
       const sp = SP[c.id];
       f.style.setProperty('--ec', EL[sp.el] ? EL[sp.el].c : sp.type === 'counter' ? '#7fb3ff' : '#7cc49b');
       f.style.setProperty('--p', (c.t / c.dur).toFixed(3));
-      setHTML(f.querySelector('.f-spell'), `${sp.name}${c.perfect ? ' ✦' : ''}`);
+      setHTML(f.querySelector('.f-spell'), sp.name);
     } else setHTML(f.querySelector('.f-spell'), st.stun ? 'Choáng!' : warned[s.i] ? '⚠ Phép giáng!' : '');
-    f.querySelector('.f-cast i').style.width = c ? (100 * c.t / c.dur) + '%' : '0';
+    // Thanh tiến độ dưới chân: niệm phép (màu theo hệ), không niệm thì hiện tiến độ rút phép
+    const dr = s.drawing, bar = c ? c.t / c.dur : dr ? dr.t / dr.dur : 0;
+    f.classList.toggle('drawing', !c && !!dr);
+    f.querySelector('.f-cast i').style.width = (100 * bar) + '%';
     setHTML(f.querySelector('.f-pets'), s.pets.map((p, k) => `<span class="pet" style="--k:${k}"><i class="art art-${p.art} k-creature"></i><b>${Math.ceil(p.until - S.t)}</b></span>`).join(''));
   }
-  // Thanh niệm của bạn (bấm Space ở vạch vàng)
-  const me = S.side[0], cb = $('#dCast'), c = me.cast;
-  cb.classList.toggle('on', !!c); cb.classList.toggle('perfect', !!(c && c.perfect));
-  cb.querySelector('i').style.width = c ? (100 * c.t / c.dur) + '%' : '0';
-  const dr = me.drawing;
-  cb.classList.toggle('drawing', !!dr && !c);            // thanh niệm ưu tiên hiện phép đang niệm
-  if (dr && !c) cb.querySelector('i').style.width = (100 * dr.t / dr.dur) + '%';
-  cb.querySelector('span').textContent = c ? `Đang niệm ${SP[c.id].name}${!c.tried ? ' · bấm Space ở vạch vàng' : ''}${me.next != null ? ' · tiếp: ' + SP[me.hand[me.next]]?.name : ''}${dr ? ' · đang rút…' : ''}`
-    : dr ? (dr.kind === 'one' ? 'Đang rút phép…' : 'Đang thay cả tay…') : me.pick ? 'Chọn 1 trong 3 lá bên dưới' : me.st.stun ? 'Choáng!'
-    : me.hand.some(id => !id) ? 'Niệm phép: 1–4 · ô trống: Q rút 1, W xem 3 chọn 1, E thay cả tay' : 'Niệm phép: phím 1–4 hoặc chạm lá';
+  const me = S.side[0];
   if (me.pick) { const t = $('.d-pickt'); if (t) t.textContent = Math.max(0, me.pick.until - S.t).toFixed(1); }
   const dbtn = {one:canDraw(me), pick:canPick(me), refresh:canRefresh(me)};
   document.querySelectorAll('#dHand [data-draw]').forEach(b => b.classList.toggle('off', !dbtn[b.dataset.draw]));
@@ -551,9 +536,9 @@ function showStart(){
     <div class="row d-choice"><span class="meta">Độ khó:</span>${Object.keys(DIFF).map(k => btn('data-ddiff', k, DIFF[k].name, cfg.diff === k)).join('')}</div>
     <ul class="d-how">
       <li><b>1–4</b> hoặc chạm lá: niệm phép. Niệm xong ô đó <b>để trống</b>, phải tự rút: <b>Q</b> rút 1 lá (${R.DRAW_TIME} giây), <b>W</b> xem 3 lá trên cùng chọn 1 (${R.PICK_COST} ma lực), <b>E</b> thay cả tay (${R.REFRESH_COST} ma lực). Rút và niệm cùng lúc được; bấm lá khi đang niệm hoặc thiếu ma lực để xếp làm phép tiếp theo, đủ điều kiện là tự niệm.</li>
-      <li><b>Space</b> (hoặc chạm thanh niệm) đúng lúc thanh chạy qua <span style="color:var(--brass)">vạch vàng</span>: Niệm chuẩn, phép mạnh hơn.</li>
+      <li>Đang niệm thì dưới chân nhân vật hiện thanh tiến độ, đầy thanh là phép bay ra.</li>
       <li>Nhìn vòng phép dưới chân đối thủ để biết họ đang niệm gì. Phản chú (khiên, gương, né…) phải dựng <b>trước khi</b> phép bay tới; phép ngắt trúng lúc đối thủ đang niệm thì huỷ phép của họ.</li>
-      <li>Hai phép sát thương va nhau: <b>Đấu Đũa</b>, bấm Space thật nhanh để đẩy luồng phép về phía đối thủ.</li>
+      <li>Hai phép sát thương va nhau: <b>Đấu Đũa</b>, bấm Space (hoặc chạm vào luồng phép) thật nhanh để đẩy luồng phép về phía đối thủ.</li>
     </ul>
     <button class="btn primary" data-dstart="1" ${loadoutOk() ? '' : 'disabled'}>Bắt đầu</button></div></div>`;
 }
@@ -581,8 +566,7 @@ function showEnd(){
 /* ---------- Điều khiển ---------- */
 function press(){
   if (!S || S.over) return;
-  if (S.clash) { S.clash.press[0]++; const r = $('#dClash').getBoundingClientRect(); FX.burst({x:r.left + r.width * parseFloat(getComputedStyle($('#dClash')).getPropertyValue('--m')) / 100, y:r.top + r.height * .45}, {color:[1,.85,.45], count:16, speed:180, life:.3}); return; }
-  tryPerfect(S.side[0]);
+  if (S.clash) { S.clash.press[0]++; const r = $('#dClash').getBoundingClientRect(); FX.burst({x:r.left + r.width * parseFloat(getComputedStyle($('#dClash')).getPropertyValue('--m')) / 100, y:r.top + r.height * .45}, {color:[1,.85,.45], count:16, speed:180, life:.3}); }
 }
 const playing = () => S && !S.over && !$('#dOverlay').innerHTML;
 document.addEventListener('click', e => {
@@ -596,7 +580,7 @@ document.addEventListener('click', e => {
   const pk = e.target.closest('[data-pk]'); if (pk) { choosePick(me, +pk.dataset.pk); return; }
   const dw = e.target.closest('[data-draw]'); if (dw) { ({one:drawOne, pick:startPick, refresh:refreshHand})[dw.dataset.draw](me); return; }
   const c = e.target.closest('.dcard'); if (c) { castHand(me, +c.dataset.hi); return; }
-  if (e.target.closest('#dCast, #dClash')) press();
+  if (e.target.closest('#dClash')) press();
 });
 document.addEventListener('keydown', e => {
   if (!playing()) return;

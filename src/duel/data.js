@@ -36,10 +36,10 @@ export const DUEL_WEATHER = {
 
 // Độ khó của máy: độ trễ phản xạ (giây), tỉ lệ dựng khiên kịp, tỉ lệ niệm chuẩn, tốc độ dồn lực khi Đấu Đũa (lần/giây)
 export const DIFF = {
-  // delay: phản xạ · block: tỉ lệ đỡ · perfect: niệm chuẩn · mash: tốc độ bấm Đấu Đũa · gap: nghỉ tối thiểu giữa 2 phép · hoard: tỉ lệ nhịn để dồn phép lớn
-  easy:{name:'Dễ', delay:.8, block:.45, perfect:.25, mash:5, gap:1.1, hoard:.4},
-  normal:{name:'Thường', delay:.5, block:.75, perfect:.5, mash:7, gap:.45, hoard:.25},
-  hard:{name:'Khó', delay:.3, block:.92, perfect:.75, mash:9, gap:.15, hoard:.15},
+  // delay: phản xạ · block: tỉ lệ đỡ · mash: tốc độ bấm Đấu Đũa · gap: nghỉ tối thiểu giữa 2 phép · hoard: tỉ lệ nhịn để dồn phép lớn
+  easy:{name:'Dễ', delay:.8, block:.45, mash:5, gap:1.1, hoard:.4},
+  normal:{name:'Thường', delay:.5, block:.75, mash:7, gap:.45, hoard:.25},
+  hard:{name:'Khó', delay:.3, block:.92, mash:9, gap:.15, hoard:.15},
 };
 
 export const RULES = {
@@ -47,7 +47,6 @@ export const RULES = {
   HAND:4, TRAVEL:.75,
   DRAW_TIME:.4, PICK_COST:1, PICK_TIME:5, REFRESH_COST:2, REFRESH_TIME:.8,   // rút 1 lá · xem 3 chọn 1 · thay cả tay
   LOADOUT_MIN:5, LOADOUT_MAX:8,                          // số phép được mang vào trận                                    // thời gian bay của phép
-  PERFECT:[.62, .84],                                    // vùng "niệm chuẩn" trên thanh niệm
   WET:6, BURN:4.5, BURN_TICK:1.5, STUN:1.5,
   WEATHER_EVERY:30, FRENZY_AT:120,                       // sau 2 phút: Cuồng phong, ma lực hồi gấp đôi
   CLASH:1.8, INTRO:1.8,                                  // thời gian dồn lực Đấu Đũa · màn "Sẵn sàng… Đấu!"

@@ -21,7 +21,7 @@
 - Mỗi phép tốn ma lực và có **thời gian niệm**. Ma lực bắt đầu 4, hồi 1 điểm mỗi 1,1 giây.
 - Trong lúc niệm, đối thủ thấy vòng phép dưới chân và tên phép trên đầu bạn.
 - Niệm xong, phép bay khoảng 0,75 giây mới trúng. Phép giáng từ trời bay lâu hơn và có vòng cảnh báo dưới chân mục tiêu.
-- **Niệm chuẩn:** bấm Space (hoặc chạm thanh niệm) đúng lúc thanh chạy qua vạch vàng thì phép mạnh hơn (sát thương +1, hồi máu +2, khiên lâu hơn…). Mỗi lần niệm chỉ được bấm 1 lần.
+- Đang niệm thì dưới chân nhân vật hiện **thanh tiến độ** (màu theo hệ phép), đầy thanh là phép bay ra. Đang rút phép thì thanh màu xanh.
 
 ## Phản chú và ngắt phép
 - **Khiên** chặn phép kế tiếp bay tới · **Gương** phản phép sát thương về người niệm · **Né** làm mọi phép bay tới trượt · **Rào chắn** hút một lượng sát thương · **Xoá phép** xoá mọi phép đang bay tới.
@@ -76,4 +76,4 @@ Sau 2 phút vào **Cuồng phong**: ma lực hồi gấp đôi.
 |---|---|
 | 1–4 hoặc chạm lá | Niệm phép |
 | Q / W / E | Rút 1 lá / Xem 3 chọn 1 / Thay cả tay |
-| Space hoặc chạm thanh niệm | Niệm chuẩn · dồn lực khi Đấu Đũa |
+| Space hoặc chạm luồng phép | Dồn lực khi Đấu Đũa |
