@@ -2,6 +2,7 @@ import './base.css';
 import './duel.css';
 import { $, EL } from './config.js';
 import { applyArt } from './art.js';
+import { frameStyle, loadSheets, makeAnimator, play, sheetOf, tick } from './anim.js';
 import { FX } from '../fx/three-fx.js';
 import { BOOKS, DIFF, DUEL_DECKS, DUEL_WEATHER, RULES as R, SPELLS } from './data.js';
 
@@ -53,6 +54,7 @@ function mkSide(i, deck, chosen){
     cast:null, drawing:null, pick:null, st:{}, cd:{}, shield:0, mirror:0, evade:0, barrier:null, pets:[], lastCast:-9, hand:[], queue:[]};
   for (const id of chosen) for (let k = 0; k < D.list[id]; k++) s.queue.push(id);
   shuffle(s.queue); s.hand = s.queue.splice(0, R.HAND);
+  s.anim = sheetOf(D.portrait) ? makeAnimator(sheetOf(D.portrait)) : null;
   return s;
 }
 function newDuel(){
@@ -118,10 +120,14 @@ function tryPerfect(s){
 function finishCast(s){
   const c = s.cast; s.cast = null;
   const sp = SP[c.id], bonus = c.perfect ? 1 : 0;
+  play(s.anim, castAnim(sp));
   if (sp.self) { applySelf(s, sp, bonus); return; }
   launch(s, sp, bonus, true);
   if (sp.volley) for (let k = 1; k < sp.volley.n; k++) S.pending.push({at:S.t + k * sp.volley.gap, s, sp, bonus});
 }
+// Động tác khi phóng phép: phép thủ → thủ thế, hỗ trợ → toả sáng, phép tấn công lớn → tụ lực
+const castAnim = sp => !sp.self ? (sp.cost >= 5 ? 'power' : 'release')
+  : sp.shield || sp.mirror || sp.evade || sp.barrier || sp.nullify ? 'guard' : 'buff';
 function launch(s, sp, bonus, fromCast, fromPet){
   const o = S.side[1 - s.i];
   const p = {from:s.i, to:o.i, sp, bonus, k:0, travel:sp.travel || R.TRAVEL, reflected:false, pet:!!fromPet,
@@ -371,11 +377,13 @@ function banner(text, color, huge){
   b.className = 'd-banner'; void b.offsetWidth; b.className = 'd-banner show' + (huge ? ' huge' : '');
 }
 function hitFx(i, n){
+  play(S.side[i].anim, 'hit');
   const f = fighter(i); f.classList.remove('hit'); void f.offsetWidth; f.classList.add('hit');
   if (n >= 5) { S.stop = .09; FX.shake(Math.min(14, n * 1.6)); $('.d-stage').classList.remove('flash'); void $('.d-stage').offsetWidth; $('.d-stage').classList.add('flash'); }
 }
 function hudHTML(s){
-  return `<div class="h-top"><span class="h-pic art art-${s.portrait} k-creature"></span>
+  const pic = s.anim ? `<span class="h-pic sheet" style="${frameStyle(s.anim.m, 'idle')}"></span>` : `<span class="h-pic art art-${s.portrait} k-creature"></span>`;
+  return `<div class="h-top">${pic}
       <div class="h-id"><b>${s.name}</b><span class="meta">${s.label}</span></div></div>
     <div class="h-hp"><i class="trail"></i><i class="fill"></i><span class="lp">${s.hp}</span></div>
     <div class="h-mana">${[...Array(R.MANA_MAX)].map(() => '<i></i>').join('')}<b></b></div>
@@ -384,7 +392,7 @@ function hudHTML(s){
 function fighterHTML(s){
   return `<div class="f-pets"></div><div class="f-spell"></div>
     <div class="f-circle"><i></i><i></i></div><div class="f-bubble"></div>
-    <div class="f-sprite art art-${s.portrait} k-creature"></div><div class="f-shadow"></div>
+    ${s.anim ? `<div class="f-sprite sheet" style="${frameStyle(s.anim.m, 'idle')}"></div>` : `<div class="f-sprite art art-${s.portrait} k-creature"></div>`}<div class="f-shadow"></div>
     <div class="f-cast"><i></i></div>`;
 }
 function renderStatic(){
@@ -588,12 +596,23 @@ document.addEventListener('keydown', e => {
   e.preventDefault();
 });
 
+// Chạy sprite sheet của đấu sĩ; khựng hình khi trúng đòn nặng thì hoạt ảnh cũng khựng theo
+function animate(dt){
+  if (!S || S.stop > 0) return;
+  for (const s of S.side) {
+    if (!s.anim) continue;
+    const base = S.over && S.winner !== s.i ? 'ko' : s.cast ? 'cast' : 'idle';
+    const css = tick(s.anim, dt, base, s.cast ? s.cast.t : 0), el = fighter(s.i).querySelector('.f-sprite');
+    if (el && el.dataset.f !== css) { el.style.cssText = css; el.dataset.f = css; }
+  }
+}
 let last = performance.now();
 function frame(now){
   const dt = Math.min(.05, (now - last) / 1000); last = now;
-  step(dt); draw();
+  step(dt); draw(); animate(dt);
   requestAnimationFrame(frame);
 }
 applyArt();
+loadSheets();
 showStart();
 requestAnimationFrame(frame);

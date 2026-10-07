@@ -68,3 +68,12 @@ Nếu đổi số khung hay fps thì cập nhật JSON cho khớp (tối đa 6 k
 - Làm 1 artifact xem trước: chọn nhân vật và hoạt ảnh, chạy đúng fps, nền ca-rô để thấy độ trong suốt, có vạch ngang ở y = 180 để kiểm tra đường đáy, có nút xem ở dạng lật ngang.
 - Đảm bảo không có khung nào bị lệch đáy, nhảy kích thước hay tràn khỏi ô 192×192, và `idle` / `cast_loop` lặp mượt không giật.
 - Làm **phoenix trước** cho mình duyệt phong cách, rồi mới làm 5 nhân vật còn lại.
+
+---
+
+## Lắp sheet vào game
+1. Thả `<id>-sheet.png` và `<id>.json` vào `public/sprites/anim/` (`<id>` là `portrait` của sách trong `src/duel/data.js`, ví dụ `phoenix`).
+2. Thêm `<id>` vào mảng `IDS` trong `src/duel/anim.js`.
+3. Hàng thiếu thì ghi `"missing": true` trong JSON: game tự lấy hoạt ảnh gần giống (`power`/`guard`/`buff` → `release`). Có thể thêm hàng `power` (tụ lực) cho phép tấn công từ 5 ma lực.
+
+Game chọn động tác như sau: đứng yên → `idle`; đang niệm → `cast_start` rồi lặp `cast_loop`; niệm xong phép tấn công → `release` (hoặc `power`), phép khiên/gương/né/rào chắn/xoá phép → `guard`, phép hỗ trợ khác → `buff`; trúng đòn → `hit`; hết máu → `ko`.
