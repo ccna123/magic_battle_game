@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
-  <style id="artcss"></style>
 </head>
 <body>
 <!-- Đấu phép tốc độ kiểu game đối kháng: HUD đối xứng trên cùng, sân khấu ngang (bạn trái, máy phải), thanh niệm và 4 lá phép bên dưới -->
@@ -25,7 +24,7 @@
     <div class="st-sky"></div><div class="st-hills"></div><div class="st-floor"></div>
     <div class="fighter me" id="fMe"></div>
     <div class="fighter opp" id="fOpp"></div>
-    <div id="dProj"></div>
+    <canvas id="dFx" class="d-fx"></canvas>
     <div id="dClash" class="d-clash" hidden>
       <div class="beam me"></div><div class="beam opp"></div><div class="flare"></div>
       <div class="d-cbox"><div class="d-push"><i></i></div><div class="meta">Bấm <b>Space</b> (hoặc chạm sân) thật nhanh · còn <b id="dClashT">0</b>s</div></div>

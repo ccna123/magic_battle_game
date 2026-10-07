@@ -1,0 +1,378 @@
+{
+  "id": "storm_fox",
+  "element": "storm",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "bolt1",
+      "pose": "release",
+      "type": "bolt",
+      "level": 1,
+      "row": 0,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+        "flight": [
+          0,
+          3
+        ],
+        "impact": [
+          4,
+          7
+        ]
+      },
+      "hitFrame": 4
+    },
+    {
+      "key": "bolt2",
+      "pose": "release",
+      "type": "bolt",
+      "level": 2,
+      "row": 1,
+      "frames": 8,
+      "mode": "volley",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "count": 3,
+      "spreadY": [
+        0,
+        0,
+        0
+      ],
+      "interval": 0.13,
+      "hitFrame": 4,
+      "segments": {
+        "flight": [
+          0,
+          3
+        ],
+        "impact": [
+          4,
+          7
+        ]
+      }
+    },
+    {
+      "key": "bolt3",
+      "pose": "release",
+      "type": "bolt",
+      "level": 3,
+      "row": 2,
+      "frames": 8,
+      "mode": "zigzag",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "path": "zigzag",
+      "amp": 42,
+      "waves": 3,
+      "hitFrame": 4,
+      "segments": {
+        "flight": [
+          0,
+          3
+        ],
+        "impact": [
+          4,
+          7
+        ]
+      }
+    },
+    {
+      "key": "sky1",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 1,
+      "row": 3,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+        "charge": [
+          0,
+          1
+        ],
+        "strike": [
+          2,
+          4
+        ],
+        "fade": [
+          5,
+          7
+        ]
+      },
+      "hitFrame": 2,
+      "skyMode": "cloud",
+      "landFrame": 2,
+      "top": 80,
+      "band": 68,
+      "dir": 0
+    },
+    {
+      "key": "sky2",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 2,
+      "row": 4,
+      "frames": 8,
+      "mode": "thundercloud",
+      "kit": true,
+      "fps": 6,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+        2,
+        4,
+        6
+      ],
+      "segments": {
+        "gather": [
+          0,
+          1
+        ],
+        "storm": [
+          2,
+          5
+        ],
+        "fade": [
+          6,
+          7
+        ]
+      },
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 80,
+      "band": 75,
+      "dir": 0
+    },
+    {
+      "key": "sky3",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 3,
+      "row": 5,
+      "frames": 8,
+      "mode": "barrage9",
+      "kit": true,
+      "fps": 16,
+      "anchor": "bottom",
+      "at": "target",
+      "count": 5,
+      "spreadX": [
+        -50,
+        30,
+        -20,
+        50,
+        0
+      ],
+      "interval": 0.1,
+      "hitFrame": 2,
+      "segments": {
+        "charge": [
+          0,
+          1
+        ],
+        "strike": [
+          2,
+          4
+        ],
+        "fade": [
+          5,
+          7
+        ]
+      },
+      "skyMode": "cloud",
+      "landFrame": 2,
+      "top": 80,
+      "band": 75,
+      "dir": 0
+    },
+    {
+      "key": "ground1",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 1,
+      "row": 6,
+      "frames": 8,
+      "mode": "sparkline",
+      "kit": true,
+      "fps": 16,
+      "anchor": "bottom",
+      "at": "caster_to_target",
+      "count": 5,
+      "interval": 0.06,
+      "hitFrame": 2,
+      "segments": {
+        "grow": [
+          0,
+          2
+        ],
+        "hold": [
+          3,
+          4
+        ],
+        "fade": [
+          5,
+          7
+        ]
+      }
+    },
+    {
+      "key": "ground2",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 2,
+      "row": 7,
+      "frames": 8,
+      "mode": "shockfloor",
+      "kit": true,
+      "fps": 8,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 2,
+      "stun": 0.6,
+      "segments": {
+        "spread": [
+          0,
+          1
+        ],
+        "shock": [
+          2,
+          5
+        ],
+        "fade": [
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "key": "ground3",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 3,
+      "row": 8,
+      "frames": 8,
+      "mode": "tower",
+      "kit": true,
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "caster_front",
+      "zapFrames": [
+        3,
+        4,
+        5
+      ],
+      "zapTop": 124,
+      "segments": {
+        "plant": [
+          0,
+          1
+        ],
+        "charge": [
+          2,
+          5
+        ],
+        "fade": [
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "key": "spread1",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 1,
+      "row": 9,
+      "frames": 8,
+      "mode": "haste",
+      "kit": true,
+      "fps": 10,
+      "anchor": "center",
+      "at": "caster",
+      "buffFrame": 3,
+      "segments": {
+        "form": [
+          0,
+          2
+        ],
+        "hold": [
+          3,
+          5
+        ],
+        "fade": [
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "key": "spread2",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 2,
+      "row": 10,
+      "frames": 8,
+      "mode": "chain",
+      "kit": true,
+      "fps": 16,
+      "anchor": "beam",
+      "at": "hand_to_target",
+      "hitFrame": 1,
+      "segments": {
+        "arc": [
+          0,
+          5
+        ],
+        "fade": [
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "key": "spread3",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 3,
+      "row": 11,
+      "frames": 8,
+      "mode": "tempest",
+      "kit": true,
+      "fps": 8,
+      "anchor": "center",
+      "at": "caster",
+      "zapFrames": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "segments": {
+        "gather": [
+          0,
+          1
+        ],
+        "storm": [
+          2,
+          6
+        ],
+        "fade": [
+          7,
+          7
+        ]
+      }
+    }
+  ]
+}

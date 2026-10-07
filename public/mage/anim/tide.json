@@ -1,0 +1,84 @@
+{
+  "id": "tide",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "anims": {
+    "idle": {
+      "row": 0,
+      "frames": 6,
+      "fps": 8,
+      "loop": true
+    },
+    "cast_start": {
+      "row": 1,
+      "frames": 4,
+      "fps": 12,
+      "loop": false
+    },
+    "cast_loop": {
+      "row": 2,
+      "frames": 4,
+      "fps": 10,
+      "loop": true
+    },
+    "release": {
+      "row": 3,
+      "frames": 6,
+      "fps": 14,
+      "loop": false
+    },
+    "guard": {
+      "row": 4,
+      "frames": 4,
+      "fps": 12,
+      "loop": false,
+      "hold": true
+    },
+    "buff": {
+      "row": 5,
+      "frames": 5,
+      "fps": 10,
+      "loop": false
+    },
+    "hit": {
+      "row": 6,
+      "frames": 3,
+      "fps": 14,
+      "loop": false
+    },
+    "ko": {
+      "row": 7,
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "hold": true
+    },
+    "release_sky": {
+      "row": 8,
+      "frames": 6,
+      "fps": 14,
+      "loop": false
+    },
+    "release_ground": {
+      "row": 9,
+      "frames": 6,
+      "fps": 14,
+      "loop": false
+    },
+    "release_spread": {
+      "row": 10,
+      "frames": 6,
+      "fps": 14,
+      "loop": false
+    }
+  },
+  "hand": {
+    "release": [
+      169,
+      73
+    ]
+  }
+}

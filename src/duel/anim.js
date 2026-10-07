@@ -1,18 +1,12 @@
-/* Hoạt ảnh đấu sĩ theo sprite sheet: public/sprites/anim/<id>-sheet.png + <id>.json.
-   Mỗi hàng của sheet là một hoạt ảnh (idle, cast_start, cast_loop, release, guard, buff, hit, ko; tuỳ chọn: summon, power, aura).
-   Nhân vật chưa có sheet thì vẫn dùng ảnh tĩnh như cũ. Thêm nhân vật mới: thả file vào thư mục rồi thêm id vào IDS. */
-const IDS = ['firemage', 'icewitch', 'stag', 'crow', 'fox'];
+/* Hoạt ảnh đấu sĩ theo sprite sheet nhân vật của gói pháp sư (public/mage/anim/<id>-sheet.png + <id>.json).
+   Mỗi hàng là một hoạt ảnh: idle, cast_start, cast_loop, release, guard, buff, hit, ko, release_sky, release_ground, release_spread. */
 const SHEETS = {};
 const COLS = 6;
-const FALLBACK = {power:'release', guard:'release', buff:'release', aura:'guard', summon:'buff', cast_loop:'cast_start'};
+const FALLBACK = {release_sky:'release', release_ground:'release', release_spread:'buff', guard:'release', buff:'release', cast_loop:'cast_start'};
 
-export function loadSheets(){
-  return Promise.all(IDS.map(id => fetch(`/sprites/anim/${id}.json`).then(r => r.json()).then(m => {
-    m.rows = Math.max(...Object.values(m.anims).map(a => a.row)) + 1;
-    m.src = `/sprites/anim/${id}-sheet.png`;
-    new Image().src = m.src;
-    SHEETS[id] = m;
-  }).catch(() => {})));
+// Đăng ký sheet của một nhân vật (gọi sau khi nạp gói pháp sư)
+export function addSheet(id, meta, src){
+  SHEETS[id] = {...meta, src, rows:Math.max(...Object.values(meta.anims).map(a => a.row)) + 1};
 }
 export const sheetOf = id => SHEETS[id];
 

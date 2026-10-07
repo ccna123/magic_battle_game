@@ -1,0 +1,361 @@
+{
+  "id": "pyro",
+  "element": "fire",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "bolt1",
+      "pose": "release",
+      "type": "bolt",
+      "level": 1,
+      "row": 0,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+        "flight": [
+          0,
+          3
+        ],
+        "impact": [
+          4,
+          7
+        ]
+      },
+      "hitFrame": 4
+    },
+    {
+      "key": "bolt2",
+      "pose": "release",
+      "type": "bolt",
+      "level": 2,
+      "row": 1,
+      "frames": 8,
+      "mode": "bounce",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "path": "bounce",
+      "hops": 2.5,
+      "hitFrame": 4,
+      "segments": {
+        "flight": [
+          0,
+          3
+        ],
+        "impact": [
+          4,
+          7
+        ]
+      }
+    },
+    {
+      "key": "bolt3",
+      "pose": "release",
+      "type": "bolt",
+      "level": 3,
+      "row": 2,
+      "frames": 8,
+      "mode": "swoop",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "path": "swoop",
+      "arc": 110,
+      "hitFrame": 4,
+      "segments": {
+        "flight": [
+          0,
+          3
+        ],
+        "impact": [
+          4,
+          7
+        ]
+      }
+    },
+    {
+      "key": "sky1",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 1,
+      "row": 3,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+        "charge": [
+          0,
+          1
+        ],
+        "strike": [
+          2,
+          4
+        ],
+        "fade": [
+          5,
+          7
+        ]
+      },
+      "hitFrame": 2,
+      "skyMode": "fall",
+      "landFrame": 2,
+      "top": 115,
+      "band": 41,
+      "dir": 0.25
+    },
+    {
+      "key": "sky2",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 2,
+      "row": 4,
+      "frames": 8,
+      "mode": "barrage",
+      "kit": true,
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "count": 3,
+      "spreadX": [
+        -44,
+        0,
+        40
+      ],
+      "interval": 0.16,
+      "hitFrame": 2,
+      "segments": {
+        "charge": [
+          0,
+          1
+        ],
+        "strike": [
+          2,
+          4
+        ],
+        "fade": [
+          5,
+          7
+        ]
+      },
+      "skyMode": "fall",
+      "landFrame": 3,
+      "top": 95,
+      "band": 63,
+      "dir": 0.7
+    },
+    {
+      "key": "sky3",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 3,
+      "row": 5,
+      "frames": 8,
+      "mode": "sun",
+      "kit": true,
+      "fps": 12,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 2,
+      "shake": 10,
+      "segments": {
+        "charge": [
+          0,
+          1
+        ],
+        "strike": [
+          2,
+          4
+        ],
+        "fade": [
+          5,
+          7
+        ]
+      },
+      "skyMode": "fall",
+      "landFrame": 3,
+      "top": 82,
+      "band": 73,
+      "dir": 0.7
+    },
+    {
+      "key": "ground1",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 1,
+      "row": 6,
+      "frames": 8,
+      "mode": "mine1",
+      "kit": true,
+      "fps": 6,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 5,
+      "segments": {
+        "arm": [
+          0,
+          4
+        ],
+        "blast": [
+          5,
+          7
+        ]
+      }
+    },
+    {
+      "key": "ground2",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 2,
+      "row": 7,
+      "frames": 8,
+      "mode": "lava",
+      "kit": true,
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+        2,
+        4,
+        6
+      ],
+      "segments": {
+        "spread": [
+          0,
+          1
+        ],
+        "swirl": [
+          2,
+          5
+        ],
+        "dry": [
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "key": "ground3",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 3,
+      "row": 8,
+      "frames": 8,
+      "mode": "volcano",
+      "kit": true,
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 3,
+      "knockUp": 60,
+      "shake": 8,
+      "segments": {
+        "warn": [
+          0,
+          1
+        ],
+        "erupt": [
+          2,
+          5
+        ],
+        "crumble": [
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "key": "spread1",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 1,
+      "row": 9,
+      "frames": 8,
+      "mode": "empower",
+      "kit": true,
+      "fps": 10,
+      "anchor": "center",
+      "at": "caster",
+      "buffFrame": 3,
+      "segments": {
+        "form": [
+          0,
+          2
+        ],
+        "hold": [
+          3,
+          5
+        ],
+        "fade": [
+          6,
+          7
+        ]
+      }
+    },
+    {
+      "key": "spread2",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 2,
+      "row": 10,
+      "frames": 8,
+      "mode": "wave",
+      "kit": true,
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "caster_front",
+      "travel": true,
+      "hitFrame": 4,
+      "segments": {
+        "roll": [
+          0,
+          3
+        ],
+        "crash": [
+          4,
+          7
+        ]
+      }
+    },
+    {
+      "key": "spread3",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 3,
+      "row": 11,
+      "frames": 8,
+      "mode": "cage",
+      "kit": true,
+      "fps": 6,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+        2,
+        4,
+        6
+      ],
+      "freeze": true,
+      "segments": {
+        "rise": [
+          0,
+          1
+        ],
+        "burn": [
+          2,
+          5
+        ],
+        "fade": [
+          6,
+          7
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,324 @@
+{
+  "id": "beastmaster",
+  "element": "beast",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "bolt1",
+      "pose": "release",
+      "type": "bolt",
+      "level": 1,
+      "row": 0,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "bolt2",
+      "pose": "release",
+      "type": "bolt",
+      "level": 2,
+      "row": 1,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "bolt3",
+      "pose": "release",
+      "type": "bolt",
+      "level": 3,
+      "row": 2,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "sky1",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 1,
+      "row": 3,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "sky2",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 2,
+      "row": 4,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "sky3",
+      "pose": "release_sky",
+      "type": "sky",
+      "level": 3,
+      "row": 5,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "ground1",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 1,
+      "row": 6,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "ground2",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 2,
+      "row": 7,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "ground3",
+      "pose": "release_ground",
+      "type": "ground",
+      "level": 3,
+      "row": 8,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "spread1",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 1,
+      "row": 9,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "spread2",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 2,
+      "row": 10,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    },
+    {
+      "key": "spread3",
+      "pose": "release_spread",
+      "type": "spread",
+      "level": 3,
+      "row": 11,
+      "frames": 8,
+      "fps": 12,
+      "anchor": "bottom",
+      "segments": {
+        "open": [
+          0,
+          2
+        ],
+        "pillar": [
+          3,
+          5
+        ],
+        "close": [
+          6,
+          7
+        ]
+      },
+      "summon": true,
+      "spawnFrame": 3
+    }
+  ]
+}

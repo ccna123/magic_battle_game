@@ -1,47 +1,48 @@
 import './base.css';
 import './duel.css';
 import { $, EL } from './config.js';
-import { applyArt } from './art.js';
-import { frameStyle, loadSheets, makeAnimator, play, sheetOf, tick } from './anim.js';
+import { addSheet, frameStyle, makeAnimator, play, sheetOf, tick } from './anim.js';
 import { FX } from '../fx/three-fx.js';
-import { BOOKS, DIFF, DUEL_DECKS, DUEL_WEATHER, RULES as R, SPELLS } from './data.js';
+import { DIFF, DUEL_WEATHER, RULES as R } from './data.js';
+import { MAGES, loadMages, spellIcon } from './mages.js';
+import { BASE, FW, SKY_PRE, fxAdd, fxClear, fxDraw, fxUpdate } from './spellfx.js';
 
 /* ---------- Đấu Trường Phép Thuật: đấu phép thời gian thực ----------
    Lối chơi kiểu Asuka: 4 lá xoay vòng từ sách phép, ma lực hồi liên tục, mỗi phép có thời gian niệm mà đối thủ nhìn thấy.
-   Hiển thị kiểu game đối kháng: hai đấu sĩ trên sân khấu ngang, HUD đối xứng, phép có hình theo hệ và vệt hạt. */
+   Nhân vật và phép lấy từ gói pháp sư (public/mage): niệm → tư thế theo loại phép → phép hiện ra ở khung 2 của tư thế → trúng đích theo khung của phép. */
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const pick = a => a[Math.random() * a.length | 0];
 
-// Sổ phép chung: phép bài (id lá) và phép sách ('chimera.QQE')
-const SP = {};
-for (const [id, s] of Object.entries(SPELLS))
-  SP[id] = {...s, id, type:s.self ? (s.shield || s.mirror ? 'counter' : 'support') : s.interrupt ? 'counter' : 'atk'};
-for (const [bk, b] of Object.entries(BOOKS)) for (const [key, s] of Object.entries(b.spells)) SP[`${bk}.${key}`] = {...s, id:`${bk}.${key}`};
-// 6 bộ: 2 trường phái gốc + 4 sách theo linh thú (mỗi phép 2 bản, phép từ 5 ma lực 1 bản)
-const DECKS = {...DUEL_DECKS};
-for (const [bk, b] of Object.entries(BOOKS))
-  DECKS[bk] = {name:b.name, portrait:b.portrait, hero:b.hero, tip:b.desc, list:Object.fromEntries(Object.entries(b.spells).map(([k, s]) => [`${bk}.${k}`, s.cost >= 5 ? 1 : 2]))};
+// Sổ phép và các "sách" (mỗi pháp sư là một sách 12 phép: cấp 1–2 có 2 bản, cấp 3 có 1 bản). Điền sau khi nạp gói pháp sư.
+const SP = {}, DECKS = {};
+function buildDecks(){
+  for (const [id, M] of Object.entries(MAGES)) {
+    for (const sp of Object.values(M.spells)) SP[sp.id] = sp;
+    DECKS[id] = {name:M.name, tip:M.tip, list:Object.fromEntries(Object.values(M.spells).map(sp => [sp.id, sp.level >= 3 ? 1 : 2]))};
+    addSheet(id, M.anim, M.sheetSrc);
+  }
+}
 const TYPE = {atk:'Tấn công', counter:'Phản chú', support:'Hỗ trợ'};
+const KIND = {bolt:'Bắn thẳng', sky:'Giáng từ trời', ground:'Dưới đất', spread:'Dang tay'};
 const COL = {water:[.4,.7,1], storm:[1,.95,.4], fire:[1,.5,.1], ice:[.7,.9,1], earth:[.75,.55,.3], light:[1,.95,.6], dark:[.6,.35,.95], mind:[.95,.45,.8]};
-const IMPACT = {fire:'fire', storm:'bolt', ice:'petrify', earth:'shatter'};
-const isDef = sp => !!(sp.shield || sp.mirror || sp.evade || sp.nullify || sp.barrier);
-const isHeal = sp => !!(sp.heal || sp.regen || sp.rebirth);
+const isDef = sp => !!(sp.barrier || sp.wall || sp.guard);
+const isHeal = sp => !!(sp.heal || sp.drainHp);
+const total = sp => (sp.dmg || 0) * (sp.hits || 1);
+const POSE_DELAY = 2 / 14;                               // phép hiện ra ở khung 2 của tư thế phóng phép
 
 let S = null;
-let cfg = {me:'chimera', opp:'random', diff:'normal', loadout:{}};
+let cfg = {me:'pyro', opp:'random', diff:'normal', loadout:{}};
 try { Object.assign(cfg, JSON.parse(localStorage.getItem('dp-duel') || '{}')); } catch (e) {}
 if (!cfg.loadout || typeof cfg.loadout !== 'object') cfg.loadout = {};
-if (!DECKS[cfg.me]) cfg.me = 'chimera';
-if (cfg.opp !== 'random' && !DECKS[cfg.opp]) cfg.opp = 'random';
+function fixCfg(){
+  if (!DECKS[cfg.me]) cfg.me = 'pyro';
+  if (cfg.opp !== 'random' && !DECKS[cfg.opp]) cfg.opp = 'random';
+}
 
 /* ---------- Phép mang vào trận: chọn 5–8 phép trong sách ---------- */
 const poolOf = deck => Object.keys(DECKS[deck].list);
-function defaultLoadout(deck){
-  // Mặc định: cả sách; sách nhiều hơn 8 phép thì bớt phép hỗ trợ ở cuối
-  const pool = poolOf(deck), drop = new Set();
-  for (const id of [...pool].reverse()) if (pool.length - drop.size > R.LOADOUT_MAX && SP[id].type === 'support') drop.add(id);
-  return pool.filter(id => !drop.has(id)).slice(0, R.LOADOUT_MAX);
-}
+// Mặc định: các phép cấp 1–2 (8 phép), phép cấp 3 để người chơi tự đổi vào
+const defaultLoadout = deck => poolOf(deck).filter(id => SP[id].level <= 2).slice(0, R.LOADOUT_MAX);
 function loadoutOf(deck){
   const pool = poolOf(deck), l = (cfg.loadout[deck] || []).filter(id => pool.includes(id));
   return l.length >= Math.min(R.LOADOUT_MIN, pool.length) && l.length <= R.LOADOUT_MAX ? l : defaultLoadout(deck);
@@ -50,23 +51,23 @@ const aiLoadout = deck => shuffle(poolOf(deck)).slice(0, R.LOADOUT_MAX);
 
 /* ---------- Tạo trận ---------- */
 function mkSide(i, deck, chosen){
-  const D = DECKS[deck], s = {i, deck, name:i ? 'Máy' : 'Bạn', label:D.name, portrait:D.portrait, hp:R.HP, mana:R.MANA_START, regen:0, hpAcc:0,
-    cast:null, next:null, drawing:null, pick:null, st:{}, shield:0, mirror:0, evade:0, barrier:null, pets:[], lastCast:-9, hand:[], queue:[]};
+  const D = DECKS[deck], s = {i, deck, name:i ? 'Máy' : 'Bạn', label:D.name, hp:R.HP, mana:R.MANA_START, regen:0, hpAcc:0,
+    cast:null, next:null, drawing:null, pick:null, st:{}, shield:0, mirror:0, evade:0, barrier:null, wall:null, pets:[], lastCast:-9, hand:[], queue:[]};
   for (const id of chosen) for (let k = 0; k < D.list[id]; k++) s.queue.push(id);
   shuffle(s.queue); s.hand = s.queue.splice(0, R.HAND);
-  s.anim = sheetOf(D.hero) ? makeAnimator(sheetOf(D.hero)) : null;   // nhân vật có hoạt ảnh của sách
+  s.anim = sheetOf(deck) ? makeAnimator(sheetOf(deck)) : null;
   return s;
 }
 function newDuel(){
   const opp = cfg.opp === 'random' ? pick(Object.keys(DECKS).filter(k => k !== cfg.me)) : cfg.opp;
   S = {t:0, over:false, winner:null, side:[mkSide(0, cfg.me, loadoutOf(cfg.me)), mkSide(1, opp, aiLoadout(opp))], proj:[], pending:[], clash:null, stop:0, intro:R.INTRO,
     weather:'clear', wNext:R.WEATHER_EVERY, frenzy:false, aiNext:1.2, seen:new Set(), diff:DIFF[cfg.diff]};
-  renderStatic(); renderHand();
+  fxClear(); renderStatic(); renderHand();
   banner('Sẵn sàng…', 'var(--ink)');
 }
 
 /* ---------- Niệm phép ---------- */
-const castTime = (s, sp) => sp.cast * (s.st.frozen ? 2 : 1) * (s.st.slow ? 2 : 1) * (s.st.haste ? .5 : 1);
+const castTime = (s, sp) => sp.cast * (s.st.frozen ? 2 : 1) * (s.st.slow ? 1 + s.st.slow.f : 1) * (s.st.haste ? .6 : 1);
 function canBegin(s, id){
   const sp = SP[id];
   return !!sp && active(s) && !s.cast && s.mana >= sp.cost;
@@ -115,47 +116,94 @@ function castHand(s, hi){
 }
 function finishCast(s){
   const c = s.cast; s.cast = null;
-  const sp = SP[c.id], bonus = 0;
-  play(s.anim, castAnim(sp));
-  if (sp.self) applySelf(s, sp, bonus);
-  else {
-    launch(s, sp, bonus, true);
-    if (sp.volley) for (let k = 1; k < sp.volley.n; k++) S.pending.push({at:S.t + k * sp.volley.gap, s, sp, bonus});
-  }
+  const sp = SP[c.id];
+  play(s.anim, sp.pose || 'buff');
+  // Hoả Thân: các phép sát thương tiếp theo mạnh hơn
+  let mul = 1;
+  if (sp.dmg && s.st.empower) { mul = s.st.empower.mul; if (--s.st.empower.n <= 0) delete s.st.empower; }
+  S.pending.push({at:S.t + POSE_DELAY, fn:() => release(s, sp, mul)});
 }
-// Động tác khi phóng phép: tấn công lớn → tụ lực, khiên/rào chắn/xoá phép → hào quang, gương/né → thủ thế, gọi linh thú → triệu hồi, còn lại → toả sáng
-const castAnim = sp => !sp.self ? (sp.cost >= 5 ? 'power' : 'release')
-  : sp.shield || sp.barrier || sp.nullify ? 'aura' : sp.mirror || sp.evade ? 'guard' : sp.pet ? 'summon' : 'buff';
-function launch(s, sp, bonus, fromCast, fromPet){
-  const o = S.side[1 - s.i];
-  const p = {from:s.i, to:o.i, sp, bonus, k:0, travel:sp.travel || R.TRAVEL, reflected:false, pet:!!fromPet,
-    clashable:fromCast && sp.dmg > 0 && !sp.noClash && !sp.volley, small:!fromCast || !!sp.volley};
-  // Đấu Đũa: hai phép sát thương bay ngược chiều nhau thì va nhau giữa sân
-  const rival = p.clashable && S.proj.find(q => q.from === o.i && q.clashable && !q.reflected);
+// Một nhịp sát thương: đi theo hệ thống "phép đang bay" để khiên / tường / Đấu Đũa xử lý chung
+function hitP(s, sp, delay, o = {}){
+  const p = {from:s.i, to:1 - s.i, sp, k:0, travel:Math.max(.05, delay), mul:1, ...o};
   S.proj.push(p);
-  if (rival && !S.clash) { S.clash = {mine:s.i === 0 ? p : rival, theirs:s.i === 0 ? rival : p, t:0, press:[0, 0], aiAcc:0, push:.5}; banner('Đấu Đũa!', 'var(--brass)'); }
+  return p;
 }
-function applySelf(s, sp, bonus){
-  const o = S.side[1 - s.i];
-  if (sp.shield) { s.shield = S.t + sp.shield + bonus; float(s.i, 'Khiên!', '#9fd0ff'); FX.anim(at(s.i), 'shield', {to:5, fps:14}); }
-  if (sp.mirror) { s.mirror = S.t + sp.mirror + bonus; float(s.i, 'Gương!', '#d8f0ff'); FX.anim(at(s.i), 'mirror', {to:4, fps:12}); }
-  if (sp.evade) { s.evade = S.t + sp.evade + bonus * .5; float(s.i, 'Né!', '#cfe8ff'); }
-  if (sp.barrier) { s.barrier = {hp:sp.barrier.hp + bonus * 2, until:S.t + sp.barrier.dur}; float(s.i, `Rào chắn ${s.barrier.hp}`, '#d9c08a'); FX.anim(at(s.i), 'shield', {to:5, fps:14}); }
-  if (sp.cleanse) { for (const k of ['wet', 'burn', 'frozen', 'stun', 'curse', 'weak', 'slow']) delete s.st[k]; float(s.i, 'Thanh tẩy', 'var(--good)'); }
-  if (sp.heal) { heal(s, sp.heal + bonus * 2); FX.anim(at(s.i), 'heal', {from:2, fps:12}); }
-  if (sp.regen) { s.st.regen = {rate:sp.regen.rate, until:S.t + sp.regen.dur + bonus}; FX.anim(at(s.i), 'heal', {from:2, fps:12}); }
-  if (sp.haste) { s.st.haste = S.t + sp.haste + bonus; float(s.i, 'Tăng tốc!', '#ffe9a0'); FX.rise(at(s.i), [1,.9,.5], 50); }
-  if (sp.rebirth) { s.st.rebirth = S.t + sp.rebirth + bonus; float(s.i, 'Lửa tái sinh', '#ffb36b'); FX.anim(at(s.i), 'fire', {from:1, to:5}); }
-  if (sp.manaGain) s.mana = Math.min(R.MANA_MAX, s.mana + sp.manaGain);
-  if (sp.weather) setWeather(sp.weather);
-  if (sp.nullify) {
-    const gone = S.proj.filter(p => p.to === s.i);
-    S.proj = S.proj.filter(p => p.to !== s.i); S.pending = S.pending.filter(q => q.s === s);
-    if (gone.length) float(s.i, `Xoá ${gone.length} phép!`, '#cfe8ff', true);
-    if (o.cast) { interrupt(o); }
-    FX.anim(at(s.i), 'patronus', {to:5, size:260, fps:13}); FX.shake(6);
+// Khoảng cách giữa hai đấu sĩ tính theo px gốc của sheet (để ước thời gian đạn bay)
+function gapRef(){ const G = geo(); return G ? Math.abs(G[1].x - G[0].x) / G[0].k : 600; }
+// Phép xuất hiện: dựng hình theo sheet phép và lên lịch các nhịp sát thương theo khung gây sát thương của phép
+function release(s, sp, mul){
+  if (S.over) return;
+  const o = S.side[1 - s.i], m = sp.meta || {}, fps = m.fps || 14, base = {from:s.i, to:o.i, sp, mul}, gap = gapRef();
+  if (sp.self) applySelf(s, sp);
+  // Phép tự thân: hình quanh người niệm (tường đá đứng trước mặt, giữ tới khi hết hạn)
+  if (sp.self) {
+    if (m.mode === 'wall') fxAdd({...base, i:s.i, dx:108, fps:5, hold:{from:3, to:5, until:() => s.wall ? s.wall.until : 0}});
+    else fxAdd({...base, i:s.i, center:true, cy:92, fps});
+    return;
   }
-  if (sp.pet) { s.pets.push({...sp.pet, until:S.t + sp.pet.dur + bonus, next:S.t + .4}); float(s.i, `${sp.pet.name} xuất hiện!`, '#ffd28a'); FX.anim(at(s.i), 'summon', {fps:16}); }
+  const last = n => (p, j) => { p.last = j === n - 1; return p; };
+  // Triệu thú: vòng triệu hồi, quái trồi ra rồi lao / bổ nhào / phun lên trúng mục tiêu
+  if (sp.summon) {
+    const atTarget = sp.mech === 'dive' || sp.mech === 'erupt';
+    fxAdd({...base, i:atTarget ? o.i : s.i, dx:atTarget ? 0 : 100, fps:12});
+    const T = {charge:.7 + gap / (380 + 160 * sp.level), dive:.85, erupt:.5, guard:1.2}[sp.mech] || .8;
+    const p = hitP(s, sp, T, {mul, last:!sp.extra, warn:true});
+    fxAdd({kind:'mon', ...base, p, delay:.25});
+    for (let j = 1; j <= (sp.extra || 0); j++) hitP(s, sp, T + .3 * j, {mul:mul * .4, last:j === sp.extra});
+    return;
+  }
+  // Tia nối tay → địch (tia băng, xích sét)
+  if (m.mode === 'beam' || m.mode === 'chain') {
+    fxAdd({...base, beam:true, fps});
+    const fr = m.tickFrames || [m.hitFrame ?? 1];
+    fr.forEach((f, j) => hitP(s, sp, f / fps, {mul, last:j === fr.length - 1}));
+    return;
+  }
+  // Đạn bay (kể cả loạt đạn quạt / liên thanh và đường bay nảy / vòng / zíc zắc); sóng lửa lăn sát đất
+  if (sp.kind === 'bolt' || m.mode === 'wave') {
+    const n = m.count || 1, speed = m.mode === 'wave' ? 340 : m.path ? 470 : 620, travel = Math.max(.35, gap / speed);
+    for (let j = 0; j < n; j++) S.pending.push({at:S.t + j * (m.interval || 0), fn:() => {
+      const p = hitP(s, sp, travel, {mul, bolt:m.mode !== 'wave', last:j === n - 1, clashable:n === 1 && sp.hits === 1 && m.mode !== 'wave'});
+      p.ent = fxAdd({kind:'bolt', ...base, p, fps, dy:(m.spreadY || [])[j] || 0, phase:'fly', ground:m.mode === 'wave'});
+      const rival = p.clashable && S.proj.find(q => q.from === o.i && q.clashable && !q.reflected && !q.gone);
+      if (rival && !S.clash) { S.clash = {mine:s.i === 0 ? p : rival, theirs:s.i === 0 ? rival : p, t:0, press:[0, 0], aiAcc:0, push:.5}; banner('Đấu Đũa!', 'var(--brass)'); }
+    }});
+    return;
+  }
+  // Phép giáng / dưới đất / dang tay: đặt ở chỗ địch (hoặc trước mặt / quanh người niệm), sát thương ở khung gây sát thương
+  const fall = sp.kind === 'sky' && m.skyMode === 'fall', pre = fall ? SKY_PRE : 0;
+  const hitAt = fall ? (m.landFrame || 2) : (m.hitFrame ?? (sp.kind === 'sky' ? 2 : 3));
+  const ent = {...base, i:o.i, fps, sky:sp.kind === 'sky' ? m.skyMode : null};
+  if (m.at === 'caster_front') Object.assign(ent, {i:s.i, dx:m.zapFrames ? 96 : 100});
+  else if (m.at === 'caster') Object.assign(ent, {i:s.i, center:true, cy:92});
+  else if (m.mode === 'drain' || m.mode === 'timefreeze') Object.assign(ent, {center:true, cy:100, tint:m.mode === 'timefreeze'});
+  if (m.mode === 'barrage' || m.mode === 'barrage9' || (m.count && sp.kind === 'sky')) {
+    const xs = m.spreadX || [-40, 0, 40];
+    xs.forEach((dx, j) => { fxAdd({...ent, ddx:dx, delay:j * (m.interval || .15)}); hitP(s, sp, j * (m.interval || .15) + pre + hitAt / fps, {mul, last:j === xs.length - 1, warn:true}); });
+    return;
+  }
+  if (m.at === 'caster_to_target' && m.count) {                 // hàng gai / mạch điện mọc nối tiếp từ chân người niệm tới địch
+    const n = m.count, x0 = 64, x1 = gap - 6;
+    for (let j = 0; j < n; j++) fxAdd({...ent, i:s.i, dx:x0 + (x1 - x0) * j / (n - 1), delay:j * (m.interval || .07)});
+    hitP(s, sp, (n - 1) * (m.interval || .07) + hitAt / fps, {mul, last:true});
+    return;
+  }
+  fxAdd(ent);
+  const ticks = m.tickFrames || m.zapFrames;
+  if (ticks) ticks.forEach((f, j) => hitP(s, sp, f / fps, {mul, last:j === ticks.length - 1, warn:true,
+    zap:m.zapFrames ? {from:s.i, dx:96, top:m.zapTop || 100} : m.mode === 'tempest' ? {sky:true} : null}));
+  else hitP(s, sp, pre + hitAt / fps, {mul, last:true, warn:true});
+  if (m.shake) S.pending.push({at:S.t + pre + hitAt / fps, fn:() => FX.shake(m.shake)});
+}
+function applySelf(s, sp){
+  if (sp.barrier) { s.barrier = {hp:sp.barrier.hp, until:S.t + sp.barrier.dur}; float(s.i, `Giáp ${s.barrier.hp}`, '#9fe8ff'); }
+  if (sp.wall) { s.wall = {n:sp.wall.n, until:S.t + sp.wall.dur, root:sp.wall.rootOnFall}; float(s.i, sp.wall.n >= 99 ? 'Thành luỹ!' : `Tường đá chặn ${sp.wall.n} đạn`, '#c8f06a'); }
+  if (sp.guard) s.st.guard = {pct:sp.guard.pct, until:S.t + sp.guard.dur};
+  if (sp.cleanse) { for (const k of ['wet', 'burn', 'frozen', 'stun', 'weak', 'slow', 'mark']) delete s.st[k]; float(s.i, 'Giải hiệu ứng', 'var(--good)'); }
+  if (sp.heal) heal(s, sp.heal);
+  if (sp.empower) { s.st.empower = {...sp.empower}; float(s.i, `${sp.empower.n} phép tới +${Math.round((sp.empower.mul - 1) * 100)}%`, '#ffb36b'); }
+  if (sp.haste) { s.st.haste = S.t + sp.haste; float(s.i, 'Niệm nhanh!', '#ffe9a0'); }
 }
 function interrupt(t){
   banner('Ngắt phép!', 'var(--bad)'); float(t.i, SP[t.cast.id].name + ' bị huỷ', 'var(--bad)');
@@ -164,53 +212,67 @@ function interrupt(t){
 
 /* ---------- Trúng đích ---------- */
 function land(p){
-  const sp = p.sp, t = S.side[p.to], c = S.side[p.from];
-  if (t.evade > S.t) { float(t.i, 'Trượt!', '#cfe8ff'); return; }
-  if (sp.dmg > 0 && t.mirror > S.t && !p.reflected) {
-    t.mirror = 0; banner('Phản!', '#d8f0ff'); FX.anim(at(t.i), 'mirror', {to:4, fps:14});
-    S.proj.push({...p, from:p.to, to:p.from, k:0, reflected:true, clashable:false}); return;
+  const sp = p.sp, t = S.side[p.to], c = S.side[p.from], st = t.st;
+  if (t.evade > S.t) { p.gone = true; float(t.i, 'Trượt!', '#cfe8ff'); return; }
+  if (p.bolt && t.wall && t.wall.until > S.t && t.wall.n > 0 && !sp.pierce) {
+    p.gone = true; t.wall.n--; float(t.i, 'Tường chặn!', '#c8f06a'); FX.burst(at(t.i, .6), {color:[.8,.95,.5], count:40, speed:160});
+    if (t.wall.n <= 0) t.wall.until = S.t;
+    return;
   }
-  if (t.shield > S.t) { t.shield = 0; float(t.i, 'Chặn!', '#9fd0ff', true); FX.anim(at(t.i), 'shield', {from:3, fps:14}); FX.burst(at(t.i), {color:[.6,.8,1], count:70, speed:180}); return; }
-  const st = t.st;
+  if (p.bolt && sp.dmg > 0 && t.mirror > S.t && !p.reflected) {
+    t.mirror = 0; banner('Phản!', '#d8f0ff');
+    const q = {...p, from:p.to, to:p.from, k:0, reflected:true, clashable:false}; if (p.ent) p.ent.p = q;
+    S.proj.push(q); return;
+  }
+  p.gone = true;
+  if (t.shield > S.t && !sp.pierce) { t.shield = 0; float(t.i, 'Chặn!', '#9fd0ff', true); return; }
+  p.hitTarget = true;
   let n = 0, burn = sp.burn;
   if (sp.dmg) {
-    n = sp.dmg + p.bonus + (DUEL_WEATHER[S.weather].mod[sp.el] || 0);
-    if (c.st.weak) n -= 2;
-    if (sp.el === 'storm' && st.wet) { n += 3; delete st.wet; react('Giật lan', EL.storm.c); }
-    else if (sp.el === 'fire' && st.wet) { n -= 2; delete st.wet; burn = false; react('Dập lửa', EL.water.c); }
-    else if (sp.el === 'fire' && st.frozen) { n *= 2; delete st.frozen; react('Hơi nước', '#f2f2f2'); }
-    else if (sp.el === 'ice' && st.burn) { n += 1; delete st.burn; react('Tan chảy', EL.ice.c); }
-    if (st.curse) n *= 1.5;
-    n = Math.max(0, Math.round(n));
+    let mul = (p.mul || 1) * (1 + (DUEL_WEATHER[S.weather].mod[sp.el] || 0));
+    if (c.st.weak) mul *= .7;                                          // người niệm bị Mù: phép yếu đi
+    if (sp.el === 'storm' && st.wet) { mul *= 1.3; delete st.wet; react('Giật lan', EL.storm.c); }
+    else if (sp.el === 'fire' && st.wet) { mul *= .7; delete st.wet; burn = 0; react('Dập lửa', EL.water.c); }
+    else if (sp.el === 'fire' && st.frozen) { mul *= 1.5; delete st.frozen; react('Hơi nước', '#f2f2f2'); }
+    else if (sp.el === 'ice' && st.burn) { mul *= 1.2; delete st.burn; react('Tan chảy', EL.ice.c); }
+    if (st.mark) mul *= 1.1;                                           // bị đánh dấu con mồi
+    if (st.guard) mul *= 1 - st.guard.pct;                             // bong bóng hộ thân
+    n = Math.max(1, Math.round(sp.dmg * mul));
   }
   const dealt = n > 0 ? damage(t, n) : 0;
-  if (dealt && sp.drain) { const h = Math.round(dealt * sp.drain); if (h) heal(c, h); }
+  if (p.last && sp.drainHp && dealt) heal(c, sp.drainHp);
+  if (p.last && sp.selfHeal) heal(c, sp.selfHeal);
+  if (p.last && sp.armorOnHit) c.barrier = {hp:(c.barrier ? c.barrier.hp : 0) + sp.armorOnHit, until:S.t + 5};
   if (S.over) return;
   if (sp.wet) st.wet = S.t + R.WET;
-  if (burn) st.burn = {until:S.t + R.BURN, next:S.t + R.BURN_TICK};
-  if (sp.freeze) { const deep = !!st.wet; delete st.wet; st.frozen = Math.max(st.frozen || 0, S.t + sp.freeze + (deep ? 2 : 0)); if (deep) react('Đóng băng sâu', EL.ice.c); }
-  if (sp.interrupt && t.cast) { interrupt(t); st.stun = Math.max(st.stun || 0, S.t + R.STUN); }
+  if (burn) st.burn = {until:Math.max(st.burn ? st.burn.until : 0, S.t + burn), next:st.burn ? st.burn.next : S.t + R.BURN_TICK};
+  if (sp.freeze) st.frozen = Math.max(st.frozen || 0, S.t + sp.freeze);
+  if (sp.slow) st.slow = {until:S.t + 3, f:Math.min(.8, Math.max(st.slow ? st.slow.f : 0, sp.slow))};
+  if (sp.root) { st.slow = {until:S.t + sp.root * 2 + 1, f:Math.max(st.slow ? st.slow.f : 0, .4)}; st.root = S.t + sp.root * 2 + 1; }
+  if (sp.launch) { st.stun = Math.max(st.stun || 0, S.t + .35); const f = fighter(t.i); f.classList.remove('launch'); void f.offsetWidth; f.classList.add('launch'); }
   if (sp.stun) st.stun = Math.max(st.stun || 0, S.t + sp.stun);
-  if (sp.manaBurn) { const m = Math.min(t.mana, sp.manaBurn); t.mana -= m; if (m) float(t.i, `−${m} ma lực`, '#9ad2ff'); }
-  if (sp.manaSteal) { const m = Math.min(t.mana, sp.manaSteal); t.mana -= m; c.mana = Math.min(R.MANA_MAX, c.mana + m); if (m) float(t.i, `Bị hút ${m} ma lực`, '#9ad2ff'); }
-  if (sp.curse) { st.curse = S.t + sp.curse; float(t.i, 'Bị nguyền!', '#c58cf0'); }
-  if (sp.weaken) st.weak = S.t + sp.weaken;
-  if (sp.slow) st.slow = S.t + sp.slow;
-  const col = COL[sp.el] || [1,1,1];
-  FX.burst(at(t.i), {color:col, count:p.small ? 30 : 90, speed:p.small ? 140 : 230});
-  if (!p.small && IMPACT[sp.el]) FX.anim(at(t.i), IMPACT[sp.el], {fps:16});
-  if (!p.small) FX.ring(at(t.i), col, 90, .45);
+  if (t.cast && (sp.interrupt || sp.stun >= .5)) interrupt(t);
+  if (sp.blind) st.weak = Math.max(st.weak || 0, S.t + sp.blind);
+  if (sp.mark) st.mark = S.t + sp.mark;
+  if (sp.dispel && p.last) {
+    const drop = [['wall', () => t.wall = null], ['barrier', () => t.barrier = null], ['empower', () => delete st.empower], ['haste', () => delete st.haste], ['guard', () => delete st.guard]]
+      .find(([k]) => k === 'wall' || k === 'barrier' ? t[k] : st[k]);
+    if (drop) { drop[1](); float(t.i, 'Bị xoá phép duy trì', '#c58cf0'); }
+  }
+  if (p.zap) fxAdd({kind:'zap', from:p.from, to:p.to, sp, color:EL[sp.el] ? EL[sp.el].c : '#fff',
+    x0:G => p.zap.sky ? G[p.to].x + (Math.random() - .5) * 80 * G[p.to].k : G[p.zap.from].x + p.zap.dx * G[p.zap.from].k * G[p.zap.from].face,
+    y0:G => p.zap.sky ? 0 : G[p.zap.from].g - p.zap.top * G[p.zap.from].k});
+  FX.burst(at(t.i), {color:COL[sp.el] || [1,1,1], count:24, speed:150});
 }
 function damage(t, n){
   if (t.barrier && t.barrier.until > S.t) {
     const a = Math.min(t.barrier.hp, n); t.barrier.hp -= a; n -= a;
-    if (a) float(t.i, `Rào chắn −${a}`, '#d9c08a');
+    if (a) float(t.i, `Giáp −${a}`, '#9fe8ff');
     if (t.barrier.hp <= 0) t.barrier = null;
   }
   if (n <= 0) return 0;
-  t.hp = Math.max(0, t.hp - n); float(t.i, '−' + n, 'var(--bad)', n >= 5);
+  t.hp = Math.max(0, t.hp - n); float(t.i, '−' + n, 'var(--bad)', n >= 20);
   hitFx(t.i, n);
-  if (t.hp <= 0 && t.st.rebirth > S.t) { t.hp = 8; delete t.st.rebirth; banner('Tái sinh!', '#ffb36b'); FX.anim(at(t.i), 'fire', {from:1, to:6}); return n; }
   if (t.hp <= 0 && !S.over) {
     S.over = true; S.winner = 1 - t.i; S.stop = 0;
     fighter(t.i).classList.add('ko'); banner('K.O.', 'var(--bad)', true); FX.shake(14);
@@ -240,11 +302,12 @@ function step(dt){
   if ((S.wNext -= dt) <= 0) setWeather(pick(Object.keys(DUEL_WEATHER).filter(k => k !== S.weather)));
   for (const s of S.side) {
     const st = s.st;
-    for (const k of ['wet', 'frozen', 'stun', 'curse', 'weak', 'slow', 'haste', 'rebirth']) if (st[k] && st[k] <= S.t) delete st[k];
-    if (st.regen && st.regen.until <= S.t) delete st.regen;
+    for (const k of ['wet', 'frozen', 'stun', 'weak', 'haste', 'mark', 'root']) if (st[k] && st[k] <= S.t) delete st[k];
+    for (const k of ['slow', 'guard']) if (st[k] && st[k].until <= S.t) delete st[k];
     if (s.barrier && s.barrier.until <= S.t) s.barrier = null;
-    if (st.regen) { s.hpAcc += dt * st.regen.rate; if (s.hpAcc >= 1) { const h = Math.floor(s.hpAcc); s.hpAcc -= h; s.hp = Math.min(R.HP, s.hp + h); } }
-    if (st.burn) { if (S.t >= st.burn.next) { st.burn.next += R.BURN_TICK; damage(s, 1); } if (st.burn && S.t >= st.burn.until) delete st.burn; }
+    // Tường đá hết hạn: Thành Luỹ Cổ Thụ sụp xuống làm đối thủ bị Trói chân
+    if (s.wall && s.wall.until <= S.t) { const o = S.side[1 - s.i]; if (s.wall.root) { o.st.slow = {until:S.t + 3, f:.4}; o.st.root = S.t + 3; } s.wall = null; }
+    if (st.burn) { if (S.t >= st.burn.next) { st.burn.next += R.BURN_TICK; damage(s, R.BURN_DMG); } if (st.burn && S.t >= st.burn.until) delete st.burn; }
     if (!st.frozen && s.mana < R.MANA_MAX) {
       s.regen += dt * (S.frenzy ? 2 : 1);
       while (s.regen >= R.REGEN) { s.regen -= R.REGEN; s.mana = Math.min(R.MANA_MAX, s.mana + 1); }
@@ -257,14 +320,12 @@ function step(dt){
     }
     // Phép đã xếp hàng: niệm ngay khi rảnh và đủ ma lực; ô đó bị thay lá thì bỏ
     if (s.next != null) { if (!s.hand[s.next]) s.next = null; else if (!s.cast && canBegin(s, s.hand[s.next])) castHand(s, s.next); }
-    for (const pet of s.pets) if (S.t >= pet.next) { pet.next += pet.every; launch(s, pet, 0, false, true); }
-    s.pets = s.pets.filter(pet => pet.until > S.t);
     if (S.over) return;
   }
-  for (const q of [...S.pending]) if (S.t >= q.at) { S.pending.splice(S.pending.indexOf(q), 1); launch(q.s, q.sp, q.bonus, false); }
+  for (const q of [...S.pending]) if (S.t >= q.at) { S.pending.splice(S.pending.indexOf(q), 1); q.fn(); if (S.over) return; }
   for (const p of [...S.proj]) {
     p.k += dt / p.travel;
-    if (p.k >= 1) { const i = S.proj.indexOf(p); if (i >= 0) S.proj.splice(i, 1); land(p); if (S.over) return; }
+    if (p.k >= 1 && S.proj.includes(p)) { S.proj.splice(S.proj.indexOf(p), 1); land(p); if (S.over) return; }
   }
   aiThink(dt);
 }
@@ -277,8 +338,8 @@ function stepClash(dt){
   if (C.t < R.CLASH) return;
   const win = C.press[0] === C.press[1] ? (Math.random() < .5 ? 0 : 1) : C.press[0] > C.press[1] ? 0 : 1;
   const w = win === 0 ? C.mine : C.theirs, l = win === 0 ? C.theirs : C.mine;
-  S.proj.splice(S.proj.indexOf(l), 1);
-  w.bonus += 2; w.k = .5; w.clashable = false;      // phép thắng bay tiếp từ giữa sân, mạnh thêm 2
+  S.proj.splice(S.proj.indexOf(l), 1); l.gone = true;
+  w.mul = (w.mul || 1) * 1.3; w.k = .5; w.clashable = false;      // phép thắng bay tiếp từ giữa sân, mạnh thêm 30%
   banner(win === 0 ? 'Bạn thắng Đấu Đũa!' : 'Máy thắng Đấu Đũa!', win === 0 ? 'var(--good)' : 'var(--bad)');
   FX.shake(8); S.clash = null;
 }
@@ -295,19 +356,19 @@ function aiThink(dt){
   const sp = id => SP[id];
   // 1. Phép của bạn đang bay tới: phòng thủ nếu kịp (chỉ "thấy" sau độ trễ phản xạ)
   for (const p of S.proj) {
-    if (p.to !== 1 || !p.sp.dmg || p.small || S.seen.has(p)) continue;
+    if (p.to !== 1 || !p.sp.dmg || S.seen.has(p)) continue;
     const age = p.k * p.travel, left = (1 - p.k) * p.travel;
     if (age < D.delay) continue;
     S.seen.add(p);
-    if (me.shield > S.t || me.mirror > S.t || me.evade > S.t || Math.random() > D.block) continue;
-    const rank = id => sp(id).mirror ? 2 : sp(id).evade || sp(id).nullify ? 1 : 0;
-    const def = ready.filter(id => isDef(sp(id)) && castTime(me, sp(id)) < left - .03).sort((a, b) => rank(b) - rank(a));
+    if ((me.wall && me.wall.until > S.t) || me.barrier || me.st.guard || Math.random() > D.block) continue;
+    // Tường đá chỉ chặn đạn bay; giáp và bong bóng đỡ được mọi đòn
+    const def = ready.filter(id => isDef(sp(id)) && (p.bolt || !sp(id).wall) && castTime(me, sp(id)) + POSE_DELAY < left - .03);
     if (def.length) { cast(def[0]); return; }
   }
   // 2. Bạn đang niệm phép lớn: ngắt nếu kịp
   const yc = you.cast;
   if (yc && S.t - yc.started >= D.delay && (sp(yc.id).cost >= 3 || yc.dur >= 1)) {
-    const intr = ready.filter(id => (sp(id).interrupt || sp(id).nullify) && castTime(me, sp(id)) + (sp(id).self ? 0 : sp(id).travel || R.TRAVEL) < yc.dur - yc.t - .05);
+    const intr = ready.filter(id => (sp(id).interrupt || sp(id).stun >= .5) && castTime(me, sp(id)) + POSE_DELAY + (sp(id).kind === 'bolt' ? .8 : .3) < yc.dur - yc.t - .05);
     if (intr.length) { cast(intr[0]); return; }
   }
   // Tự rút phép: ô trống mà không còn phép niệm được, hoặc trống từ 2 ô
@@ -317,7 +378,7 @@ function aiThink(dt){
     if (drawOne(me)) return;
   }
   // Tay toàn phép thủ/hỗ trợ không dùng được: thay cả tay để tìm phép tấn công
-  const atkHeld = held.some(id => sp(id).dmg > 0 && !sp(id).interrupt);
+  const atkHeld = held.some(id => sp(id).dmg > 0);
   if (!empties && !atkHeld && me.mana >= R.REFRESH_COST + 2 && Math.random() < .5 && refreshHand(me)) return;
   if (!ready.length && !empties && me.mana >= 7 && Math.random() < .25 && refreshHand(me)) return;
   aiCast(me, you, ready, cast, sp);
@@ -327,15 +388,13 @@ function aiThink(dt){
 function aiCast(me, you, ready, cast, sp){
   if (S.t - me.lastCast < S.diff.gap) return;        // nghỉ giữa 2 phép theo độ khó
   // 3. Máu thấp: hồi
-  if (me.hp <= 12) { const h = ready.find(id => isHeal(sp(id))); if (h) { cast(h); return; } }
+  if (me.hp <= R.HP * .4) { const h = ready.find(id => isHeal(sp(id))); if (h) { cast(h); return; } }
   // 4. Combo phản ứng: đối thủ Ướt → Sét, Đóng băng → Lửa
   const combo = ready.filter(id => sp(id).dmg > 0 && ((you.st.wet && sp(id).el === 'storm') || (you.st.frozen && sp(id).el === 'fire')))
     .sort((a, b) => sp(b).dmg - sp(a).dmg)[0];
   if (combo) { cast(combo); return; }
-  // 5. Hỗ trợ khi dư ma lực: linh thú, tăng tốc, thời tiết, nguyền
-  const sup = ready.filter(id => (sp(id).pet && !me.pets.length) || (sp(id).haste && !me.st.haste) || (sp(id).curse && !you.st.curse)
-    || (sp(id).weather && sp(id).weather !== S.weather) || (sp(id).manaSteal && you.mana >= 3) || (sp(id).regen && me.hp <= 24)
-    || (sp(id).rebirth && me.hp <= 14));
+  // 5. Hỗ trợ: Hoả Thân / Lôi Tốc khi chưa có, hồi máu khi đã mất máu
+  const sup = ready.filter(id => (sp(id).empower && !me.st.empower) || (sp(id).haste && !me.st.haste) || (sp(id).heal && me.hp <= R.HP * .7));
   if (sup.length && (me.mana >= 5 || Math.random() < .5)) { cast(pick(sup)); return; }
   // 6. Mở combo (Ướt / Đóng băng) nếu có phép nối, không thì phép tấn công mạnh nhất (đôi khi nhịn để dồn phép lớn)
   const setup = ready.find(id => !you.st.wet && !you.st.frozen && (sp(id).wet || sp(id).freeze >= 2)
@@ -343,11 +402,11 @@ function aiCast(me, you, ready, cast, sp){
   if (setup) { cast(setup); return; }
   const big = me.hand.find(id => id && sp(id).cost >= 5 && sp(id).dmg);
   if (big && me.mana < sp(big).cost && me.mana >= sp(big).cost - 2 && Math.random() < S.diff.hoard) return;
-  const atk = ready.filter(id => sp(id).dmg > 0 && !sp(id).interrupt)
-    .sort((a, b) => sp(b).dmg * (sp(b).volley ? sp(b).volley.n : 1) - sp(a).dmg * (sp(a).volley ? sp(a).volley.n : 1));
+  const atk = ready.filter(id => sp(id).dmg > 0)
+    .sort((a, b) => total(sp(b)) - total(sp(a)));
   if (atk.length) { cast(atk[0]); return; }
   // Không có phép tấn công: giải phóng ô bằng phép hỗ trợ còn lại (giữ lại 1 phép thủ để đỡ đòn)
-  const spare = ready.filter(id => sp(id).self && !isDef(sp(id)) && !sp(id).weather);
+  const spare = ready.filter(id => sp(id).self && !isDef(sp(id)));
   if (spare.length && me.mana >= 6) cast(spare[0]);
 }
 
@@ -356,8 +415,8 @@ function aiChoose(me, held){
   const o = me.pick.opts, score = id => {
     const p = SP[id];
     if (isDef(p) && !held.some(h => isDef(SP[h]))) return 50;
-    if (isHeal(p) && me.hp <= 14) return 40;
-    return (p.dmg || 0) * (p.volley ? p.volley.n : 1) + (p.pet ? 4 : 0) + (p.interrupt ? 3 : 0);
+    if (p.heal && me.hp <= R.HP * .45) return 40;
+    return total(p) / 2 + (p.interrupt || p.stun >= .5 ? 6 : 0);
   };
   let best = 0; o.forEach((id, k) => { if (score(id) > score(o[best])) best = k; });
   choosePick(me, best);
@@ -389,7 +448,7 @@ function hitFx(i, n){
   if (n >= 5) { S.stop = .09; FX.shake(Math.min(14, n * 1.6)); $('.d-stage').classList.remove('flash'); void $('.d-stage').offsetWidth; $('.d-stage').classList.add('flash'); }
 }
 function hudHTML(s){
-  const pic = s.anim ? `<span class="h-pic sheet" style="${frameStyle(s.anim.m, 'idle')}"></span>` : `<span class="h-pic art art-${s.portrait} k-creature"></span>`;
+  const pic = `<span class="h-pic sheet" style="${frameStyle(s.anim.m, 'idle')}"></span>`;
   return `<div class="h-top">${pic}
       <div class="h-id"><b>${s.name}</b><span class="meta">${s.label}</span></div></div>
     <div class="h-hp"><i class="trail"></i><i class="fill"></i><span class="lp">${s.hp}</span></div>
@@ -399,7 +458,7 @@ function hudHTML(s){
 function fighterHTML(s){
   return `<div class="f-pets"></div><div class="f-spell"></div>
     <div class="f-circle"><i></i><i></i></div><div class="f-bubble"></div>
-    ${s.anim ? `<div class="f-sprite sheet" style="${frameStyle(s.anim.m, 'idle')}"></div>` : `<div class="f-sprite art art-${s.portrait} k-creature"></div>`}<div class="f-shadow"></div>
+    <div class="f-sprite sheet" style="${frameStyle(s.anim.m, 'idle')}"></div><div class="f-shadow"></div>
     <div class="f-cast"><i></i></div>`;
 }
 function renderStatic(){
@@ -410,8 +469,8 @@ const kindCls = sp => sp.type === 'counter' ? 'counter' : sp.type === 'support' 
 function miniCard(id, attrs, key){
   const sp = SP[id];
   return `<button class="dcard card face k-${kindCls(sp)}" ${attrs} title="${sp.name}: ${sp.text}">
-    <span class="cost">${sp.cost}</span><div class="cname">${sp.name}</div><div class="cart art art-${sp.art}"></div>
-    <div class="cstats"><span>${TYPE[sp.type]} · ${sp.cast}s</span></div><span class="dkey">${key}</span><span class="dfill"></span></button>`;
+    <span class="cost">${sp.cost}</span><div class="cname">${sp.name}</div><div class="cart spic" style="${spellIcon(sp)}"></div>
+    <div class="cstats"><span>${sp.dmg ? `${sp.dmg}${sp.hits > 1 ? '×' + sp.hits : ''} st` : TYPE[sp.type]} · ${sp.cast}s</span></div><span class="dkey">${key}</span><span class="dfill"></span></button>`;
 }
 function renderHand(){
   const s = S.side[0];
@@ -436,33 +495,35 @@ function chips(s){
   if (st.burn) c('st-burn', `Cháy ${left(st.burn.until)}`);
   if (st.frozen) c('st-frozen', `Đóng băng ${left(st.frozen)}`);
   if (st.stun) c('st-stun', `Choáng ${left(st.stun)}`);
-  if (st.curse) c('d-cu', `Bị nguyền ${left(st.curse)}`);
-  if (st.weak) c('d-cu', `Chói mắt ${left(st.weak)}`);
-  if (st.slow) c('d-cu', `Chậm ${left(st.slow)}`);
-  if (st.haste) c('d-good', `Tăng tốc ${left(st.haste)}`);
-  if (st.regen) c('d-good', `Hồi máu ${left(st.regen.until)}`);
-  if (st.rebirth) c('d-good', `Tái sinh ${left(st.rebirth)}`);
+  if (st.weak) c('d-cu', `Mù ${left(st.weak)}`);
+  if (st.root) c('d-cu', `Trói chân ${left(st.root)}`);
+  else if (st.slow) c('d-cu', `Chậm ${Math.round(st.slow.f * 100)}% ${left(st.slow.until)}`);
+  if (st.mark) c('d-cu', `Con mồi ${left(st.mark)}`);
+  if (st.haste) c('d-good', `Niệm nhanh ${left(st.haste)}`);
+  if (st.empower) c('d-good', `Hoả Thân ×${st.empower.n}`);
+  if (st.guard) c('d-sh', `Bong bóng −${Math.round(st.guard.pct * 100)}% ${left(st.guard.until)}`);
+  if (s.wall && s.wall.until > S.t) c('d-ba', `Tường đá ${s.wall.n >= 99 ? '∞' : s.wall.n} · ${left(s.wall.until)}`);
   if (s.shield > S.t) c('d-sh', `Khiên ${left(s.shield)}`);
   if (s.mirror > S.t) c('d-mi', `Gương ${left(s.mirror)}`);
   if (s.evade > S.t) c('d-mi', `Né ${left(s.evade)}`);
-  if (s.barrier) c('d-ba', `Rào chắn ${s.barrier.hp}`);
+  if (s.barrier) c('d-ba', `Giáp ${s.barrier.hp}`);
   return out.join('');
 }
 function setHTML(el, html){ if (el && el.innerHTML !== html) el.innerHTML = html; }
-// Vị trí phép trên sân (px trong sân khấu): bay vòng cung giữa hai đấu sĩ, phép giáng thì rơi thẳng từ trời
-function projPos(p, W, H){
-  const xa = p.from === 0 ? .2 : .8, xb = p.from === 0 ? .8 : .2, y0 = .5;
-  let k = p.k;
-  if (S.clash && (p === S.clash.mine || p === S.clash.theirs)) { const m = .2 + .6 * (.15 + .7 * S.clash.push); return {x:m * W, y:y0 * H, a:0}; }
-  if (p.travel > 1.2) return {x:xb * W, y:(-.1 + (y0 + .1) * k) * H, a:90};
-  const x = (xa + (xb - xa) * k) * W, y = (y0 - Math.sin(Math.PI * k) * (p.small ? .08 : .16)) * H;
-  const a = Math.atan2(-Math.cos(Math.PI * k) * (p.small ? .08 : .16) * Math.PI * H, (xb - xa) * W) * 180 / Math.PI;
-  return {x, y, a};
+// Vị trí các đấu sĩ trên canvas phép (px trong sân khấu): tâm ngang, mặt đất (y = 180 của khung), tỉ lệ so với khung 192, hướng mặt
+function geo(){
+  const st = $('.d-stage'); if (!st || !S) return null;
+  const r0 = st.getBoundingClientRect(), G = [];
+  for (const s of S.side) {
+    const el = fighter(s.i).querySelector('.f-sprite'); if (!el) return null;
+    const r = el.getBoundingClientRect(), k = r.width / FW; if (!k) return null;
+    G.push({x:r.left - r0.left + r.width / 2, g:r.top - r0.top + BASE * k, k, face:s.i ? -1 : 1, mage:s.deck});
+  }
+  return G;
 }
-let trailTick = 0;
 function draw(){
   if (!S) return;
-  const warned = [0, 1].map(i => S.proj.some(p => p.to === i && p.travel > 1.2));
+  const warned = [0, 1].map(i => S.proj.some(p => p.to === i && p.warn && (1 - p.k) * p.travel > .15));
   for (const s of S.side) {
     const h = $(s.i === 0 ? '#hMe' : '#hOpp'), f = fighter(s.i), st = s.st;
     const pct = (100 * s.hp / R.HP) + '%';
@@ -488,7 +549,6 @@ function draw(){
     const dr = s.drawing, bar = c ? c.t / c.dur : dr ? dr.t / dr.dur : 0;
     f.classList.toggle('drawing', !c && !!dr);
     f.querySelector('.f-cast i').style.width = (100 * bar) + '%';
-    setHTML(f.querySelector('.f-pets'), s.pets.map((p, k) => `<span class="pet" style="--k:${k}"><i class="art art-${p.art} k-creature"></i><b>${Math.ceil(p.until - S.t)}</b></span>`).join(''));
   }
   const me = S.side[0];
   if (me.pick) { const t = $('.d-pickt'); if (t) t.textContent = Math.max(0, me.pick.until - S.t).toFixed(1); }
@@ -502,14 +562,12 @@ function draw(){
     b.classList.toggle('queued', me.next === +b.dataset.hi);
     b.querySelector('.dfill').style.height = me.mana < sp.cost ? (100 * (1 - (me.mana + me.regen / R.REGEN) / sp.cost)) + '%' : '0';
   });
-  // Phép bay: hình theo hệ + vệt hạt three.js
+  // Phép vẽ từ sheet phép lên canvas phủ sân
   const stage = $('.d-stage'), r = stage.getBoundingClientRect(), W = r.width, H = r.height;
-  trailTick++;
-  setHTML($('#dProj'), S.proj.map(p => {
-    const q = projPos(p, W, H), size = p.small ? 12 + p.sp.dmg * 3 : 18 + (p.sp.dmg + p.bonus) * 4;
-    if (trailTick % 2 === 0 && !S.stop) FX.burst({x:r.left + q.x, y:r.top + q.y}, {color:COL[p.sp.el] || [1,1,1], count:p.small ? 1 : 3, speed:30, life:.4, size:p.small ? 7 : 12, spread:3});
-    return `<i class="pj el-${p.sp.el || 'none'}${p.reflected ? ' refl' : ''}${p.travel > 1.2 ? ' fall' : ''}" style="left:${q.x.toFixed(1)}px;top:${q.y.toFixed(1)}px;--s:${size}px;--a:${q.a.toFixed(0)}deg"></i>`;
-  }).join(''));
+  const cv = $('#dFx'), dpr = Math.min(2, window.devicePixelRatio || 1);
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const G = geo(); if (G) fxDraw(g, G);
   // Đấu Đũa: hai luồng phép giằng co giữa sân
   const cl = $('#dClash');
   if (S.clash) {
@@ -525,7 +583,7 @@ function draw(){
 }
 function showStart(){
   const tile = (k, attr, on) => { const D = DECKS[k];
-    const pic = sheetOf(D.hero) ? `<span class="art sheet" style="${frameStyle(sheetOf(D.hero), 'idle')}"></span>` : `<span class="art art-${D.portrait} k-creature"></span>`;
+    const pic = `<span class="art sheet" style="${frameStyle(sheetOf(k), 'idle')}"></span>`;
     return `<button class="d-bookbtn ${on ? 'on' : ''}" ${attr}="${k}">${pic}<span><b>${D.name}</b><span class="meta">${D.tip}</span></span></button>`; };
   const btn = (attr, k, label, on) => `<button class="btn sm ${on ? 'on' : ''}" ${attr}="${k}">${label}</button>`;
   $('#dOverlay').innerHTML = `<div class="over"><div class="box d-box">
@@ -550,8 +608,8 @@ function loadoutHTML(){
   const pool = poolOf(cfg.me), cur = curLoadout();
   return `<p class="meta d-lbl">Phép mang vào trận: <b>${cur.length}</b> / tối đa ${R.LOADOUT_MAX} (ít nhất ${Math.min(R.LOADOUT_MIN, pool.length)}) · bấm để bật/tắt</p>
     <div class="d-load">${pool.map(id => { const sp = SP[id], on = cur.includes(id);
-      return `<button class="d-lo t-${sp.type} ${on ? 'on' : ''}" data-lo="${id}" title="${sp.text}"><span class="art art-${sp.art}"></span>
-        <span><b>${sp.name}</b><span class="meta">${TYPE[sp.type]} · ${sp.cost} ma lực · ×${DECKS[cfg.me].list[id]}</span></span></button>`; }).join('')}</div>`;
+      return `<button class="d-lo t-${sp.type} ${on ? 'on' : ''}" data-lo="${id}" title="${sp.text}"><span class="art spic" style="${spellIcon(sp)}"></span>
+        <span><b>${sp.name}</b><span class="meta">${KIND[sp.kind]} · ${sp.dmg ? `${sp.dmg}${sp.hits > 1 ? '×' + sp.hits : ''} st · ` : ''}${sp.cost} ma lực · ×${DECKS[cfg.me].list[id]}</span></span></button>`; }).join('')}</div>`;
 }
 function toggleLoadout(id){
   const cur = curLoadout(), k = cur.indexOf(id);
@@ -599,6 +657,7 @@ document.addEventListener('keydown', e => {
 // Chạy sprite sheet của đấu sĩ; khựng hình khi trúng đòn nặng thì hoạt ảnh cũng khựng theo
 function animate(dt){
   if (!S || S.stop > 0) return;
+  fxUpdate(S.over || S.intro > 0 ? dt : S.clash ? dt * .5 : dt, () => S.t);
   for (const s of S.side) {
     if (!s.anim) continue;
     const base = S.over && S.winner !== s.i ? 'ko' : s.cast ? 'cast' : 'idle';
@@ -612,7 +671,7 @@ function frame(now){
   step(dt); draw(); animate(dt);
   requestAnimationFrame(frame);
 }
-applyArt();
-loadSheets().then(() => { if (!S) showStart(); });   // có hoạt ảnh thì vẽ lại màn chọn sách với hình nhân vật
-showStart();
-requestAnimationFrame(frame);
+// Nạp gói pháp sư (nhân vật, sheet phép, dữ liệu phép) rồi mới mở màn chọn sách
+$('#dOverlay').innerHTML = '<div class="over"><div class="box"><h2>Đang tải…</h2><p class="meta">Đang nạp pháp sư và phép.</p></div></div>';
+loadMages().then(() => { buildDecks(); fixCfg(); showStart(); requestAnimationFrame(frame); })
+  .catch(e => { $('#dOverlay').innerHTML = `<div class="over"><div class="box"><h2>Lỗi tải</h2><p class="meta">${e.message}</p></div></div>`; });

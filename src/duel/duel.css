@@ -79,6 +79,13 @@ a.btn{text-decoration:none;color:var(--ink)}
 .ko .f-sprite.sheet{animation:none;filter:brightness(.8)}
 .stun .f-sprite.sheet{animation:wobble .5s infinite alternate}
 .h-pic.sheet,.d-bookbtn .art.sheet{background-repeat:no-repeat;image-rendering:pixelated}
+/* Canvas phép: vẽ sheet phép của gói pháp sư phủ lên sân, trên đấu sĩ */
+.d-fx{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;image-rendering:pixelated}
+.spic{image-rendering:pixelated;background-color:#0a1316}
+.dcard .cart.spic{background-color:#0a1316}
+/* Bị hất tung */
+.launch .f-sprite.sheet{animation:launch .55s ease-out}
+@keyframes launch{30%{translate:0 -28%}60%{translate:0 -8%}100%{translate:0 0}}
 
 /* Vòng phép dưới chân khi niệm: lớn dần theo tiến độ */
 .f-circle{position:absolute;left:50%;bottom:-8%;width:150%;aspect-ratio:3;translate:-50% 0;opacity:0;transition:opacity .15s;z-index:1;pointer-events:none}
@@ -110,21 +117,6 @@ a.btn{text-decoration:none;color:var(--ink)}
 .pet b{position:absolute;right:-4px;bottom:-4px;font-size:11px;background:var(--table);border:1px solid var(--rail);border-radius:99px;padding:0 4px}
 
 /* ---- Phép bay: hình theo hệ ---- */
-#dProj{position:absolute;inset:0;pointer-events:none;z-index:5}
-.pj{position:absolute;width:var(--s);height:var(--s);translate:-50% -50%;rotate:var(--a);filter:drop-shadow(0 0 10px var(--g)) drop-shadow(0 0 22px var(--g));--g:#fff}
-.pj::after{content:"";position:absolute;right:50%;top:20%;height:60%;width:180%;background:linear-gradient(270deg,var(--g),transparent);border-radius:50%;opacity:.6;z-index:-1}
-.pj.el-fire{--g:#ff7a1a;border-radius:50%;background:radial-gradient(circle at 62% 50%,#fff,#ffe07a 22%,#ff8a1a 50%,#c2310c 68%,transparent 72%);animation:flick .12s infinite alternate}
-.pj.el-ice{--g:#93dbf2;width:calc(var(--s) * 1.7);clip-path:polygon(0 50%,62% 12%,100% 50%,62% 88%);background:linear-gradient(90deg,#4aa6c8,#e9fbff 70%,#fff)}
-.pj.el-ice::after,.pj.el-storm::after,.pj.el-earth::after{display:none}
-.pj.el-storm{--g:#ffe45c;width:calc(var(--s) * 1.8);clip-path:polygon(0 40%,38% 30%,32% 0,100% 55%,58% 62%,66% 100%,0 40%);background:linear-gradient(90deg,#fff6b0,#fff,#ffe45c);animation:flick .06s infinite alternate}
-.pj.el-water{--g:#4a96e6;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#bfe3ff 18%,#4a96e6 55%,#1d4f8f 70%,transparent 72%);border:1px solid rgb(255 255 255 / .5)}
-.pj.el-earth{--g:#b08a52;clip-path:polygon(20% 0,75% 8%,100% 45%,85% 90%,35% 100%,0 65%,5% 20%);background:linear-gradient(135deg,#d8b27a,#7b5530 60%,#4a3018);animation:spin .8s linear infinite}
-.pj.el-light{--g:#f1dc7c;clip-path:polygon(50% 0,61% 38%,100% 50%,61% 62%,50% 100%,39% 62%,0 50%,39% 38%);background:radial-gradient(circle,#fff,#fff3b0 45%,#f1c84c);animation:spin 1s linear infinite}
-.pj.el-dark{--g:#a37be0;border-radius:50%;background:radial-gradient(circle,#140822 35%,#5a2a9a 52%,#b58cf5 62%,transparent 70%)}
-.pj.el-mind{--g:#e07bc4;border-radius:50%;border:4px solid #f5a6dc;background:radial-gradient(circle,rgb(255 255 255 / .8) 15%,transparent 45%);animation:spin .9s linear infinite}
-.pj.el-none{--g:#ffd28a;border-radius:50%;background:radial-gradient(circle,#fff,#ffd28a 50%,transparent 72%)}
-.pj.fall{--s:calc(var(--s) * 1.4)}
-.pj.refl{outline:2px dashed #e6f4ff;outline-offset:4px}
 @keyframes flick{to{scale:1.12;filter:drop-shadow(0 0 14px var(--g)) drop-shadow(0 0 30px var(--g))}}
 
 /* ---- Đấu Đũa: hai luồng phép giằng co ---- */

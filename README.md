@@ -7,7 +7,7 @@ Game đấu phép thời gian thực một người chơi với máy, chạy tr�
 - **Thanh niệm dưới chân:** đang niệm thì nhân vật có thanh tiến độ, đối thủ cũng nhìn thấy.
 - **Đấu Đũa:** hai phép sát thương va nhau giữa sân, ai bấm nhanh hơn thì đẩy được luồng phép về phía đối thủ.
 - **Phản ứng nguyên tố** (Ướt + Sét = Giật lan, Đóng băng + Lửa = Hơi nước…) và **thời tiết** đổi mỗi 30 giây.
-- **6 sách phép:** Thuỷ – Lôi, Hoả – Băng, Chimera, Wyvern, Phượng Hoàng, Ma Cà Rồng; máy có 3 độ khó.
+- **7 pháp sư, mỗi người 12 phép** (bắn thẳng, giáng từ trời, dưới đất, dang tay), mỗi phép có hoạt ảnh riêng; máy có 3 độ khó.
 
 Luật chi tiết: [docs/LUAT-CHOI.md](docs/LUAT-CHOI.md) · Việc sắp làm: [docs/LO-TRINH.md](docs/LO-TRINH.md)
 
@@ -31,50 +31,26 @@ Thư mục `dist/` sau khi build có thể đưa thẳng lên GitHub Pages, Netl
 ## Cấu trúc thư mục
 
 ```
-index.html              Khung trang: HUD, sân khấu, thanh niệm, tay 4 lá
+index.html              Khung trang: HUD, sân khấu, canvas phép, tay 4 lá
 src/
   duel/
-    data.js             ★ Dữ liệu phép, sách phép, thời tiết, độ khó, hằng số luật
-    duel.js             Vòng lặp thời gian thực, sát thương/phản ứng, máy (AI), giao diện, điều khiển
-    duel.css            Giao diện màn đấu (HUD, sân khấu, đấu sĩ, hình phép, Đấu Đũa)
-    base.css            Nền dùng chung: màu, nút, khung lá phép, chip trạng thái
-    art.js, sprites.js  Sinh class .art-<tên> cho từng sprite trong public/sprites
+    duel.js             Vòng lặp thời gian thực, niệm → tư thế → phép, sát thương/phản ứng, máy (AI), giao diện, điều khiển
+    mages.js            Nạp gói pháp sư, đổi dữ liệu phép trong game-data.json thành phép của trận
+    spellfx.js          Vẽ phép từ sheet phép lên canvas (đạn bay, giáng từ trời, tia, tường, quái triệu hồi…)
+    anim.js             Chạy sprite sheet nhân vật (idle, niệm, các tư thế phóng phép, trúng đòn, gục)
+    data.js             Luật trận, thời tiết, độ khó
+    duel.css, base.css  Giao diện
     config.js           Hệ nguyên tố (tên, màu)
   fx/three-fx.js        Lớp hiệu ứng three.js: hạt, flipbook, rung màn hình, hạt thời tiết
 public/
-  sprites/<tên>.png     Hình linh thú và phép
-  fx/<tên>.png          Dải hiệu ứng 8 khung (lửa, sét, khiên, gương, triệu hồi…)
+  mage/                 ★ Gói pháp sư: game-data.json, anim/<id>-sheet.png + .json, spells/<id>-spells.png + .json, summons/
+  fx/<tên>.png          Dải hiệu ứng 8 khung dùng chung (khiên, ngắt phép…)
   ui/                   Khung lá phép
-tools/
-  slice_sheet.py        Cắt sprite sheet nền magenta thành từng PNG
-  sprite-prompts.html   Prompt Gemini để tạo thêm sprite (mở bằng trình duyệt)
+docs/mage-anim/CLAUDE.md  Định dạng gói pháp sư (khung, hàng hoạt ảnh, thông số phép)
 ```
 
-## Thêm một phép mới
+## Sửa hoặc thêm phép
 
-Thêm vào một sách trong `BOOKS` ở `src/duel/data.js`. Ví dụ phép Sét gây 4 sát thương và ngắt phép:
-
-```js
-XYZ:{name:'Tia Sét Cầu', type:'atk', art:'fulmen', cost:3, cast:.8, cd:9, el:'storm', dmg:4, interrupt:true,
-  text:'4 sát thương Sét. Trúng lúc đối thủ đang niệm thì ngắt phép.'},
-```
-
-- `type`: `atk` (tấn công), `counter` (phản chú), `support` (hỗ trợ) · `cost` ma lực · `cast` giây niệm
-- `el`: `fire`, `water`, `storm`, `ice`, `earth`, `light`, `dark`, `mind`
-- Phép lên đối thủ: `dmg`, `wet`, `burn`, `freeze`, `stun`, `interrupt`, `drain`, `curse`, `weaken`, `slow`, `manaBurn`, `manaSteal`, `travel`, `volley`
-- Phép lên bản thân (`self:true`): `shield`, `mirror`, `evade`, `nullify`, `barrier`, `heal`, `regen`, `haste`, `cleanse`, `rebirth`, `manaGain`, `weather`, `pet`
-- Ghi chú đầy đủ từng trường nằm ở đầu phần sách phép trong `data.js`. Máy tự dùng phép mới theo loại, không cần viết thêm AI.
-
-## Thêm sprite
-
-1. Tạo ảnh bằng prompt trong `tools/sprite-prompts.html` (nền magenta, lưới 4×4).
-2. Cắt ảnh:
-   ```bash
-   pip install pillow numpy scipy
-   python3 tools/slice_sheet.py dot-01.png --grid 4x4 --ids ten_1,ten_2,... --out public/sprites
-   ```
-3. Thêm tên vào `src/duel/sprites.js`, rồi dùng `art:'ten'` trong dữ liệu phép.
-
-## Ghi chú
-
-Tên phép lấy cảm hứng từ thế giới phù thuỷ quen thuộc chỉ dùng cho dự án cá nhân. Nếu phát hành công khai hoặc thương mại, nên đổi sang tên tự đặt.
+Chỉ số phép (tên, sát thương, số nhịp, ma lực, thời gian niệm, hiệu ứng) nằm trong `public/mage/game-data.json`, hình phép trong `public/mage/spells/<id>-spells.png` + `.json`.
+`src/duel/mages.js` đọc câu hiệu ứng (`effect`) để ra cơ chế: Cháy, Choáng, Làm chậm, Ướt, Đóng băng, Trói chân, Hút máu, Mù, Hất tung, Đánh dấu con mồi, giáp, tường chặn đạn, Hoả Thân, Lôi Tốc…
+Thêm nhân vật mới: thêm vào `game-data.json` và thả sheet nhân vật + sheet phép đúng định dạng trong `docs/mage-anim/CLAUDE.md`.
