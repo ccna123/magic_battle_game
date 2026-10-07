@@ -1,0 +1,68 @@
+/* Đấu Trường Phép Thuật — nền dùng chung: biến màu, chữ, nút, khung lá phép, chip trạng thái, chữ bay, hộp phủ, thời tiết */
+:root{
+  --table:#0e1517; --felt:#15222a; --card:#1c2b33; --rail:#2a3d45;
+  --ink:#ece5d1; --mute:#8fa19d; --brass:#d1a94f;
+  --creature:#b9803f; --charm:#3f9c82; --enchant:#7486cc; --counter:#bf4c43;
+  --good:#7cc49b; --bad:#e2766b;
+  --font-display:'Grenze Gotisch', 'Times New Roman', Georgia, serif;
+  --font-body:'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
+  --cw: 100px;
+  color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--table);color:var(--ink)}
+body{font-family:var(--font-body);font-size:15px;line-height:1.4;padding:8px 12px 16px}
+button{font:inherit;color:inherit}
+.meta{color:var(--mute);font-size:13px;font-variant-numeric:tabular-nums}
+.art{background-image:var(--art,none),radial-gradient(circle at 50% 58%,color-mix(in srgb,var(--k) 45%,transparent),transparent 72%);background-size:var(--fit,86%),100% 100%;background-position:center;background-repeat:no-repeat;image-rendering:pixelated}
+.card{width:var(--cw);flex:0 0 var(--cw);aspect-ratio:5/7;border-radius:7px;background:var(--card);border:1px solid var(--rail);position:relative;display:flex;flex-direction:column;overflow:hidden;cursor:pointer;transition:transform .15s, box-shadow .15s;--k:var(--creature)}
+.card:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.card::before{content:"";height:5px;background:var(--k);flex:0 0 auto}
+.cname{font-family:var(--font-display);font-size:clamp(10px,2.3vw,13px);line-height:1.05;padding:4px 5px 0;text-wrap:balance;overflow:hidden;max-height:2.2em}
+.cart{flex:1;margin:2px 4px;border-radius:4px;min-height:0;background-color:color-mix(in srgb,var(--table) 70%,var(--k))}
+.cstats{font-size:10.5px;font-variant-numeric:tabular-nums;padding:2px 5px 4px;display:flex;justify-content:space-between;gap:2px}
+.cstats b{font-weight:700}
+.btn{background:var(--card);border:1px solid var(--rail);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn:hover,.btn:focus-visible{border-color:var(--brass);outline:none}
+.btn.primary{background:var(--brass);color:var(--table);border-color:var(--brass);font-weight:700}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:4px 9px;font-size:13px}
+.over{position:fixed;inset:0;background:color-mix(in srgb,var(--table) 85%,transparent);display:grid;place-items:center;padding:16px;z-index:5}
+.over .box{background:var(--felt);border:1px solid var(--brass);border-radius:14px;padding:24px;text-align:center;max-width:360px}
+.over h2{font-family:var(--font-display);font-size:40px;margin:0 0 8px;color:var(--brass)}
+.card.face{background:url(/ui/frame-creature.png) center/100% 100% no-repeat;border:0;padding:0}
+.card.face.k-charm{background-image:url(/ui/frame-charm.png)}
+.card.face.k-enchant{background-image:url(/ui/frame-enchant.png)}
+.card.face.k-counter{background-image:url(/ui/frame-counter.png)}
+.card.face::before{display:none}
+/* Bố cục theo khung: ảnh trong ô vòm trên, tên trên thanh ngang, chỉ số ở ô dưới */
+.card.face .cart{position:absolute;left:12%;right:12%;top:8.5%;height:43%;margin:0;border-radius:3px;background-color:transparent}
+.card.face .cname{position:absolute;left:11%;right:11%;top:56.5%;transform:translateY(-50%);padding:0;max-height:none;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:calc(var(--cw) * .118);line-height:1.15;text-shadow:0 1px 2px #000}
+.card.face .cstats{position:absolute;left:12%;right:12%;top:63%;bottom:11%;padding:0;display:flex;align-items:center;justify-content:center;gap:5%;font-size:calc(var(--cw) * .13)}
+.card.face .cstats span:only-child{font-size:.82em;color:var(--mute)}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.cost{position:absolute;top:3%;left:5%;z-index:2;width:calc(var(--cw) * .21);height:calc(var(--cw) * .21);min-width:15px;min-height:15px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#9ad2ff,#2a6fd0 70%);color:#fff;font-weight:700;font-size:max(10px,calc(var(--cw) * .13));display:grid;place-items:center;box-shadow:0 0 0 1.5px #0a1a2a;font-variant-numeric:tabular-nums;text-shadow:0 1px 1px #000}
+.chip{font-size:9px;padding:0 4px;border-radius:4px;background:rgba(14,21,23,.85);border:1px solid currentColor;line-height:1.4;white-space:nowrap}
+.st-wet{color:#4a96e6} .st-burn{color:#e8673a} .st-frozen{color:#93dbf2} .st-stun{color:#e3c44a}
+.fly{position:fixed;transform:translate(-50%,-50%);font-weight:700;font-size:18px;pointer-events:none;z-index:7;text-shadow:0 2px 4px #000;animation:fly 1.25s ease-out forwards;font-variant-numeric:tabular-nums;white-space:nowrap}
+.fly.big{font-family:var(--font-display);font-size:26px}
+@keyframes fly{0%{opacity:0;transform:translate(-50%,-20%)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,-170%)}}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.weather{display:flex;align-items:center;gap:6px 8px;flex-wrap:wrap;background:var(--card);border:1px solid var(--rail);border-radius:10px;padding:5px 10px;font-size:13px;text-align:left;cursor:default;min-width:0;flex:1 1 300px}
+.weather b{font-family:var(--font-display);font-weight:500;font-size:17px}
+.wdesc{color:var(--ink);opacity:.85}
+.wnext{display:inline-flex;align-items:center;gap:4px;color:var(--ink)}
+.wdot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:0 0 auto;box-shadow:0 0 0 1px rgba(0,0,0,.4)}
+.w-clear{background:radial-gradient(circle at 35% 35%,#fff3c4,#c9a24a)}
+.w-rain{background:radial-gradient(circle at 35% 35%,#bfe0ff,#2f6fb8)}
+.w-heat{background:radial-gradient(circle at 35% 35%,#ffe0a0,#e0541f)}
+.w-blizzard{background:radial-gradient(circle at 35% 35%,#ffffff,#8fc8e6)}
+.w-moon{background:radial-gradient(circle at 35% 35%,#f4f6ff,#8e97c4)}
+.w-fog{background:radial-gradient(circle at 35% 35%,#d9dedf,#69747a)}
+.w-ley{background:radial-gradient(circle at 35% 35%,#c4e6ff,#3f6be0)}
+html,body{margin:0}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+img{max-width:100%}
+[hidden]{display:none!important}
+.k-charm{--k:var(--charm)} .k-enchant{--k:var(--enchant)} .k-counter{--k:var(--counter)} .k-creature{--k:var(--creature)}

@@ -177,3 +177,10 @@ a.btn{text-decoration:none;color:var(--ink)}
   .d-next{display:none}
 }
 @media (prefers-reduced-motion:reduce){.f-sprite,.pet,.pj,.f-circle i{animation:none!important}}
+.d-title{font-family:var(--font-display);font-weight:700;font-size:clamp(20px,3vw,28px);margin:0;line-height:1;white-space:nowrap}
+.d-title span{color:var(--brass)}
+/* Hộp bắt đầu: rộng đủ cho lưới sách (đè giới hạn 360px của .over .box) */
+.over .d-box{max-width:min(760px,100%);width:100%}
+.d-bookbtn b{display:block;font-size:13px;line-height:1.2;margin-bottom:2px}
+.d-bookbtn .meta{display:block;line-height:1.35}
+.d-box .d-how{text-align:left}

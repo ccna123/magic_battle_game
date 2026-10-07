@@ -5,47 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Đấu Trường Phép Thuật</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap">
   <style id="artcss"></style>
 </head>
-<body class="view-3d">
-<div class="app">
-  <div class="head">
-    <h1>Đấu Trường <span>Phép Thuật</span></h1>
-    <div class="row"><a class="btn sm primary" href="duel.html" style="text-decoration:none">Đấu phép tốc độ (thử)</a><button class="btn sm" id="viewBtn" aria-pressed="true">Góc nhìn: Nghiêng</button><button class="btn sm" data-newgame="1">Chọn bộ bài</button><button class="btn sm" id="openLib">Kho lá bài</button></div>
+<body>
+<!-- Đấu phép tốc độ kiểu game đối kháng: HUD đối xứng trên cùng, sân khấu ngang (bạn trái, máy phải), thanh niệm và 4 lá phép bên dưới -->
+<div class="duel">
+  <header class="d-top">
+    <h1 class="d-title">Đấu Trường <span>Phép Thuật</span></h1>
+    <div class="weather" id="dWeather"></div>
+  </header>
+  <div class="d-hud">
+    <div class="hud me" id="hMe"></div>
+    <div class="h-mid"><span class="d-time" id="dTime">0:00</span></div>
+    <div class="hud opp" id="hOpp"></div>
   </div>
-  <!-- Màn chơi kiểu Tag Force: HUD đối thủ trên, sân nghiêng giữa, bảng lệnh bên phải, bài trên tay xoè ngay trong màn -->
-  <div class="board">
-    <div class="hud top">
-      <div class="info" id="oppInfo"></div>
-      <div class="opphand" id="oppHand"></div>
-      <div class="phases" id="turnline"></div>
+  <div class="board d-stage" data-weather="clear">
+    <div class="st-sky"></div><div class="st-hills"></div><div class="st-floor"></div>
+    <div class="fighter me" id="fMe"></div>
+    <div class="fighter opp" id="fOpp"></div>
+    <div id="dProj"></div>
+    <div id="dClash" class="d-clash" hidden>
+      <div class="beam me"></div><div class="beam opp"></div><div class="flare"></div>
+      <div class="d-cbox"><div class="d-push"><i></i></div><div class="meta">Bấm <b>Space</b> (hoặc chạm sân) thật nhanh · còn <b id="dClashT">0</b>s</div></div>
     </div>
-    <div class="field3d"><div class="plane">
-      <span id="oppGY" class="gyslot opp"></span><span id="myGY" class="gyslot me"></span>
-      <div class="zone opp"><span class="zlabel">Phép</span><span id="oppST" style="display:contents"></span></div>
-      <div class="zone z3 opp"><span class="zlabel">Linh thú</span><span id="oppFam" style="display:contents"></span></div>
-      <div class="midline"></div>
-      <div class="zone z3 me"><span class="zlabel">Linh thú</span><span id="myFam" style="display:contents"></span></div>
-      <div class="zone me"><span class="zlabel">Phép</span><span id="myST" style="display:contents"></span></div>
-    </div></div>
-    <div class="strip">
-      <div class="chain" id="chain"></div>
-      <div id="tip"></div>
-      <div class="prompt" id="prompt"></div>
-    </div>
-    <div class="hand" id="myHand"></div>
-    <div class="hud bottom"><div class="info" id="myInfo"></div></div>
+    <div id="dBanner" class="d-banner"></div>
   </div>
+  <div class="d-castbar" id="dCast"></div>
+  <div class="d-hand" id="dHand"></div>
 </div>
-<div id="overlay"></div>
-<div id="cardmenu" class="cardmenu" role="menu" hidden></div>
-<div id="cardinfo" class="cardinfo" hidden></div>
-<div id="deckpick" class="lib" hidden></div>
-<div id="gravebox" class="lib" hidden></div>
-<div id="lib" class="lib" hidden></div>
-<input type="file" id="artFile" accept="image/*" hidden>
-<script type="module" src="/src/main.js"></script>
+<div id="dOverlay"></div>
+<script type="module" src="/src/duel/duel.js"></script>
 </body>
 </html>

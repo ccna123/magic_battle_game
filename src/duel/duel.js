@@ -1,12 +1,11 @@
-import '../styles.css';
+import './base.css';
 import './duel.css';
-import { $, EL } from '../config.js';
-import { DB } from '../data/cards.js';
-import { applyArt } from '../ui/art.js';
+import { $, EL } from './config.js';
+import { applyArt } from './art.js';
 import { FX } from '../fx/three-fx.js';
 import { BOOKS, DIFF, DUEL_DECKS, DUEL_WEATHER, RULES as R, SPELLS } from './data.js';
 
-/* ---------- Đấu phép tốc độ (bản thử) ----------
+/* ---------- Đấu Trường Phép Thuật: đấu phép thời gian thực ----------
    Lối chơi kiểu Asuka: 4 lá xoay vòng từ sách phép, ma lực hồi liên tục, mỗi phép có thời gian niệm mà đối thủ nhìn thấy.
    Hiển thị kiểu game đối kháng: hai đấu sĩ trên sân khấu ngang, HUD đối xứng, phép có hình theo hệ và vệt hạt. */
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -15,7 +14,7 @@ const pick = a => a[Math.random() * a.length | 0];
 // Sổ phép chung: phép bài (id lá) và phép sách ('chimera.QQE')
 const SP = {};
 for (const [id, s] of Object.entries(SPELLS))
-  SP[id] = {...s, id, name:DB[id].name, art:id, type:s.self ? (s.shield || s.mirror ? 'counter' : 'support') : s.interrupt ? 'counter' : 'atk'};
+  SP[id] = {...s, id, type:s.self ? (s.shield || s.mirror ? 'counter' : 'support') : s.interrupt ? 'counter' : 'atk'};
 for (const [bk, b] of Object.entries(BOOKS)) for (const [key, s] of Object.entries(b.spells)) SP[`${bk}.${key}`] = {...s, id:`${bk}.${key}`};
 // 6 bộ: 2 trường phái gốc + 4 sách theo linh thú (mỗi phép 2 bản, phép từ 5 ma lực 1 bản)
 const DECKS = {...DUEL_DECKS};
@@ -423,10 +422,10 @@ function draw(){
 }
 function showStart(){
   const tile = (k, attr, on) => { const D = DECKS[k];
-    return `<button class="d-bookbtn ${on ? 'on' : ''}" ${attr}="${k}"><span class="art art-${D.portrait} k-creature"></span><span><b>${D.name}</b><br><span class="meta">${D.tip}</span></span></button>`; };
+    return `<button class="d-bookbtn ${on ? 'on' : ''}" ${attr}="${k}"><span class="art art-${D.portrait} k-creature"></span><span><b>${D.name}</b><span class="meta">${D.tip}</span></span></button>`; };
   const btn = (attr, k, label, on) => `<button class="btn sm ${on ? 'on' : ''}" ${attr}="${k}">${label}</button>`;
   $('#dOverlay').innerHTML = `<div class="over"><div class="box d-box">
-    <h2>Đấu phép tốc độ</h2><p class="meta">Không có lượt. Ma lực tự hồi, cầm 4 lá phép xoay vòng từ sách. Mỗi phép có thời gian niệm mà đối thủ nhìn thấy được.</p>
+    <h2>Đấu Trường Phép Thuật</h2><p class="meta">Đấu phép thời gian thực, không có lượt. Ma lực tự hồi, cầm 4 lá phép xoay vòng từ sách. Mỗi phép có thời gian niệm mà đối thủ nhìn thấy được.</p>
     <p class="meta d-lbl">Chọn sách phép:</p>
     <div class="d-books">${Object.keys(DECKS).map(k => tile(k, 'data-dme', cfg.me === k)).join('')}</div>
     <div class="row d-choice"><span class="meta">Đối thủ:</span>${btn('data-dopp', 'random', 'Ngẫu nhiên', cfg.opp === 'random')}${Object.keys(DECKS).map(k => btn('data-dopp', k, DECKS[k].name, cfg.opp === k)).join('')}</div>
