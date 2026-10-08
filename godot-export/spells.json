@@ -1,0 +1,6350 @@
+{
+ "version": 1,
+ "note": "Sinh từ src/duel/mages.js bằng tools/export-spells.mjs. Ý nghĩa từng trường: CLAUDE.md mục 4 (hiệu ứng), mục 5 (cách tính đòn), docs/mage-anim/CLAUDE.md (visual).",
+ "rules": {
+  "HP": 150,
+  "MANA_START": 4,
+  "MANA_MAX": 10,
+  "REGEN": 1.1,
+  "HAND": 4,
+  "DRAW_TIME": 0.4,
+  "PICK_COST": 1,
+  "PICK_TIME": 5,
+  "REFRESH_COST": 2,
+  "REFRESH_TIME": 0.8,
+  "LOADOUT_MIN": 5,
+  "LOADOUT_MAX": 8,
+  "WET": 6,
+  "BURN_TICK": 1,
+  "BURN_DMG": 2,
+  "WEATHER_EVERY": 30,
+  "FRENZY_AT": 120,
+  "CLASH": 1.8,
+  "INTRO": 1.8
+ },
+ "weather": {
+  "clear": {
+   "name": "Trời quang",
+   "desc": "Không có hiệu ứng.",
+   "mod": {}
+  },
+  "rain": {
+   "name": "Mưa giông",
+   "desc": "Sét, Nước +20% · Lửa −20%",
+   "mod": {
+    "storm": 0.2,
+    "water": 0.2,
+    "fire": -0.2
+   }
+  },
+  "heat": {
+   "name": "Nắng gắt",
+   "desc": "Lửa +20% · Băng −20%",
+   "mod": {
+    "fire": 0.2,
+    "ice": -0.2
+   }
+  },
+  "blizzard": {
+   "name": "Bão tuyết",
+   "desc": "Băng +20% · Lửa −20%",
+   "mod": {
+    "ice": 0.2,
+    "fire": -0.2
+   }
+  }
+ },
+ "difficulty": {
+  "easy": {
+   "name": "Dễ",
+   "delay": 0.8,
+   "block": 0.45,
+   "mash": 5,
+   "gap": 1.1,
+   "hoard": 0.4
+  },
+  "normal": {
+   "name": "Thường",
+   "delay": 0.5,
+   "block": 0.75,
+   "mash": 7,
+   "gap": 0.45,
+   "hoard": 0.25
+  },
+  "hard": {
+   "name": "Khó",
+   "delay": 0.3,
+   "block": 0.92,
+   "mash": 9,
+   "gap": 0.15,
+   "hoard": 0.15
+  }
+ },
+ "reactions": [
+  {
+   "spell": "storm",
+   "target": "wet",
+   "mul": 1.3,
+   "consume": "wet",
+   "name": "Giật lan"
+  },
+  {
+   "spell": "fire",
+   "target": "wet",
+   "mul": 0.7,
+   "consume": "wet",
+   "noBurn": true,
+   "name": "Dập lửa"
+  },
+  {
+   "spell": "fire",
+   "target": "frozen",
+   "mul": 1.5,
+   "consume": "frozen",
+   "name": "Hơi nước"
+  },
+  {
+   "spell": "ice",
+   "target": "burn",
+   "mul": 1.2,
+   "consume": "burn",
+   "name": "Tan chảy"
+  }
+ ],
+ "characters": {
+  "pyro": {
+   "name": "Hoả Pháp Sư Ignar",
+   "format": 1,
+   "el": "fire",
+   "tip": "Lửa: đạn nảy, phượng hoàng bổ nhào, mưa thiên thạch, núi lửa. Gây Cháy liên tục, có Hoả Thân tăng sát thương.",
+   "hand": [
+    177,
+    88
+   ],
+   "head": [
+    100,
+    40
+   ],
+   "sheet": "anim/pyro-sheet.png",
+   "anim": "anim/pyro.json",
+   "spellSheet": "spells/pyro-spells.png",
+   "spellRows": 12,
+   "defaultLoadout": [
+    "bolt1",
+    "bolt2",
+    "sky1",
+    "sky2",
+    "ground1",
+    "ground2",
+    "spread1",
+    "spread2"
+   ],
+   "spells": {
+    "bolt1": {
+     "name": "Hoả Cầu",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "fire",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.4,
+     "dmg": 10,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 10 sát thương. Gây Cháy 2 giây",
+     "burn": 2,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 0,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "offsetX": -5
+     }
+    },
+    "bolt2": {
+     "name": "Hoả Cầu Nảy",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "fire",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.7,
+     "dmg": 18,
+     "hits": 1,
+     "text": "Quả cầu lửa nảy tưng tưng sát mặt đất rồi nổ ở chân địch, khó chặn bằng khiên đặt cao. 18 sát thương. Gây Cháy 3 giây",
+     "burn": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 1,
+      "frames": 8,
+      "mode": "bounce",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "path": "bounce",
+      "hops": 2.5,
+      "hitFrame": 4,
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "offsetX": -21
+     }
+    },
+    "bolt3": {
+     "name": "Phượng Hoàng Lửa",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "fire",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.1,
+     "dmg": 30,
+     "hits": 1,
+     "text": "Phượng hoàng lửa bay vòng lên cao rồi bổ nhào xuống địch. 30 sát thương. Gây Cháy 4 giây, hồi 6 máu cho người niệm",
+     "burn": 4,
+     "selfHeal": 6,
+     "copies": 1,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 2,
+      "frames": 8,
+      "mode": "swoop",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "path": "swoop",
+      "arc": 110,
+      "hitFrame": 4,
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "offsetX": 4
+     }
+    },
+    "sky1": {
+     "name": "Mưa Lửa",
+     "type": "atk",
+     "kind": "sky",
+     "el": "fire",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.7,
+     "dmg": 14,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 14 sát thương. Gây Cháy 2 giây",
+     "burn": 2,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 3,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 41,
+      "band": 104,
+      "dir": 0
+     }
+    },
+    "sky2": {
+     "name": "Mưa Thiên Thạch",
+     "type": "atk",
+     "kind": "sky",
+     "el": "fire",
+     "level": 2,
+     "cost": 4,
+     "cast": 1,
+     "dmg": 9,
+     "hits": 3,
+     "text": "3 thiên thạch nhỏ rơi lần lượt quanh chỗ địch đứng. 9 sát thương × 3 nhịp. Mỗi viên gây Cháy 1 giây",
+     "burn": 1,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 4,
+      "frames": 8,
+      "mode": "barrage",
+      "kit": true,
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "count": 3,
+      "spreadX": [
+       -44,
+       0,
+       40
+      ],
+      "interval": 0.16,
+      "hitFrame": 2,
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "skyMode": "fall",
+      "landFrame": 3,
+      "top": 57,
+      "band": 91,
+      "dir": 0.7
+     }
+    },
+    "sky3": {
+     "name": "Sao Băng Hoả Ngục",
+     "type": "atk",
+     "kind": "sky",
+     "el": "fire",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.5,
+     "dmg": 42,
+     "hits": 1,
+     "text": "Một khối thiên thạch khổng lồ giáng xuống, rung cả sân. 42 sát thương. Gây Cháy 4 giây, để lại vùng lửa",
+     "burn": 4,
+     "copies": 1,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 5,
+      "frames": 8,
+      "mode": "sun",
+      "kit": true,
+      "fps": 12,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 2,
+      "shake": 10,
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "skyMode": "fall",
+      "landFrame": 2,
+      "top": 0,
+      "band": 135,
+      "dir": 0.7
+     }
+    },
+    "ground1": {
+     "name": "Bùa Nổ",
+     "type": "atk",
+     "kind": "ground",
+     "el": "fire",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.6,
+     "dmg": 16,
+     "hits": 1,
+     "text": "Khắc ấn lửa dưới chân địch, ấn nhấp nháy đếm ngược rồi nổ. 16 sát thương. Gây Cháy 2 giây",
+     "burn": 2,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 6,
+      "frames": 8,
+      "mode": "mine1",
+      "kit": true,
+      "fps": 6,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 5,
+      "segments": {
+       "arm": [
+        0,
+        4
+       ],
+       "blast": [
+        5,
+        7
+       ]
+      }
+     }
+    },
+    "ground2": {
+     "name": "Vòng Dung Nham",
+     "type": "atk",
+     "kind": "ground",
+     "el": "fire",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.9,
+     "dmg": 8,
+     "hits": 3,
+     "text": "Dung nham loang dưới chân địch, bỏng 3 nhịp. 8 sát thương × 3 nhịp. Làm chậm 20%, Cháy liên tục khi đứng trong vũng",
+     "burn": 2,
+     "slow": 0.2,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 7,
+      "frames": 8,
+      "mode": "lava",
+      "kit": true,
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+       2,
+       4,
+       6
+      ],
+      "segments": {
+       "spread": [
+        0,
+        1
+       ],
+       "swirl": [
+        2,
+        5
+       ],
+       "dry": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "ground3": {
+     "name": "Núi Lửa Thức Giấc",
+     "type": "atk",
+     "kind": "ground",
+     "el": "fire",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.3,
+     "dmg": 38,
+     "hits": 1,
+     "text": "Núi lửa phun trào ngay dưới chân địch, hất tung địch lên không. 38 sát thương. Hất tung, Cháy 3 giây",
+     "burn": 3,
+     "launch": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 8,
+      "frames": 8,
+      "mode": "volcano",
+      "kit": true,
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 3,
+      "knockUp": 60,
+      "shake": 8,
+      "segments": {
+       "warn": [
+        0,
+        1
+       ],
+       "erupt": [
+        2,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "spread1": {
+     "name": "Hoả Thân",
+     "type": "support",
+     "kind": "spread",
+     "el": "fire",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.5,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Lửa bao quanh người, 3 phép tiếp theo mạnh hơn. 3 phép tiếp theo +30% sát thương",
+     "empower": {
+      "mul": 1.3,
+      "n": 3
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 9,
+      "frames": 8,
+      "mode": "empower",
+      "kit": true,
+      "fps": 10,
+      "anchor": "center",
+      "at": "caster",
+      "buffFrame": 3,
+      "segments": {
+       "form": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "offsetX": 2
+     }
+    },
+    "spread2": {
+     "name": "Tường Lửa Cuộn",
+     "type": "atk",
+     "kind": "spread",
+     "el": "fire",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.8,
+     "dmg": 17,
+     "hits": 1,
+     "text": "Một bức tường lửa lăn sát mặt đất về phía địch, đốt mọi thứ trên đường đi. 17 sát thương. Gây Cháy 3 giây, xuyên qua khiên",
+     "burn": 3,
+     "pierce": true,
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 10,
+      "frames": 8,
+      "mode": "wave",
+      "kit": true,
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "caster_front",
+      "travel": true,
+      "hitFrame": 4,
+      "segments": {
+       "roll": [
+        0,
+        3
+       ],
+       "crash": [
+        4,
+        7
+       ]
+      },
+      "offsetX": -2
+     }
+    },
+    "spread3": {
+     "name": "Lồng Lửa Hoả Ngục",
+     "type": "atk",
+     "kind": "spread",
+     "el": "fire",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 12,
+     "hits": 3,
+     "text": "Cột lửa mọc vòng quanh địch, nhốt địch đứng im và đốt 3 nhịp. 12 sát thương × 3 nhịp. Địch không di chuyển được 1,5 giây",
+     "stun": 1.5,
+     "copies": 1,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 11,
+      "frames": 8,
+      "mode": "cage",
+      "kit": true,
+      "fps": 6,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+       2,
+       4,
+       6
+      ],
+      "freeze": true,
+      "segments": {
+       "rise": [
+        0,
+        1
+       ],
+       "burn": [
+        2,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "offsetX": 0
+     }
+    }
+   }
+  },
+  "storm_fox": {
+   "name": "Hồ Ly Lôi Sư Kiora",
+   "format": 1,
+   "el": "storm",
+   "tip": "Sét: loạt cầu sét, tháp lôi, bão cửu vĩ. Nhiều nhịp Choáng ngắn để ngắt phép đối thủ, có Lôi Tốc niệm nhanh.",
+   "hand": [
+    190,
+    84
+   ],
+   "head": [
+    100,
+    40
+   ],
+   "sheet": "anim/storm_fox-sheet.png",
+   "anim": "anim/storm_fox.json",
+   "spellSheet": "spells/storm_fox-spells.png",
+   "spellRows": 12,
+   "defaultLoadout": [
+    "bolt1",
+    "bolt2",
+    "sky1",
+    "sky2",
+    "ground1",
+    "ground2",
+    "spread1",
+    "spread2"
+   ],
+   "spells": {
+    "bolt1": {
+     "name": "Tia Lửa Điện",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "storm",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.4,
+     "dmg": 10,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 10 sát thương. Choáng 0,2 giây",
+     "stun": 0.2,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 0,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "offsetX": 6
+     }
+    },
+    "bolt2": {
+     "name": "Loạt Cầu Sét",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "storm",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.7,
+     "dmg": 7,
+     "hits": 3,
+     "text": "Bắn liên tiếp 3 cầu sét theo cùng một đường thẳng. 7 sát thương × 3 nhịp. Mỗi phát Choáng 0,1 giây",
+     "stun": 0.1,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 1,
+      "frames": 8,
+      "mode": "volley",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "count": 3,
+      "spreadY": [
+       0,
+       0,
+       0
+      ],
+      "interval": 0.13,
+      "hitFrame": 4,
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "offsetX": 8
+     }
+    },
+    "bolt3": {
+     "name": "Hồ Hoả Lôi",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "storm",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.1,
+     "dmg": 30,
+     "hits": 1,
+     "text": "Linh hồ sét phi nước đại sát mặt đất, lao thẳng vào địch. 30 sát thương. Choáng 0,6 giây, nảy sang 2 mục tiêu",
+     "stun": 0.6,
+     "copies": 1,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 2,
+      "frames": 8,
+      "mode": "zigzag",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "path": "zigzag",
+      "amp": 5,
+      "waves": 6,
+      "hitFrame": 4,
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "offsetX": 4
+     }
+    },
+    "sky1": {
+     "name": "Sét Đánh",
+     "type": "atk",
+     "kind": "sky",
+     "el": "storm",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.7,
+     "dmg": 14,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 14 sát thương. Choáng 0,2 giây",
+     "stun": 0.2,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 3,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 51,
+      "band": 70,
+      "dir": 0
+     }
+    },
+    "sky2": {
+     "name": "Mây Giông",
+     "type": "atk",
+     "kind": "sky",
+     "el": "storm",
+     "level": 2,
+     "cost": 4,
+     "cast": 1,
+     "dmg": 9,
+     "hits": 3,
+     "text": "Mây giông đóng trên đầu địch, giáng sét 3 nhịp. 9 sát thương × 3 nhịp. Mỗi nhịp Choáng 0,2 giây (Ướt thì gấp đôi)",
+     "stun": 0.2,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 4,
+      "frames": 8,
+      "mode": "thundercloud",
+      "kit": true,
+      "fps": 6,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+       2,
+       4,
+       6
+      ],
+      "segments": {
+       "gather": [
+        0,
+        1
+       ],
+       "storm": [
+        2,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 24,
+      "band": 96,
+      "dir": 0
+     }
+    },
+    "sky3": {
+     "name": "Thiên Lôi Cửu Vĩ",
+     "type": "atk",
+     "kind": "sky",
+     "el": "storm",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.5,
+     "dmg": 9,
+     "hits": 5,
+     "text": "5 tia sét lớn giáng dồn dập quanh chỗ địch đứng. 9 sát thương × 5 nhịp. Choáng 0,8 giây",
+     "stun": 0.8,
+     "copies": 1,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 5,
+      "frames": 8,
+      "mode": "barrage9",
+      "kit": true,
+      "fps": 16,
+      "anchor": "bottom",
+      "at": "target",
+      "count": 5,
+      "spreadX": [
+       -50,
+       30,
+       -20,
+       50,
+       0
+      ],
+      "interval": 0.1,
+      "hitFrame": 2,
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "skyMode": "cloud",
+      "landFrame": 2,
+      "top": 0,
+      "band": 135,
+      "dir": 0
+     }
+    },
+    "ground1": {
+     "name": "Mạch Điện Chạy",
+     "type": "atk",
+     "kind": "ground",
+     "el": "storm",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.6,
+     "dmg": 10,
+     "hits": 1,
+     "text": "Tia lửa điện chạy dọc mặt đất từ chân người niệm tới chỗ địch. 10 sát thương. Choáng 0,2 giây",
+     "stun": 0.2,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 6,
+      "frames": 8,
+      "mode": "sparkline",
+      "kit": true,
+      "fps": 16,
+      "anchor": "bottom",
+      "at": "caster_to_target",
+      "count": 5,
+      "interval": 0.06,
+      "hitFrame": 2,
+      "segments": {
+       "grow": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      }
+     }
+    },
+    "ground2": {
+     "name": "Lưới Lôi Địa",
+     "type": "atk",
+     "kind": "ground",
+     "el": "storm",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.9,
+     "dmg": 20,
+     "hits": 1,
+     "text": "Phủ lưới điện dưới chân địch, giật một phát làm địch choáng đứng im. 20 sát thương. Choáng 0,6 giây",
+     "stun": 0.6,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 7,
+      "frames": 8,
+      "mode": "shockfloor",
+      "kit": true,
+      "fps": 8,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 2,
+      "stun": 0.6,
+      "segments": {
+       "spread": [
+        0,
+        1
+       ],
+       "shock": [
+        2,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "ground3": {
+     "name": "Tháp Lôi Cửu Vĩ",
+     "type": "atk",
+     "kind": "ground",
+     "el": "storm",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.3,
+     "dmg": 13,
+     "hits": 3,
+     "text": "Cắm tháp thu lôi lớn trước mặt, tháp tự bắn 3 tia sét vào địch. 13 sát thương × 3 nhịp. Mỗi tia Choáng 0,3 giây",
+     "stun": 0.3,
+     "copies": 1,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 8,
+      "frames": 8,
+      "mode": "tower",
+      "kit": true,
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "caster_front",
+      "zapFrames": [
+       3,
+       4,
+       5
+      ],
+      "zapTop": 124,
+      "segments": {
+       "plant": [
+        0,
+        1
+       ],
+       "charge": [
+        2,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "spread1": {
+     "name": "Lôi Tốc",
+     "type": "support",
+     "kind": "spread",
+     "el": "storm",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.5,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Điện chạy khắp người, niệm phép và di chuyển nhanh hơn. Thời gian niệm −40% trong 4 giây",
+     "haste": 4,
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 9,
+      "frames": 8,
+      "mode": "haste",
+      "kit": true,
+      "fps": 10,
+      "anchor": "center",
+      "at": "caster",
+      "buffFrame": 3,
+      "segments": {
+       "form": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "offsetX": 1
+     }
+    },
+    "spread2": {
+     "name": "Xích Lôi",
+     "type": "atk",
+     "kind": "spread",
+     "el": "storm",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.8,
+     "dmg": 16,
+     "hits": 1,
+     "text": "Tia sét nối thẳng từ tay tới địch ngay lập tức, không thể né. 16 sát thương. Choáng 0,4 giây, nảy sang 1 mục tiêu",
+     "stun": 0.4,
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 10,
+      "frames": 8,
+      "mode": "chain",
+      "kit": true,
+      "fps": 16,
+      "anchor": "beam",
+      "at": "hand_to_target",
+      "hitFrame": 1,
+      "segments": {
+       "arc": [
+        0,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "offsetX": 0
+     }
+    },
+    "spread3": {
+     "name": "Bão Cửu Vĩ",
+     "type": "atk",
+     "kind": "spread",
+     "el": "storm",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 8,
+     "hits": 5,
+     "text": "Chín đuôi sét xoè sau lưng, gọi 5 tia sét từ trời đánh xuống địch. 8 sát thương × 5 nhịp. Mỗi tia Choáng 0,2 giây",
+     "stun": 0.2,
+     "copies": 1,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 11,
+      "frames": 8,
+      "mode": "tempest",
+      "kit": true,
+      "fps": 8,
+      "anchor": "center",
+      "at": "caster",
+      "zapFrames": [
+       2,
+       3,
+       4,
+       5,
+       6
+      ],
+      "segments": {
+       "gather": [
+        0,
+        1
+       ],
+       "storm": [
+        2,
+        6
+       ],
+       "fade": [
+        7,
+        7
+       ]
+      },
+      "offsetX": 1
+     }
+    }
+   }
+  },
+  "tide": {
+   "name": "Thuỷ Tộc Nerei",
+   "format": 1,
+   "el": "water",
+   "tip": "Nước: đẩy lùi, làm Ướt, vũng xoáy làm chậm. Bộ hồi máu và bong bóng giảm sát thương mạnh nhất.",
+   "hand": [
+    181,
+    94
+   ],
+   "head": [
+    100,
+    40
+   ],
+   "sheet": "anim/tide-sheet.png",
+   "anim": "anim/tide.json",
+   "spellSheet": "spells/tide-spells.png",
+   "spellRows": 12,
+   "defaultLoadout": [
+    "bolt1",
+    "bolt2",
+    "sky1",
+    "sky2",
+    "ground1",
+    "ground2",
+    "spread1",
+    "spread2"
+   ],
+   "spells": {
+    "bolt1": {
+     "name": "Tia Nước",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "water",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.4,
+     "dmg": 10,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 10 sát thương. Đẩy lùi nhẹ",
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 0,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "offsetX": -1
+     }
+    },
+    "bolt2": {
+     "name": "Cầu Bong Bóng",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "water",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.7,
+     "dmg": 18,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 18 sát thương. Đẩy lùi, làm Ướt 3 giây",
+     "wet": true,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 1,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "offsetX": -2
+     }
+    },
+    "bolt3": {
+     "name": "Rồng Nước",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "water",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.1,
+     "dmg": 30,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 30 sát thương. Đẩy lùi mạnh, làm Ướt, hồi 8 máu cho người niệm",
+     "wet": true,
+     "selfHeal": 8,
+     "copies": 1,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 2,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "offsetX": 0
+     }
+    },
+    "sky1": {
+     "name": "Mưa Rào",
+     "type": "atk",
+     "kind": "sky",
+     "el": "water",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.7,
+     "dmg": 14,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 14 sát thương. Đẩy lùi nhẹ",
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 3,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 36,
+      "band": 88,
+      "dir": 0
+     }
+    },
+    "sky2": {
+     "name": "Thác Đổ",
+     "type": "atk",
+     "kind": "sky",
+     "el": "water",
+     "level": 2,
+     "cost": 4,
+     "cast": 1,
+     "dmg": 24,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 24 sát thương. Đẩy lùi, làm Ướt 3 giây",
+     "wet": true,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 4,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "pour",
+      "landFrame": 3,
+      "top": 0,
+      "band": 135,
+      "dir": 0
+     }
+    },
+    "sky3": {
+     "name": "Đại Hồng Thuỷ",
+     "type": "atk",
+     "kind": "sky",
+     "el": "water",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.5,
+     "dmg": 40,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 40 sát thương. Đẩy lùi mạnh, làm Ướt, hồi 8 máu cho người niệm",
+     "wet": true,
+     "selfHeal": 8,
+     "copies": 1,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 5,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "pour",
+      "landFrame": 3,
+      "top": 0,
+      "band": 135,
+      "dir": 0
+     }
+    },
+    "ground1": {
+     "name": "Vũng Nước",
+     "type": "atk",
+     "kind": "ground",
+     "el": "water",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.6,
+     "dmg": 5,
+     "hits": 3,
+     "text": "Tạo vũng xoáy dưới chân địch: cứ mỗi nhịp gây sát thương nhỏ và làm chậm, 3 nhịp. 5 sát thương × 3 nhịp. Làm chậm 15%",
+     "slow": 0.15,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 6,
+      "frames": 8,
+      "mode": "pool",
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+       2,
+       4,
+       6
+      ],
+      "segments": {
+       "spread": [
+        0,
+        1
+       ],
+       "swirl": [
+        2,
+        5
+       ],
+       "dry": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "ground2": {
+     "name": "Vũng Xoáy",
+     "type": "atk",
+     "kind": "ground",
+     "el": "water",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.9,
+     "dmg": 9,
+     "hits": 3,
+     "text": "Tạo vũng xoáy dưới chân địch: cứ mỗi nhịp gây sát thương nhỏ và làm chậm, 3 nhịp. 9 sát thương × 3 nhịp. Làm chậm 25%, làm Ướt",
+     "slow": 0.25,
+     "wet": true,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 7,
+      "frames": 8,
+      "mode": "pool",
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+       2,
+       4,
+       6
+      ],
+      "segments": {
+       "spread": [
+        0,
+        1
+       ],
+       "swirl": [
+        2,
+        5
+       ],
+       "dry": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "ground3": {
+     "name": "Hồ Xoáy Nuốt Chửng",
+     "type": "atk",
+     "kind": "ground",
+     "el": "water",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.3,
+     "dmg": 14,
+     "hits": 3,
+     "text": "Tạo vũng xoáy dưới chân địch: cứ mỗi nhịp gây sát thương nhỏ và làm chậm, 3 nhịp. 14 sát thương × 3 nhịp. Làm chậm 40%, làm Ướt, kéo địch về giữa vũng",
+     "slow": 0.4,
+     "wet": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 8,
+      "frames": 8,
+      "mode": "pool",
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+       2,
+       4,
+       6
+      ],
+      "segments": {
+       "spread": [
+        0,
+        1
+       ],
+       "swirl": [
+        2,
+        5
+       ],
+       "dry": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "spread1": {
+     "name": "Bọt Hồi Phục",
+     "type": "support",
+     "kind": "spread",
+     "el": "water",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.5,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Bọc người niệm trong bong bóng nước: hồi máu và chặn bớt sát thương. Hồi 8 máu",
+     "heal": 8,
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 9,
+      "frames": 8,
+      "mode": "aura",
+      "fps": 10,
+      "anchor": "center",
+      "at": "caster",
+      "healFrame": 3,
+      "segments": {
+       "form": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        5
+       ],
+       "pop": [
+        6,
+        7
+       ]
+      },
+      "offsetX": -2
+     }
+    },
+    "spread2": {
+     "name": "Bong Bóng Hộ Thân",
+     "type": "support",
+     "kind": "spread",
+     "el": "water",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.8,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Bọc người niệm trong bong bóng nước: hồi máu và chặn bớt sát thương. Hồi 15 máu, chặn 20% sát thương trong 3 giây",
+     "heal": 15,
+     "guard": {
+      "pct": 0.2,
+      "dur": 3
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 10,
+      "frames": 8,
+      "mode": "aura",
+      "fps": 10,
+      "anchor": "center",
+      "at": "caster",
+      "healFrame": 3,
+      "segments": {
+       "form": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        5
+       ],
+       "pop": [
+        6,
+        7
+       ]
+      },
+      "offsetX": -1
+     }
+    },
+    "spread3": {
+     "name": "Thánh Thuỷ Bao Bọc",
+     "type": "support",
+     "kind": "spread",
+     "el": "water",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Bọc người niệm trong bong bóng nước: hồi máu và chặn bớt sát thương. Hồi 26 máu, chặn 40% sát thương trong 4 giây, giải hiệu ứng xấu",
+     "heal": 26,
+     "guard": {
+      "pct": 0.4,
+      "dur": 4
+     },
+     "cleanse": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 11,
+      "frames": 8,
+      "mode": "aura",
+      "fps": 10,
+      "anchor": "center",
+      "at": "caster",
+      "healFrame": 3,
+      "segments": {
+       "form": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        5
+       ],
+       "pop": [
+        6,
+        7
+       ]
+      },
+      "offsetX": 0
+     }
+    }
+   }
+  },
+  "frost": {
+   "name": "Băng Nữ Sylvi",
+   "format": 1,
+   "el": "ice",
+   "tip": "Băng: làm chậm cộng dồn, Đóng băng, ngục băng và thời khắc đóng băng ngắt phép. Có giáp sương.",
+   "hand": [
+    171,
+    99
+   ],
+   "head": [
+    100,
+    40
+   ],
+   "sheet": "anim/frost-sheet.png",
+   "anim": "anim/frost.json",
+   "spellSheet": "spells/frost-spells.png",
+   "spellRows": 12,
+   "defaultLoadout": [
+    "bolt1",
+    "bolt2",
+    "sky1",
+    "sky2",
+    "ground1",
+    "ground2",
+    "spread1",
+    "spread2"
+   ],
+   "spells": {
+    "bolt1": {
+     "name": "Mũi Băng",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "ice",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.4,
+     "dmg": 10,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 10 sát thương. Làm chậm 20%",
+     "slow": 0.2,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 0,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "impactAnchor": "bottom",
+      "offsetX": -8
+     }
+    },
+    "bolt2": {
+     "name": "Quạt Giáo Băng",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "ice",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.7,
+     "dmg": 7,
+     "hits": 3,
+     "text": "Phóng cùng lúc 3 giáo băng toả hình quạt, mỗi giáo trúng là một lần sát thương. 7 sát thương × 3 nhịp. Mỗi giáo làm chậm 10%, cộng dồn",
+     "slow": 0.1,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 1,
+      "frames": 8,
+      "mode": "fan",
+      "kit": true,
+      "fps": 14,
+      "anchor": "center",
+      "at": "caster_hand",
+      "count": 3,
+      "spreadY": [
+       -30,
+       0,
+       24
+      ],
+      "interval": 0.06,
+      "hitFrame": 4,
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "impactAnchor": "bottom",
+      "offsetX": -4
+     }
+    },
+    "bolt3": {
+     "name": "Tia Băng Vĩnh Cửu",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "ice",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.1,
+     "dmg": 11,
+     "hits": 3,
+     "text": "Tia băng liên tục nối từ tay tới địch, đóng băng dần qua 3 nhịp. 11 sát thương × 3 nhịp. Mỗi nhịp làm chậm thêm 20%; đủ 3 nhịp thì Đóng băng 1 giây",
+     "slow": 0.2,
+     "freeze": 1,
+     "copies": 1,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 2,
+      "frames": 8,
+      "mode": "beam",
+      "kit": true,
+      "fps": 12,
+      "anchor": "beam",
+      "at": "hand_to_target",
+      "tickFrames": [
+       1,
+       3,
+       5
+      ],
+      "segments": {
+       "beam": [
+        0,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "offsetX": -1,
+      "beamHead": [
+       [
+        7,
+        83,
+        188
+       ],
+       [
+        9,
+        84,
+        188
+       ],
+       [
+        9,
+        84,
+        188
+       ],
+       [
+        9,
+        83,
+        186
+       ],
+       [
+        7,
+        82,
+        186
+       ],
+       [
+        6,
+        81,
+        185
+       ],
+       [
+        6,
+        81,
+        185
+       ],
+       [
+        6,
+        80,
+        183
+       ]
+      ]
+     }
+    },
+    "sky1": {
+     "name": "Mưa Đá",
+     "type": "atk",
+     "kind": "sky",
+     "el": "ice",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.7,
+     "dmg": 14,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 14 sát thương. Làm chậm 20%",
+     "slow": 0.2,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 3,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 49,
+      "band": 98,
+      "dir": 0
+     }
+    },
+    "sky2": {
+     "name": "Bão Tuyết",
+     "type": "atk",
+     "kind": "sky",
+     "el": "ice",
+     "level": 2,
+     "cost": 4,
+     "cast": 1,
+     "dmg": 9,
+     "hits": 3,
+     "text": "Gọi mây bão tuyết ngay trên đầu địch, quất tuyết 3 nhịp. 9 sát thương × 3 nhịp. Làm chậm 30% trong lúc bão",
+     "slow": 0.3,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 4,
+      "frames": 8,
+      "mode": "blizzard",
+      "kit": true,
+      "fps": 6,
+      "anchor": "bottom",
+      "at": "target",
+      "tickFrames": [
+       2,
+       4,
+       6
+      ],
+      "segments": {
+       "gather": [
+        0,
+        1
+       ],
+       "storm": [
+        2,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 26,
+      "band": 115,
+      "dir": 0
+     }
+    },
+    "sky3": {
+     "name": "Sao Băng Giá",
+     "type": "atk",
+     "kind": "sky",
+     "el": "ice",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.5,
+     "dmg": 40,
+     "hits": 1,
+     "text": "Một ngôi sao băng khổng lồ rơi xuống chỗ địch, cả sân rung chuyển. 40 sát thương. Đóng băng 1 giây, rung sân",
+     "freeze": 1,
+     "copies": 1,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 5,
+      "frames": 8,
+      "mode": "meteor",
+      "kit": true,
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 2,
+      "shake": 8,
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "skyMode": "cloud",
+      "landFrame": 2,
+      "top": 0,
+      "band": 104,
+      "dir": 0
+     }
+    },
+    "ground1": {
+     "name": "Mặt Băng Trơn",
+     "type": "atk",
+     "kind": "ground",
+     "el": "ice",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.6,
+     "dmg": 12,
+     "hits": 1,
+     "text": "Đóng băng mặt đất dưới chân địch: địch trượt chân văng lùi ra sau. 12 sát thương. Trượt lùi, mất thăng bằng 0,5 giây",
+     "stun": 0.5,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 6,
+      "frames": 8,
+      "mode": "sheet",
+      "kit": true,
+      "fps": 8,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 2,
+      "slide": 46,
+      "segments": {
+       "spread": [
+        0,
+        2
+       ],
+       "glint": [
+        3,
+        5
+       ],
+       "melt": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "ground2": {
+     "name": "Hàng Gai Băng",
+     "type": "atk",
+     "kind": "ground",
+     "el": "ice",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.9,
+     "dmg": 22,
+     "hits": 1,
+     "text": "Gai băng mọc nối tiếp thành hàng từ chân người niệm tới chỗ địch, gai cuối đâm trúng. 22 sát thương. Làm chậm 35%, chặn đường lùi",
+     "slow": 0.35,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 7,
+      "frames": 8,
+      "mode": "line",
+      "kit": true,
+      "fps": 16,
+      "anchor": "bottom",
+      "at": "caster_to_target",
+      "hitFrame": 2,
+      "segments": {
+       "grow": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        4
+       ],
+       "shatter": [
+        5,
+        7
+       ]
+      },
+      "count": 6,
+      "interval": 0.07
+     }
+    },
+    "ground3": {
+     "name": "Sông Băng Trỗi Dậy",
+     "type": "atk",
+     "kind": "ground",
+     "el": "ice",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.3,
+     "dmg": 36,
+     "hits": 1,
+     "text": "Cả khối sông băng trồi lên dưới chân địch, hất tung địch lên không. 36 sát thương. Hất tung, Đóng băng 1 giây khi rơi xuống",
+     "freeze": 1,
+     "launch": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 8,
+      "frames": 8,
+      "mode": "glacier",
+      "kit": true,
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 3,
+      "segments": {
+       "warn": [
+        0,
+        1
+       ],
+       "erupt": [
+        2,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      },
+      "knockUp": 70,
+      "shake": 7
+     }
+    },
+    "spread1": {
+     "name": "Giáp Sương",
+     "type": "counter",
+     "kind": "spread",
+     "el": "ice",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.5,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Phủ quanh người lớp giáp pha lê băng, chặn sát thương và làm chậm kẻ đánh mình. Giáp chặn 20 sát thương trong 4 giây",
+     "barrier": {
+      "hp": 20,
+      "dur": 4
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 9,
+      "frames": 8,
+      "mode": "armor",
+      "kit": true,
+      "fps": 10,
+      "anchor": "center",
+      "at": "caster",
+      "shieldFrame": 3,
+      "shield": 20,
+      "segments": {
+       "form": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        5
+       ],
+       "shatter": [
+        6,
+        7
+       ]
+      },
+      "offsetX": -2
+     }
+    },
+    "spread2": {
+     "name": "Ngục Băng",
+     "type": "atk",
+     "kind": "spread",
+     "el": "ice",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.8,
+     "dmg": 19,
+     "hits": 1,
+     "text": "Nhốt mục tiêu trong khối pha lê băng, rồi khối băng vỡ tung gây sát thương. 19 sát thương. Đóng băng 1 giây, vỡ ra làm chậm 30%",
+     "slow": 0.3,
+     "freeze": 1,
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 10,
+      "frames": 8,
+      "mode": "prison",
+      "kit": true,
+      "fps": 7,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 6,
+      "front": true,
+      "segments": {
+       "grow": [
+        0,
+        2
+       ],
+       "hold": [
+        3,
+        5
+       ],
+       "shatter": [
+        6,
+        7
+       ]
+      },
+      "offsetX": 1
+     }
+    },
+    "spread3": {
+     "name": "Thời Khắc Đóng Băng",
+     "type": "atk",
+     "kind": "spread",
+     "el": "ice",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 12,
+     "hits": 3,
+     "text": "Đóng băng thời gian quanh địch: địch đứng im giữa ấn bông tuyết, băng vụn chém 3 nhịp. 12 sát thương × 3 nhịp. Địch đứng yên 1,5 giây, phép đang niệm bị ngắt",
+     "stun": 1.5,
+     "interrupt": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 11,
+      "frames": 8,
+      "mode": "timefreeze",
+      "kit": true,
+      "fps": 6,
+      "anchor": "center",
+      "at": "target",
+      "tickFrames": [
+       2,
+       4,
+       6
+      ],
+      "freeze": true,
+      "tint": "#9fe8ff",
+      "segments": {
+       "appear": [
+        0,
+        1
+       ],
+       "frozen": [
+        2,
+        5
+       ],
+       "shatter": [
+        6,
+        7
+       ]
+      },
+      "offsetX": 0
+     }
+    }
+   }
+  },
+  "terra": {
+   "name": "Thạch Đạo Sĩ Borrun",
+   "format": 1,
+   "el": "earth",
+   "tip": "Đất: đòn nặng, Trói chân, hất tung. Dựng tường đá chặn đạn phép, đánh trúng thì được thêm giáp.",
+   "hand": [
+    180,
+    105
+   ],
+   "head": [
+    100,
+    40
+   ],
+   "sheet": "anim/terra-sheet.png",
+   "anim": "anim/terra.json",
+   "spellSheet": "spells/terra-spells.png",
+   "spellRows": 12,
+   "defaultLoadout": [
+    "bolt1",
+    "bolt2",
+    "sky1",
+    "sky2",
+    "ground1",
+    "ground2",
+    "spread1",
+    "spread2"
+   ],
+   "spells": {
+    "bolt1": {
+     "name": "Đá Ném",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "earth",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.4,
+     "dmg": 10,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 10 sát thương. Trói chân 0,3 giây",
+     "root": 0.3,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 0,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4
+     }
+    },
+    "bolt2": {
+     "name": "Hạt Gai",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "earth",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.7,
+     "dmg": 18,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 18 sát thương. Trói chân 0,6 giây, người niệm +10 giáp",
+     "root": 0.6,
+     "armorOnHit": 10,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 1,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4
+     }
+    },
+    "bolt3": {
+     "name": "Thiên Thạch Rêu",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "earth",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.1,
+     "dmg": 30,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 30 sát thương. Trói chân 1 giây, người niệm +20 giáp",
+     "root": 1,
+     "armorOnHit": 20,
+     "copies": 1,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 2,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "impactAnchor": "bottom"
+     }
+    },
+    "sky1": {
+     "name": "Mưa Sỏi",
+     "type": "atk",
+     "kind": "sky",
+     "el": "earth",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.7,
+     "dmg": 14,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 14 sát thương. Trói chân 0,3 giây",
+     "root": 0.3,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 3,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "fall",
+      "landFrame": 3,
+      "top": 94,
+      "band": 64,
+      "dir": 0
+     }
+    },
+    "sky2": {
+     "name": "Đá Tảng Rơi",
+     "type": "atk",
+     "kind": "sky",
+     "el": "earth",
+     "level": 2,
+     "cost": 4,
+     "cast": 1,
+     "dmg": 24,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 24 sát thương. Trói chân 0,6 giây, người niệm +10 giáp",
+     "root": 0.6,
+     "armorOnHit": 10,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 4,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "fall",
+      "landFrame": 4,
+      "top": 99,
+      "band": 60,
+      "dir": 0
+     }
+    },
+    "sky3": {
+     "name": "Núi Đổ",
+     "type": "atk",
+     "kind": "sky",
+     "el": "earth",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.5,
+     "dmg": 40,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 40 sát thương. Trói chân 1 giây, người niệm +20 giáp",
+     "root": 1,
+     "armorOnHit": 20,
+     "copies": 1,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 5,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "fall",
+      "landFrame": 4,
+      "top": 65,
+      "band": 86,
+      "dir": 0.15
+     }
+    },
+    "ground1": {
+     "name": "Gai Đá",
+     "type": "atk",
+     "kind": "ground",
+     "el": "earth",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.6,
+     "dmg": 12,
+     "hits": 1,
+     "text": "Đập tay xuống đất: cả sân rung chuyển, đá trồi lên hất tung địch lên không. 12 sát thương. Hất tung nhẹ",
+     "launch": true,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 6,
+      "frames": 8,
+      "mode": "quake",
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 3,
+      "segments": {
+       "warn": [
+        0,
+        1
+       ],
+       "erupt": [
+        2,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      },
+      "knockUp": 30,
+      "shake": 3
+     }
+    },
+    "ground2": {
+     "name": "Rễ Trói",
+     "type": "atk",
+     "kind": "ground",
+     "el": "earth",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.9,
+     "dmg": 22,
+     "hits": 1,
+     "text": "Đập tay xuống đất: cả sân rung chuyển, đá trồi lên hất tung địch lên không. 22 sát thương. Hất tung, Trói chân 0,6 giây khi rơi xuống",
+     "root": 0.6,
+     "launch": true,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 7,
+      "frames": 8,
+      "mode": "quake",
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 3,
+      "segments": {
+       "warn": [
+        0,
+        1
+       ],
+       "erupt": [
+        2,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      },
+      "knockUp": 50,
+      "shake": 5
+     }
+    },
+    "ground3": {
+     "name": "Địa Chấn Khởi Nguyên",
+     "type": "atk",
+     "kind": "ground",
+     "el": "earth",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.3,
+     "dmg": 36,
+     "hits": 1,
+     "text": "Đập tay xuống đất: cả sân rung chuyển, đá trồi lên hất tung địch lên không. 36 sát thương. Hất tung cao, rung cả sân, Trói chân 1 giây",
+     "root": 1,
+     "launch": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 8,
+      "frames": 8,
+      "mode": "quake",
+      "fps": 14,
+      "anchor": "bottom",
+      "at": "target",
+      "hitFrame": 3,
+      "segments": {
+       "warn": [
+        0,
+        1
+       ],
+       "erupt": [
+        2,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      },
+      "knockUp": 80,
+      "shake": 9
+     }
+    },
+    "spread1": {
+     "name": "Vách Đá",
+     "type": "counter",
+     "kind": "spread",
+     "el": "earth",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.5,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Dựng bức tường đá trước mặt, chặn đạn và phép bay thẳng tới. Chặn 1 đạn phép, đứng 2 giây",
+     "wall": {
+      "n": 1,
+      "dur": 2,
+      "rootOnFall": false
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 9,
+      "frames": 8,
+      "mode": "wall",
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "caster_front",
+      "blockFrames": [
+       2,
+       5
+      ],
+      "segments": {
+       "rise": [
+        0,
+        2
+       ],
+       "stand": [
+        3,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "spread2": {
+     "name": "Tường Đá Rêu",
+     "type": "counter",
+     "kind": "spread",
+     "el": "earth",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.8,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Dựng bức tường đá trước mặt, chặn đạn và phép bay thẳng tới. Chặn 2 đạn phép, đứng 3 giây",
+     "wall": {
+      "n": 2,
+      "dur": 3,
+      "rootOnFall": false
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 10,
+      "frames": 8,
+      "mode": "wall",
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "caster_front",
+      "blockFrames": [
+       2,
+       5
+      ],
+      "segments": {
+       "rise": [
+        0,
+        2
+       ],
+       "stand": [
+        3,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      }
+     }
+    },
+    "spread3": {
+     "name": "Thành Luỹ Cổ Thụ",
+     "type": "counter",
+     "kind": "spread",
+     "el": "earth",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Dựng bức tường đá trước mặt, chặn đạn và phép bay thẳng tới. Chặn mọi đạn phép trong 4 giây, khi sụp làm địch gần đó bị Trói chân",
+     "wall": {
+      "n": 99,
+      "dur": 4,
+      "rootOnFall": true
+     },
+     "copies": 1,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 11,
+      "frames": 8,
+      "mode": "wall",
+      "fps": 5,
+      "anchor": "bottom",
+      "at": "caster_front",
+      "blockFrames": [
+       2,
+       5
+      ],
+      "segments": {
+       "rise": [
+        0,
+        2
+       ],
+       "stand": [
+        3,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      }
+     }
+    }
+   }
+  },
+  "raven": {
+   "name": "Quạ Hắc Thuật Corvin",
+   "format": 1,
+   "el": "dark",
+   "tip": "Bóng tối: mọi đòn đều hút máu, làm Mù khiến phép đối thủ yếu đi, xoá phép duy trì của đối thủ.",
+   "hand": [
+    175,
+    120
+   ],
+   "head": [
+    100,
+    40
+   ],
+   "sheet": "anim/raven-sheet.png",
+   "anim": "anim/raven.json",
+   "spellSheet": "spells/raven-spells.png",
+   "spellRows": 12,
+   "defaultLoadout": [
+    "bolt1",
+    "bolt2",
+    "sky1",
+    "sky2",
+    "ground1",
+    "ground2",
+    "spread1",
+    "spread2"
+   ],
+   "spells": {
+    "bolt1": {
+     "name": "Mũi Bóng",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "dark",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.4,
+     "dmg": 10,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 10 sát thương. Hút 3 máu",
+     "drainHp": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 0,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "impactAnchor": "bottom",
+      "offsetX": -4
+     }
+    },
+    "bolt2": {
+     "name": "Bầy Quạ",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "dark",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.7,
+     "dmg": 18,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 18 sát thương. Hút 6 máu, làm Mù 1 giây",
+     "drainHp": 6,
+     "blind": 1,
+     "copies": 2,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 1,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "offsetX": 1
+     }
+    },
+    "bolt3": {
+     "name": "Giáo Hư Không",
+     "type": "atk",
+     "kind": "bolt",
+     "el": "dark",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.1,
+     "dmg": 30,
+     "hits": 1,
+     "text": "Đạn bay thẳng tới mục tiêu, nổ khi trúng. 30 sát thương. Hút 12 máu, làm Mù 2 giây, xoá 1 phép duy trì",
+     "drainHp": 12,
+     "blind": 2,
+     "dispel": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 2,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "center",
+      "segments": {
+       "flight": [
+        0,
+        3
+       ],
+       "impact": [
+        4,
+        7
+       ]
+      },
+      "hitFrame": 4,
+      "offsetX": -4
+     }
+    },
+    "sky1": {
+     "name": "Lông Quạ Rơi",
+     "type": "atk",
+     "kind": "sky",
+     "el": "dark",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.7,
+     "dmg": 14,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 14 sát thương. Hút 3 máu",
+     "drainHp": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 3,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 0,
+      "band": 135,
+      "dir": 0
+     }
+    },
+    "sky2": {
+     "name": "Trụ Bóng Đêm",
+     "type": "atk",
+     "kind": "sky",
+     "el": "dark",
+     "level": 2,
+     "cost": 4,
+     "cast": 1,
+     "dmg": 24,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 24 sát thương. Hút 6 máu, làm Mù 1 giây",
+     "drainHp": 6,
+     "blind": 1,
+     "copies": 2,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 4,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 0,
+      "band": 135,
+      "dir": 0
+     }
+    },
+    "sky3": {
+     "name": "Nhật Thực",
+     "type": "atk",
+     "kind": "sky",
+     "el": "dark",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.5,
+     "dmg": 40,
+     "hits": 1,
+     "text": "Tụ năng lượng trên cao rồi giáng thẳng xuống chỗ mục tiêu đứng. 40 sát thương. Hút 12 máu, làm Mù 2 giây, xoá 1 phép duy trì",
+     "drainHp": 12,
+     "blind": 2,
+     "dispel": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_sky",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 5,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "charge": [
+        0,
+        1
+       ],
+       "strike": [
+        2,
+        4
+       ],
+       "fade": [
+        5,
+        7
+       ]
+      },
+      "hitFrame": 2,
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 0,
+      "band": 130,
+      "dir": 0
+     }
+    },
+    "ground1": {
+     "name": "Xúc Tu Bóng",
+     "type": "atk",
+     "kind": "ground",
+     "el": "dark",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.6,
+     "dmg": 12,
+     "hits": 1,
+     "text": "Mặt đất dưới chân mục tiêu nứt sáng rồi trồi lên. 12 sát thương. Hút 3 máu",
+     "drainHp": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 6,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "warn": [
+        0,
+        1
+       ],
+       "erupt": [
+        2,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      },
+      "hitFrame": 3
+     }
+    },
+    "ground2": {
+     "name": "Bóng Trói",
+     "type": "atk",
+     "kind": "ground",
+     "el": "dark",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.9,
+     "dmg": 22,
+     "hits": 1,
+     "text": "Mặt đất dưới chân mục tiêu nứt sáng rồi trồi lên. 22 sát thương. Hút 6 máu, làm Mù 1 giây",
+     "drainHp": 6,
+     "blind": 1,
+     "copies": 2,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 7,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "warn": [
+        0,
+        1
+       ],
+       "erupt": [
+        2,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      },
+      "hitFrame": 3
+     }
+    },
+    "ground3": {
+     "name": "Vực Thẳm Mở",
+     "type": "atk",
+     "kind": "ground",
+     "el": "dark",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.3,
+     "dmg": 36,
+     "hits": 1,
+     "text": "Mặt đất dưới chân mục tiêu nứt sáng rồi trồi lên. 36 sát thương. Hút 12 máu, làm Mù 2 giây, xoá 1 phép duy trì",
+     "drainHp": 12,
+     "blind": 2,
+     "dispel": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_ground",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 8,
+      "frames": 8,
+      "fps": 14,
+      "anchor": "bottom",
+      "segments": {
+       "warn": [
+        0,
+        1
+       ],
+       "erupt": [
+        2,
+        5
+       ],
+       "crumble": [
+        6,
+        7
+       ]
+      },
+      "hitFrame": 3
+     }
+    },
+    "spread1": {
+     "name": "Ấn Hút Hồn",
+     "type": "atk",
+     "kind": "spread",
+     "el": "dark",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.5,
+     "dmg": 8,
+     "hits": 1,
+     "text": "Ấn nguyền lên ngực địch, rút linh hồn thành quả cầu bay về hồi máu cho người niệm. 8 sát thương. Hút 4 máu",
+     "drainHp": 4,
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 9,
+      "frames": 8,
+      "mode": "drain",
+      "fps": 10,
+      "anchor": "center",
+      "at": "target",
+      "hitFrame": 3,
+      "healFrame": 4,
+      "segments": {
+       "mark": [
+        0,
+        2
+       ],
+       "pull": [
+        3,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "offsetX": -1
+     }
+    },
+    "spread2": {
+     "name": "Nguyền Huyết",
+     "type": "atk",
+     "kind": "spread",
+     "el": "dark",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.8,
+     "dmg": 15,
+     "hits": 1,
+     "text": "Ấn nguyền lên ngực địch, rút linh hồn thành quả cầu bay về hồi máu cho người niệm. 15 sát thương. Hút 8 máu, làm Mù 1 giây",
+     "drainHp": 8,
+     "blind": 1,
+     "copies": 2,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 10,
+      "frames": 8,
+      "mode": "drain",
+      "fps": 10,
+      "anchor": "center",
+      "at": "target",
+      "hitFrame": 3,
+      "healFrame": 4,
+      "segments": {
+       "mark": [
+        0,
+        2
+       ],
+       "pull": [
+        3,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "offsetX": -7
+     }
+    },
+    "spread3": {
+     "name": "Khế Ước Hư Không",
+     "type": "atk",
+     "kind": "spread",
+     "el": "dark",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 26,
+     "hits": 1,
+     "text": "Ấn nguyền lên ngực địch, rút linh hồn thành quả cầu bay về hồi máu cho người niệm. 26 sát thương. Hút 14 máu, làm Mù 2 giây, cướp 1 phép duy trì",
+     "drainHp": 14,
+     "blind": 2,
+     "dispel": true,
+     "copies": 1,
+     "anim": {
+      "pose": "release_spread",
+      "release": 2,
+      "poseFps": 14
+     },
+     "visual": {
+      "row": 11,
+      "frames": 8,
+      "mode": "drain",
+      "fps": 10,
+      "anchor": "center",
+      "at": "target",
+      "hitFrame": 3,
+      "healFrame": 4,
+      "segments": {
+       "mark": [
+        0,
+        2
+       ],
+       "pull": [
+        3,
+        5
+       ],
+       "fade": [
+        6,
+        7
+       ]
+      },
+      "offsetX": -1
+     }
+    }
+   }
+  },
+  "pharaoh": {
+   "name": "Tư Tế Sa Mạc Sethi",
+   "format": 2,
+   "el": "earth",
+   "tip": "Cát: Mắt Horus làm Mù, lốc cát di chuyển, tay xác ướp trói chân, quan tài phong ấn, đĩa mặt trời hút máu.",
+   "hand": [
+    150,
+    104
+   ],
+   "head": [
+    103,
+    43
+   ],
+   "sheet": "anim/pharaoh-sheet.png",
+   "anim": "anim/pharaoh.json",
+   "spellSheet": "spells/pharaoh-spells.png",
+   "spellRows": 9,
+   "defaultLoadout": [
+    "horus",
+    "scarab",
+    "sandstorm",
+    "judgement",
+    "mummy",
+    "sarcophagus",
+    "khopesh",
+    "sundisk"
+   ],
+   "spells": {
+    "horus": {
+     "name": "Mắt Horus",
+     "type": "atk",
+     "kind": "beam",
+     "el": "earth",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.6,
+     "dmg": 10,
+     "hits": 3,
+     "text": "Con mắt thần mở trên trán, bắn tia sáng vàng xuyên thẳng tới địch, 3 nhịp. 10 sát thương × 3 nhịp. Làm Mù 2 giây",
+     "blind": 2,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_horus",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "beam",
+       "origin": "head",
+       "ticks": [
+        1,
+        3,
+        5
+       ],
+       "fps": 12
+      },
+      "row": 0,
+      "hand": [
+       123,
+       89
+      ],
+      "frames": 8,
+      "fps": 12,
+      "row2": 1,
+      "beamHead": [
+       [
+        4,
+        132,
+        188
+       ],
+       [
+        4,
+        132,
+        188
+       ],
+       [
+        4,
+        132,
+        188
+       ],
+       [
+        4,
+        132,
+        188
+       ],
+       [
+        4,
+        127,
+        180
+       ],
+       [
+        4,
+        128,
+        182
+       ],
+       [
+        4,
+        125,
+        177
+       ],
+       [
+        4,
+        97,
+        137
+       ]
+      ],
+      "headPt": [
+       123,
+       89
+      ]
+     }
+    },
+    "scarab": {
+     "name": "Bọ Hung Đẩy Mặt Trời",
+     "type": "atk",
+     "kind": "projectile",
+     "el": "earth",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.7,
+     "dmg": 22,
+     "hits": 1,
+     "text": "Bọ hung thánh đẩy quả cầu mặt trời lăn sát đất tới địch rồi nổ chói. 22 sát thương. Thiêu đốt 3 giây",
+     "burn": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_scarab",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "projectile",
+       "origin": "ground",
+       "speed": 300,
+       "impact": 4
+      },
+      "row": 2,
+      "hand": [
+       154,
+       169
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "sandstorm": {
+     "name": "Lốc Cát Sa Mạc",
+     "type": "atk",
+     "kind": "zone",
+     "el": "earth",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.9,
+     "dmg": 7,
+     "hits": 4,
+     "text": "Gọi một cơn lốc cát chạy dọc sân về phía địch, cuốn 4 nhịp. 7 sát thương × 4 nhịp. Làm Mù, chậm 20%",
+     "slow": 0.2,
+     "blind": 2,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_sandstorm",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "zone",
+       "move": true,
+       "speed": 150,
+       "ticks": [
+        2,
+        4,
+        6,
+        7
+       ],
+       "fps": 8,
+       "loop": true,
+       "life": 2.4
+      },
+      "row": 3,
+      "hand": [
+       142,
+       143
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    },
+    "judgement": {
+     "name": "Cán Cân Anubis",
+     "type": "atk",
+     "kind": "drop",
+     "el": "earth",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 34,
+     "hits": 1,
+     "text": "Cán cân phán xử của thần chết giáng xuống đè lên địch. Địch càng nhiều máu càng đau. 34 sát thương. Gây thêm sát thương bằng 10% máu hiện tại của địch",
+     "pctHp": 0.1,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_judgement",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "drop",
+       "hit": 3,
+       "shake": 6
+      },
+      "row": 4,
+      "hand": [
+       149,
+       159
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "mummy": {
+     "name": "Tay Xác Ướp",
+     "type": "atk",
+     "kind": "erupt",
+     "el": "earth",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.6,
+     "dmg": 14,
+     "hits": 1,
+     "text": "Những bàn tay xác ướp thò lên từ cát túm chân địch, giữ đứng yên. 14 sát thương. Trói chân 1,5 giây",
+     "root": 1.5,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_mummy",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "erupt",
+       "hit": 2,
+       "root": 1.5
+      },
+      "row": 5,
+      "hand": [
+       140,
+       171
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "sarcophagus": {
+     "name": "Quan Tài Phong Ấn",
+     "type": "atk",
+     "kind": "erupt",
+     "el": "earth",
+     "level": 3,
+     "cost": 6,
+     "cast": 1,
+     "dmg": 26,
+     "hits": 1,
+     "text": "Một quan tài vàng dựng lên nhốt địch, khi vỡ ra thì gây sát thương lớn. 26 sát thương. Địch đứng yên 1,2 giây, không niệm được phép",
+     "stun": 1.2,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_sarcophagus",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "erupt",
+       "hit": 6,
+       "freeze": true,
+       "fps": 7,
+       "front": true
+      },
+      "row": 6,
+      "hand": [
+       123,
+       107
+      ],
+      "frames": 8,
+      "fps": 7
+     }
+    },
+    "khopesh": {
+     "name": "Khopesh Hồi Toàn",
+     "type": "atk",
+     "kind": "boomerang",
+     "el": "earth",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.4,
+     "dmg": 12,
+     "hits": 2,
+     "text": "Ném lưỡi kiếm cong xoay vòng bay tới địch rồi quay về tay, trúng 2 lần. 12 sát thương × 2 nhịp. Mỗi lần trúng gây Chảy máu 1 giây",
+     "burn": 1,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_khopesh",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "boomerang",
+       "origin": "hand",
+       "speed": 520,
+       "passes": 2
+      },
+      "row": 7,
+      "hand": [
+       168,
+       89
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "sundisk": {
+     "name": "Thái Dương Ra",
+     "type": "atk",
+     "kind": "self",
+     "el": "earth",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.3,
+     "dmg": 8,
+     "hits": 5,
+     "text": "Đĩa mặt trời có cánh bay lên sau lưng, bắn 5 tia nắng xuống địch. 8 sát thương × 5 nhịp. Người niệm hồi 3 máu mỗi tia trúng",
+     "lifePerHit": 3,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_sundisk",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "rays": [
+        2,
+        3,
+        4,
+        5,
+        6
+       ],
+       "fps": 8,
+       "at": "caster_back"
+      },
+      "row": 8,
+      "hand": [
+       147,
+       7
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    }
+   }
+  },
+  "swordsman": {
+   "name": "Kiếm Khách Lãng Du",
+   "format": 2,
+   "el": "none",
+   "tip": "Kiếm khí: lướt chém xuyên giáp, kiếm bay hồi toàn, vạn kiếm giáng, điểm huyệt ngắt phép, phân thân.",
+   "hand": [
+    150,
+    104
+   ],
+   "head": [
+    101,
+    42
+   ],
+   "sheet": "anim/swordsman-sheet.png",
+   "anim": "anim/swordsman.json",
+   "spellSheet": "spells/swordsman-spells.png",
+   "spellRows": 8,
+   "defaultLoadout": [
+    "iaido",
+    "crescent",
+    "flysword",
+    "swordrain",
+    "taiji",
+    "dragonpalm",
+    "clones",
+    "acupoint"
+   ],
+   "spells": {
+    "iaido": {
+     "name": "Nhất Thiểm · Hoa Sơn",
+     "type": "atk",
+     "kind": "dash",
+     "el": "none",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.3,
+     "dmg": 24,
+     "hits": 1,
+     "text": "Rút kiếm lướt xuyên qua địch trong chớp mắt, để lại một đường chém. 24 sát thương. Xuyên giáp",
+     "pierce": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_iaido",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "dash",
+       "hit": 2,
+       "afterimages": true,
+       "stop": "behind"
+      },
+      "row": 0,
+      "hand": [
+       171,
+       94
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "crescent": {
+     "name": "Kiếm Khí Trảm · Không Động",
+     "type": "atk",
+     "kind": "projectile",
+     "el": "none",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.4,
+     "dmg": 18,
+     "hits": 1,
+     "text": "Chém một nhát từ trên xuống, phóng kiếm khí hình trăng lưỡi liềm bay tới địch. 18 sát thương. Đẩy lùi",
+     "copies": 2,
+     "anim": {
+      "pose": "sp_crescent",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "projectile",
+       "origin": "hand",
+       "speed": 560,
+       "impact": 4
+      },
+      "row": 1,
+      "hand": [
+       150,
+       112
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "flysword": {
+     "name": "Ngự Kiếm Phi Hành · Côn Lôn",
+     "type": "atk",
+     "kind": "boomerang",
+     "el": "none",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.7,
+     "dmg": 8,
+     "hits": 3,
+     "text": "Điều khiển phi kiếm bay chém tới chém lui 3 lần. 8 sát thương × 3 nhịp. Mỗi lần phá giáp 10%",
+     "copies": 2,
+     "anim": {
+      "pose": "sp_flysword",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "boomerang",
+       "origin": "hand",
+       "speed": 620,
+       "passes": 3,
+       "controlled": true
+      },
+      "row": 2,
+      "hand": [
+       167,
+       76
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "swordrain": {
+     "name": "Vạn Kiếm Quy Tông · Võ Đang",
+     "type": "atk",
+     "kind": "multi_drop",
+     "el": "none",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 6,
+     "hits": 7,
+     "text": "Giơ kiếm lên trời, gọi 7 thanh kiếm khí cắm xuống dồn dập quanh địch. 6 sát thương × 7 nhịp. Mỗi kiếm đẩy lùi nhẹ",
+     "copies": 1,
+     "anim": {
+      "pose": "sp_swordrain",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "multi_drop",
+       "count": 7,
+       "spread": 70,
+       "interval": 0.09,
+       "hit": 4
+      },
+      "row": 3,
+      "hand": [
+       115,
+       51
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "taiji": {
+     "name": "Thái Cực Đồ · Võ Đang",
+     "type": "counter",
+     "kind": "self",
+     "el": "none",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.5,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Vẽ vòng âm dương trước người, hoá giải đòn đánh và đẩy ngược lại. Chặn 1 đòn và phản 50% sát thương trong 3 giây",
+     "barrier": {
+      "hp": 25,
+      "dur": 3
+     },
+     "thorns": {
+      "pct": 0.5,
+      "dur": 3
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "sp_taiji",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "shield": 25,
+       "at": "caster_front",
+       "fps": 8
+      },
+      "row": 4,
+      "hand": [
+       149,
+       93
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    },
+    "dragonpalm": {
+     "name": "Long Ảnh Chưởng · Cái Bang",
+     "type": "atk",
+     "kind": "projectile",
+     "el": "none",
+     "level": 3,
+     "cost": 6,
+     "cast": 0.9,
+     "dmg": 30,
+     "hits": 1,
+     "text": "Một chưởng đẩy ra, chưởng phong hoá rồng ngọc lao tới nổ tung. 30 sát thương. Đẩy lùi mạnh, choáng 0,5 giây",
+     "stun": 0.5,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_dragonpalm",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "projectile",
+       "origin": "hand",
+       "speed": 480,
+       "impact": 4,
+       "shake": 4
+      },
+      "row": 5,
+      "hand": [
+       165,
+       99
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "clones": {
+     "name": "Ảnh Phân Thân · Nga Mi",
+     "type": "atk",
+     "kind": "clones",
+     "el": "none",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.6,
+     "dmg": 9,
+     "hits": 3,
+     "text": "Tách ra ba bóng ảnh vây quanh địch, mỗi bóng chém một nhát. 9 sát thương × 3 nhịp. Mỗi nhát 20% chí mạng",
+     "crit": 0.2,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_clones",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "clones",
+       "count": 3,
+       "hits": [
+        2,
+        3,
+        4
+       ],
+       "fps": 10
+      },
+      "row": 6,
+      "hand": [
+       96,
+       159
+      ],
+      "frames": 8,
+      "fps": 10
+     }
+    },
+    "acupoint": {
+     "name": "Điểm Huyệt Định Thân",
+     "type": "atk",
+     "kind": "dash",
+     "el": "none",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.4,
+     "dmg": 10,
+     "hits": 1,
+     "text": "Lướt tới điểm trúng huyệt đạo, địch đứng im không cử động được. 10 sát thương. Địch đứng yên 1,5 giây, ngắt phép đang niệm",
+     "stun": 1.5,
+     "interrupt": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_acupoint",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "dash",
+       "hit": 2,
+       "freeze": 1.5,
+       "stop": "front",
+       "fps": 8
+      },
+      "row": 7,
+      "hand": [
+       163,
+       80
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    }
+   }
+  },
+  "tarot": {
+   "name": "Bài Sư Selene",
+   "format": 2,
+   "el": "mind",
+   "tip": "Bài: phi bài, bánh xe số phận ngẫu nhiên, lá Tử Thần hẹn giờ, Mặt Trăng mê hoặc, Thế Giới vây đứng yên.",
+   "hand": [
+    150,
+    104
+   ],
+   "head": [
+    103,
+    42
+   ],
+   "sheet": "anim/tarot-sheet.png",
+   "anim": "anim/tarot.json",
+   "spellSheet": "spells/tarot-spells.png",
+   "spellRows": 8,
+   "defaultLoadout": [
+    "fan",
+    "tower",
+    "wheel",
+    "death",
+    "star",
+    "moon",
+    "chain",
+    "world"
+   ],
+   "spells": {
+    "fan": {
+     "name": "Tam Bài Phi Tiêu",
+     "type": "atk",
+     "kind": "fan",
+     "el": "mind",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.4,
+     "dmg": 9,
+     "hits": 3,
+     "text": "Vung tay ném xoè ba lá bài sắc như dao, bay ba tầng cao thấp khác nhau. 9 sát thương × 3 nhịp. Mỗi lá trúng giảm 5% kháng phép của địch",
+     "vuln": 0.05,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_fan",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "fan",
+       "origin": "hand",
+       "count": 3,
+       "spreadY": [
+        -34,
+        0,
+        30
+       ],
+       "interval": 0.07,
+       "speed": 640,
+       "impact": 4
+      },
+      "row": 0,
+      "hand": [
+       154,
+       81
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "tower": {
+     "name": "Lá Toà Tháp",
+     "type": "atk",
+     "kind": "drop",
+     "el": "mind",
+     "level": 3,
+     "cost": 6,
+     "cast": 1,
+     "dmg": 32,
+     "hits": 1,
+     "text": "Rút lá Toà Tháp giơ lên trời, sét định mệnh đánh thẳng xuống đầu địch. 32 sát thương. Phá 30% giáp, choáng 0,3 giây",
+     "stun": 0.3,
+     "armorBreak": 0.3,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_tower",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "drop",
+       "hit": 2,
+       "shake": 6,
+       "sky": true
+      },
+      "row": 1,
+      "hand": [
+       113,
+       91
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "wheel": {
+     "name": "Bánh Xe Số Phận",
+     "type": "atk",
+     "kind": "random",
+     "el": "mind",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.6,
+     "dmg": 20,
+     "hits": 1,
+     "text": "Quay bánh xe số phận trước mặt địch. Kim dừng ở đâu thì xảy ra chuyện đó: đánh mạnh gấp đôi, hồi máu cho mình, hoặc địch bị choáng. 20 sát thương. Ngẫu nhiên: 40 sát thương / hồi 20 máu / choáng 1,5 giây",
+     "random": [
+      "dmg2",
+      "heal",
+      "stun"
+     ],
+     "copies": 2,
+     "anim": {
+      "pose": "sp_wheel",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "random",
+       "hit": 6,
+       "fps": 9,
+       "outcomes": [
+        "dmg2",
+        "heal",
+        "stun"
+       ]
+      },
+      "row": 2,
+      "hand": [
+       118,
+       95
+      ],
+      "frames": 8,
+      "fps": 9
+     }
+    },
+    "death": {
+     "name": "Lá Tử Thần",
+     "type": "atk",
+     "kind": "mark",
+     "el": "mind",
+     "level": 3,
+     "cost": 7,
+     "cast": 0.8,
+     "dmg": 44,
+     "hits": 1,
+     "text": "Đặt ấn Tử Thần lơ lửng trên đầu địch. Sau 2,5 giây ấn nổ, gây sát thương rất lớn. 44 sát thương. Nếu địch dưới 25% máu thì gây gấp đôi",
+     "execute": 0.25,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_death",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "mark",
+       "delay": 2.5,
+       "hit": 5
+      },
+      "row": 3,
+      "hand": [
+       159,
+       72
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "star": {
+     "name": "Lá Ngôi Sao",
+     "type": "support",
+     "kind": "self",
+     "el": "mind",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.9,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Lá Ngôi Sao bừng sáng trên đầu, mưa sao nhỏ rơi xuống hồi máu cho người niệm. Hồi 24 máu, giải hiệu ứng xấu",
+     "heal": 24,
+     "cleanse": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_star",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "heal": 24,
+       "healAt": 4,
+       "fps": 9
+      },
+      "row": 4,
+      "hand": [
+       145,
+       80
+      ],
+      "frames": 8,
+      "fps": 9
+     }
+    },
+    "moon": {
+     "name": "Lá Mặt Trăng",
+     "type": "atk",
+     "kind": "erupt",
+     "el": "mind",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.7,
+     "dmg": 12,
+     "hits": 1,
+     "text": "Trăng khuyết hiện trên đầu địch, sương mê dâng lên. Địch bị mê hoặc, phép kế tiếp đánh trượt. 12 sát thương. Mê hoặc: phép kế tiếp của địch trượt (trong 3 giây)",
+     "confuse": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_moon",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "erupt",
+       "hit": 3,
+       "fps": 9,
+       "confuse": 3
+      },
+      "row": 5,
+      "hand": [
+       142,
+       105
+      ],
+      "frames": 8,
+      "fps": 9
+     }
+    },
+    "chain": {
+     "name": "Xiềng Định Mệnh",
+     "type": "atk",
+     "kind": "beam",
+     "el": "mind",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.6,
+     "dmg": 8,
+     "hits": 3,
+     "text": "Phóng sợi xích vàng trói lấy địch, siết 3 nhịp. Địch đứng yên tới khi xích tan. 8 sát thương × 3 nhịp. Trói chân trong lúc bị xích",
+     "root": 1.2,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_chain",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "beam",
+       "origin": "hand",
+       "ticks": [
+        2,
+        4,
+        6
+       ],
+       "fps": 10,
+       "root": 1.2
+      },
+      "row": 6,
+      "hand": [
+       141,
+       88
+      ],
+      "frames": 8,
+      "fps": 10,
+      "beamHead": [
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ]
+      ]
+     }
+    },
+    "world": {
+     "name": "Lá Thế Giới",
+     "type": "atk",
+     "kind": "strike",
+     "el": "mind",
+     "level": 3,
+     "cost": 8,
+     "cast": 1.3,
+     "dmg": 10,
+     "hits": 4,
+     "text": "Sáu lá bài bay vòng quanh địch, thời gian ngưng lại, các lá bài khép vào cắt 4 nhát. 10 sát thương × 4 nhịp. Địch đứng yên trong lúc bị vây",
+     "stun": 1.5,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_world",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "strike",
+       "hits": [
+        3,
+        4,
+        5,
+        6
+       ],
+       "freeze": true,
+       "fps": 8
+      },
+      "row": 7,
+      "hand": [
+       113,
+       77
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    }
+   }
+  },
+  "mech": {
+   "name": "Thợ Máy Gearwin",
+   "format": 2,
+   "el": "fire",
+   "tip": "Máy hơi nước: súng đinh tán, lựu đạn ném vòng, tháp pháo tự bắn, nam châm kéo và ngắt phép, khinh khí cầu ném bom.",
+   "hand": [
+    150,
+    104
+   ],
+   "head": [
+    102,
+    42
+   ],
+   "sheet": "anim/mech-sheet.png",
+   "anim": "anim/mech.json",
+   "spellSheet": "spells/mech-spells.png",
+   "spellRows": 9,
+   "defaultLoadout": [
+    "rivet",
+    "grenade",
+    "turret",
+    "drill",
+    "magnet",
+    "steamjet",
+    "airship",
+    "overdrive"
+   ],
+   "spells": {
+    "rivet": {
+     "name": "Súng Đinh Tán",
+     "type": "atk",
+     "kind": "fan",
+     "el": "fire",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.3,
+     "dmg": 5,
+     "hits": 5,
+     "text": "Rút súng đinh tán bắn liên thanh 5 phát vào địch. 5 sát thương × 5 nhịp. Mỗi phát làm chậm 4%",
+     "slow": 0.04,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_rivet",
+      "release": 1,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "fan",
+       "origin": "hand",
+       "count": 5,
+       "spreadY": [
+        0,
+        -4,
+        3,
+        -2,
+        2
+       ],
+       "interval": 0.09,
+       "speed": 760,
+       "impact": 4
+      },
+      "row": 0,
+      "hand": [
+       163,
+       91
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "grenade": {
+     "name": "Lựu Đạn Bánh Răng",
+     "type": "atk",
+     "kind": "lob",
+     "el": "fire",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.7,
+     "dmg": 28,
+     "hits": 1,
+     "text": "Ném vòng cung một quả lựu đạn bánh răng, rơi trúng chỗ địch đứng rồi nổ. 28 sát thương. Đẩy lùi, cháy 2 giây",
+     "burn": 2,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_grenade",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "lob",
+       "origin": "hand",
+       "flight": 0.75,
+       "arc": 150,
+       "impact": 4,
+       "shake": 5
+      },
+      "row": 1,
+      "hand": [
+       160,
+       68
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "turret": {
+     "name": "Tháp Pháo Hơi Nước",
+     "type": "atk",
+     "kind": "turret",
+     "el": "fire",
+     "level": 3,
+     "cost": 6,
+     "cast": 0.9,
+     "dmg": 5,
+     "hits": 6,
+     "text": "Đặt một tháp pháo hơi nước trước mặt, tự bắn địch 6 phát trong 3 giây. 5 sát thương × 6 nhịp. Tháp pháo có 20 máu, địch đánh trúng sẽ phá",
+     "copies": 1,
+     "anim": {
+      "pose": "sp_turret",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "turret",
+       "life": 3.2,
+       "every": 0.5,
+       "speed": 620,
+       "fps": 10
+      },
+      "vis2": "a small glowing steam-turret bullet",
+      "guide2": "frames 1-4: the bullet flying to the RIGHT (seamless loop, centered); frames 5-8: a small spark burst",
+      "row": 2,
+      "hand": [
+       137,
+       127
+      ],
+      "frames": 8,
+      "fps": 10,
+      "row2": 3
+     }
+    },
+    "drill": {
+     "name": "Mũi Khoan Ngầm",
+     "type": "atk",
+     "kind": "projectile",
+     "el": "fire",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.8,
+     "dmg": 26,
+     "hits": 1,
+     "text": "Đấm xuống đất phóng mũi khoan chạy ngầm, trồi lên đâm thủng chân địch. 26 sát thương. Phá 40% giáp",
+     "armorBreak": 0.4,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_drill",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "projectile",
+       "origin": "ground",
+       "speed": 380,
+       "impact": 4
+      },
+      "row": 4,
+      "hand": [
+       148,
+       171
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "magnet": {
+     "name": "Nam Châm Kéo",
+     "type": "atk",
+     "kind": "projectile",
+     "el": "fire",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.5,
+     "dmg": 14,
+     "hits": 1,
+     "text": "Phóng nam châm khổng lồ bám vào địch rồi giật mạnh, kéo địch lại gần. 14 sát thương. Kéo địch lại gần 90 px, ngắt phép đang niệm",
+     "interrupt": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_magnet",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "projectile",
+       "origin": "hand",
+       "speed": 600,
+       "impact": 4,
+       "pull": 90
+      },
+      "row": 5,
+      "hand": [
+       153,
+       92
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "steamjet": {
+     "name": "Xả Hơi Nóng",
+     "type": "atk",
+     "kind": "beam",
+     "el": "fire",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.6,
+     "dmg": 6,
+     "hits": 4,
+     "text": "Mở van ống xả trên lưng, phun luồng hơi nóng thẳng vào địch, 4 nhịp bỏng. 6 sát thương × 4 nhịp. Bỏng: giảm hồi máu 50% trong 3 giây",
+     "healCut": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_steamjet",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "beam",
+       "origin": "hand",
+       "ticks": [
+        1,
+        3,
+        5,
+        7
+       ],
+       "fps": 12
+      },
+      "row": 6,
+      "hand": [
+       152,
+       89
+      ],
+      "frames": 8,
+      "fps": 12,
+      "beamHead": [
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ]
+      ]
+     }
+    },
+    "airship": {
+     "name": "Không Kích Khinh Khí Cầu",
+     "type": "atk",
+     "kind": "multi_drop",
+     "el": "fire",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.2,
+     "dmg": 10,
+     "hits": 4,
+     "text": "Bắn pháo hiệu gọi khinh khí cầu bay ngang trời, thả 4 quả bom xuống quanh địch. 10 sát thương × 4 nhịp. Mỗi quả bom đẩy lùi nhẹ",
+     "copies": 1,
+     "anim": {
+      "pose": "sp_airship",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "multi_drop",
+       "count": 4,
+       "spread": 80,
+       "interval": 0.18,
+       "hit": 4,
+       "ship": true
+      },
+      "row": 7,
+      "hand": [
+       125,
+       32
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "overdrive": {
+     "name": "Quá Tải Lõi Hơi",
+     "type": "counter",
+     "kind": "self",
+     "el": "fire",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.6,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Mở hết van lõi hơi trên lưng: bánh răng quay quanh người tạo giáp, phép kế tiếp mạnh hơn. Giáp 20; phép kế tiếp +30% sát thương",
+     "barrier": {
+      "hp": 20,
+      "dur": 4
+     },
+     "empower": {
+      "mul": 1.3,
+      "n": 1
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "sp_overdrive",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "shield": 20,
+       "empower": 30,
+       "fps": 9
+      },
+      "row": 8,
+      "hand": [
+       145,
+       93
+      ],
+      "frames": 8,
+      "fps": 9
+     }
+    }
+   }
+  },
+  "priest": {
+   "name": "Linh Mục Aurelius",
+   "format": 2,
+   "el": "light",
+   "tip": "Thánh quang: đạn x2 lên địch bị Mù / nguyền, cột sáng, khiên thánh phản đạn, thiên thần hộ vệ, ấn hồi sinh.",
+   "hand": [
+    150,
+    104
+   ],
+   "head": [
+    102,
+    42
+   ],
+   "sheet": "anim/priest-sheet.png",
+   "anim": "anim/priest.json",
+   "spellSheet": "spells/priest-spells.png",
+   "spellRows": 9,
+   "defaultLoadout": [
+    "holybolt",
+    "lance",
+    "pillar",
+    "chains",
+    "aegis",
+    "blessing",
+    "angel",
+    "revive"
+   ],
+   "spells": {
+    "holybolt": {
+     "name": "Thánh Quang Đạn",
+     "type": "atk",
+     "kind": "projectile",
+     "el": "light",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.4,
+     "dmg": 16,
+     "hits": 1,
+     "text": "Phóng một quả cầu thánh quang hình thánh giá bay thẳng tới địch. 16 sát thương. Gây gấp đôi lên địch đang có hiệu ứng bóng tối / nguyền",
+     "smite": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_holybolt",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "projectile",
+       "origin": "hand",
+       "speed": 560,
+       "impact": 4
+      },
+      "row": 0,
+      "hand": [
+       144,
+       105
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "lance": {
+     "name": "Thương Ánh Sáng",
+     "type": "atk",
+     "kind": "beam",
+     "el": "light",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.6,
+     "dmg": 9,
+     "hits": 3,
+     "text": "Phóng một ngọn thương ánh sáng xuyên thẳng tới địch, đốt 3 nhịp. 9 sát thương × 3 nhịp. Mỗi nhịp hồi cho người niệm 2 máu",
+     "lifePerHit": 2,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_lance",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "beam",
+       "origin": "hand",
+       "ticks": [
+        1,
+        3,
+        5
+       ],
+       "fps": 12
+      },
+      "row": 1,
+      "hand": [
+       135,
+       95
+      ],
+      "frames": 8,
+      "fps": 12,
+      "beamHead": [
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ]
+      ]
+     }
+    },
+    "pillar": {
+     "name": "Cột Sáng Phán Xét",
+     "type": "atk",
+     "kind": "drop",
+     "el": "light",
+     "level": 3,
+     "cost": 6,
+     "cast": 1.1,
+     "dmg": 30,
+     "hits": 1,
+     "text": "Giơ cao thánh giá, một cột sáng từ trời giáng thẳng xuống đầu địch. 30 sát thương. Làm Mù 1,5 giây",
+     "blind": 1.5,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_pillar",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "drop",
+       "hit": 2,
+       "shake": 5
+      },
+      "row": 2,
+      "hand": [
+       129,
+       81
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "chains": {
+     "name": "Xiềng Ánh Sáng",
+     "type": "atk",
+     "kind": "erupt",
+     "el": "light",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.6,
+     "dmg": 12,
+     "hits": 1,
+     "text": "Vòng ấn thánh hiện dưới chân địch, xích sáng trồi lên trói chặt. 12 sát thương. Trói chân 2 giây",
+     "root": 2,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_chains",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "erupt",
+       "hit": 2,
+       "root": 2
+      },
+      "row": 3,
+      "hand": [
+       151,
+       176
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "aegis": {
+     "name": "Khiên Thánh",
+     "type": "counter",
+     "kind": "self",
+     "el": "light",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.4,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Dựng khiên ánh sáng trước người, chặn đòn và phản lại đạn phép. Giáp 25; phản lại đạn phép đầu tiên trong 3 giây",
+     "barrier": {
+      "hp": 25,
+      "dur": 3
+     },
+     "mirror": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_aegis",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "shield": 25,
+       "at": "caster_front",
+       "fps": 8,
+       "label": "Phản đạn"
+      },
+      "row": 4,
+      "hand": [
+       155,
+       102
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    },
+    "blessing": {
+     "name": "Phúc Lành",
+     "type": "support",
+     "kind": "self",
+     "el": "light",
+     "level": 2,
+     "cost": 5,
+     "cast": 1,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Cầu nguyện, hào quang và lông vũ sáng rơi xuống hồi máu cho người niệm. Hồi 26 máu, giải hiệu ứng xấu",
+     "heal": 26,
+     "cleanse": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_blessing",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "heal": 26,
+       "healAt": 4,
+       "fps": 9
+      },
+      "row": 5,
+      "hand": [
+       129,
+       124
+      ],
+      "frames": 8,
+      "fps": 9
+     }
+    },
+    "angel": {
+     "name": "Thiên Thần Hộ Vệ",
+     "type": "atk",
+     "kind": "turret",
+     "el": "light",
+     "level": 3,
+     "cost": 6,
+     "cast": 1,
+     "dmg": 5,
+     "hits": 5,
+     "text": "Gọi một thiên thần nhỏ bay bên cạnh, bắn 5 mũi tên ánh sáng vào địch. 5 sát thương × 5 nhịp. Mỗi mũi tên trúng hồi 2 máu cho người niệm",
+     "lifePerHit": 2,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_angel",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "turret",
+       "life": 3,
+       "every": 0.55,
+       "speed": 640,
+       "fps": 10,
+       "float": true
+      },
+      "vis2": "a small golden arrow of light",
+      "guide2": "frames 1-4: the arrow flying to the RIGHT (seamless loop, centered); frames 5-8: a small burst of light",
+      "row": 6,
+      "hand": [
+       154,
+       62
+      ],
+      "frames": 8,
+      "fps": 10,
+      "row2": 7
+     }
+    },
+    "revive": {
+     "name": "Ấn Hồi Sinh",
+     "type": "support",
+     "kind": "self",
+     "el": "light",
+     "level": 3,
+     "cost": 8,
+     "cast": 1.4,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Khắc ấn hồi sinh lên người. Nếu gục trong 8 giây tới thì đứng dậy lại. Hồi sinh với 35% máu (một lần mỗi trận)",
+     "revive": 0.35,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_revive",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "fps": 8,
+       "label": "Hồi sinh sẵn sàng"
+      },
+      "row": 8,
+      "hand": [
+       143,
+       102
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    }
+   }
+  },
+  "chrono": {
+   "name": "Thời Gian Sư Kairos",
+   "format": 2,
+   "el": "mind",
+   "tip": "Thời gian: kim đồng hồ làm chậm, ngưng đọng, bom hẹn giờ nổ sớm khi địch bị chậm, Gia Tốc, Tua Ngược hồi máu.",
+   "hand": [
+    150,
+    104
+   ],
+   "head": [
+    105,
+    42
+   ],
+   "sheet": "anim/chrono-sheet.png",
+   "anim": "anim/chrono.json",
+   "spellSheet": "spells/chrono-spells.png",
+   "spellRows": 8,
+   "defaultLoadout": [
+    "clockhand",
+    "hourglass",
+    "rewind",
+    "stasis",
+    "echo",
+    "haste",
+    "timebomb",
+    "needles"
+   ],
+   "spells": {
+    "clockhand": {
+     "name": "Kim Đồng Hồ Hồi Toàn",
+     "type": "atk",
+     "kind": "boomerang",
+     "el": "mind",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.4,
+     "dmg": 11,
+     "hits": 2,
+     "text": "Ném chiếc kim đồng hồ khổng lồ xoay như lưỡi dao, bay tới rồi quay về, trúng 2 lần. 11 sát thương × 2 nhịp. Mỗi lần trúng làm chậm 15%",
+     "slow": 0.15,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_clockhand",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "boomerang",
+       "origin": "hand",
+       "speed": 560,
+       "passes": 2
+      },
+      "row": 0,
+      "hand": [
+       129,
+       62
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "hourglass": {
+     "name": "Đồng Hồ Cát Giáng",
+     "type": "atk",
+     "kind": "drop",
+     "el": "mind",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.9,
+     "dmg": 24,
+     "hits": 1,
+     "text": "Một đồng hồ cát khổng lồ rơi xuống đập vỡ trên đầu địch, cát thời gian làm địch chậm lại. 24 sát thương. Làm chậm 40% trong 3 giây",
+     "slow": 0.4,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_hourglass",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "drop",
+       "hit": 4,
+       "shake": 4,
+       "slow": 0.4
+      },
+      "row": 1,
+      "hand": [
+       130,
+       62
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "rewind": {
+     "name": "Tua Ngược",
+     "type": "support",
+     "kind": "self",
+     "el": "mind",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.7,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Quay ngược thời gian của bản thân, lấy lại máu đã mất trong 3 giây vừa qua. Hồi lượng máu đã mất trong 3 giây trước (tối đa 30)",
+     "heal": 22,
+     "rewind": {
+      "secs": 3,
+      "max": 30
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "sp_rewind",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "heal": 22,
+       "healAt": 5,
+       "fps": 9,
+       "label": "Tua ngược"
+      },
+      "row": 2,
+      "hand": [
+       130,
+       61
+      ],
+      "frames": 8,
+      "fps": 9
+     }
+    },
+    "stasis": {
+     "name": "Ngưng Đọng Thời Gian",
+     "type": "atk",
+     "kind": "erupt",
+     "el": "mind",
+     "level": 3,
+     "cost": 6,
+     "cast": 0.8,
+     "dmg": 18,
+     "hits": 1,
+     "text": "Nhốt địch vào bong bóng thời gian, mọi thứ bên trong đứng im, khi vỡ thì nhận sát thương. 18 sát thương. Địch đứng yên 1,5 giây, không niệm được phép",
+     "stun": 1.5,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_stasis",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "erupt",
+       "hit": 6,
+       "freeze": true,
+       "fps": 7
+      },
+      "row": 3,
+      "hand": [
+       130,
+       58
+      ],
+      "frames": 8,
+      "fps": 7
+     }
+    },
+    "echo": {
+     "name": "Dư Ảnh Quá Khứ",
+     "type": "atk",
+     "kind": "clones",
+     "el": "mind",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.6,
+     "dmg": 9,
+     "hits": 3,
+     "text": "Gọi ba bản thân từ quá khứ hiện quanh địch, mỗi bản chém một nhát kim đồng hồ. 9 sát thương × 3 nhịp. Mỗi nhát làm chậm thêm 10%",
+     "slow": 0.1,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_echo",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "clones",
+       "count": 3,
+       "hits": [
+        2,
+        3,
+        4
+       ],
+       "fps": 10
+      },
+      "row": 4,
+      "hand": [
+       110,
+       60
+      ],
+      "frames": 8,
+      "fps": 10
+     }
+    },
+    "haste": {
+     "name": "Gia Tốc",
+     "type": "support",
+     "kind": "self",
+     "el": "mind",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.3,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Tăng tốc dòng thời gian của bản thân: niệm nhanh hơn, hồi ma lực nhanh hơn. Thời gian niệm phép giảm 40% trong 5 giây",
+     "haste": 5,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_haste",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "fps": 10,
+       "label": "Gia tốc 40%"
+      },
+      "row": 5,
+      "hand": [
+       126,
+       96
+      ],
+      "frames": 8,
+      "fps": 10
+     }
+    },
+    "timebomb": {
+     "name": "Bom Hẹn Giờ",
+     "type": "atk",
+     "kind": "mark",
+     "el": "mind",
+     "level": 3,
+     "cost": 6,
+     "cast": 0.6,
+     "dmg": 38,
+     "hits": 1,
+     "text": "Treo một chiếc đồng hồ báo thức trên đầu địch, hết giờ thì nổ. 38 sát thương. Nếu địch đang bị chậm thì nổ sớm hơn 1 giây",
+     "early": 1,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_timebomb",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "mark",
+       "delay": 3,
+       "hit": 5
+      },
+      "row": 6,
+      "hand": [
+       172,
+       83
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "needles": {
+     "name": "Mưa Kim Giây",
+     "type": "atk",
+     "kind": "multi_drop",
+     "el": "mind",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.1,
+     "dmg": 6,
+     "hits": 6,
+     "text": "Xé toạc bầu trời, 6 cây kim giây sắc nhọn cắm xuống dồn dập quanh địch. 6 sát thương × 6 nhịp. Mỗi kim trúng làm chậm 5%",
+     "slow": 0.05,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_needles",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "multi_drop",
+       "count": 6,
+       "spread": 70,
+       "interval": 0.1,
+       "hit": 4
+      },
+      "row": 7,
+      "hand": [
+       184,
+       81
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    }
+   }
+  },
+  "monk": {
+   "name": "Võ Tăng Huyền Không",
+   "format": 2,
+   "el": "light",
+   "tip": "Thiền võ: chưởng đẩy lùi, Kim Chung Tráo giáp 35 miễn choáng, La Hán quyền liên hoàn, Sư Tử Hống ngắt phép.",
+   "hand": [
+    150,
+    104
+   ],
+   "head": [
+    104,
+    42
+   ],
+   "sheet": "anim/monk-sheet.png",
+   "anim": "anim/monk.json",
+   "spellSheet": "spells/monk-spells.png",
+   "spellRows": 8,
+   "defaultLoadout": [
+    "palm",
+    "bell",
+    "arhat",
+    "buddhahand",
+    "lotus",
+    "mantra",
+    "roar",
+    "staff"
+   ],
+   "spells": {
+    "palm": {
+     "name": "Như Lai Thần Chưởng",
+     "type": "atk",
+     "kind": "projectile",
+     "el": "light",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.8,
+     "dmg": 28,
+     "hits": 1,
+     "text": "Một chưởng đẩy ra, bàn tay Phật vàng khổng lồ lao tới đánh bật địch. 28 sát thương. Đẩy lùi mạnh",
+     "copies": 2,
+     "anim": {
+      "pose": "sp_palm",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "projectile",
+       "origin": "hand",
+       "speed": 500,
+       "impact": 4,
+       "shake": 4,
+       "pull": -60
+      },
+      "row": 0,
+      "hand": [
+       154,
+       93
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "bell": {
+     "name": "Kim Chung Tráo",
+     "type": "counter",
+     "kind": "self",
+     "el": "light",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.4,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Một chiếc chuông vàng úp xuống bao lấy thân, đao thương bất nhập. Giáp 35, miễn choáng trong 4 giây",
+     "barrier": {
+      "hp": 35,
+      "dur": 4
+     },
+     "immune": 4,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_bell",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "shield": 35,
+       "fps": 8
+      },
+      "row": 1,
+      "hand": [
+       92,
+       58
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    },
+    "arhat": {
+     "name": "La Hán Quyền",
+     "type": "atk",
+     "kind": "dash",
+     "el": "light",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.3,
+     "dmg": 7,
+     "hits": 4,
+     "text": "Lướt tới trước mặt địch tung chuỗi quyền dồn dập 4 đòn. 7 sát thương × 4 nhịp. Đòn cuối choáng 0,4 giây",
+     "stunLast": 0.4,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_arhat",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "dash",
+       "hit": 2,
+       "stop": "front",
+       "fps": 12,
+       "combo": [
+        2,
+        3,
+        4,
+        5
+       ]
+      },
+      "row": 2,
+      "hand": [
+       123,
+       166
+      ],
+      "frames": 8,
+      "fps": 12
+     }
+    },
+    "buddhahand": {
+     "name": "Phật Thủ Giáng Thế",
+     "type": "atk",
+     "kind": "drop",
+     "el": "light",
+     "level": 3,
+     "cost": 7,
+     "cast": 1.3,
+     "dmg": 36,
+     "hits": 1,
+     "text": "Bàn tay Phật khổng lồ từ trời úp xuống đè bẹp địch, rung chuyển cả sân. 36 sát thương. Choáng 0,8 giây",
+     "stun": 0.8,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_buddhahand",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "drop",
+       "hit": 4,
+       "shake": 8
+      },
+      "row": 3,
+      "hand": [
+       107,
+       71
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "lotus": {
+     "name": "Liên Hoa Tịnh Toạ",
+     "type": "support",
+     "kind": "self",
+     "el": "light",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.9,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Ngồi kiết già trên đài sen vàng, tịnh tâm hồi máu. Hồi 24 máu",
+     "heal": 24,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_lotus",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "heal": 24,
+       "healAt": 4,
+       "fps": 8
+      },
+      "row": 4,
+      "hand": [
+       98,
+       163
+      ],
+      "frames": 8,
+      "fps": 8
+     }
+    },
+    "mantra": {
+     "name": "Lục Tự Chân Ngôn",
+     "type": "atk",
+     "kind": "fan",
+     "el": "light",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.5,
+     "dmg": 8,
+     "hits": 3,
+     "text": "Tụng chân ngôn, ba chữ phạn vàng bay ra ba tầng đánh vào địch. 8 sát thương × 3 nhịp. Mỗi chữ trúng xoá 1 hiệu ứng tốt của địch",
+     "dispel": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_mantra",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "fan",
+       "origin": "hand",
+       "count": 3,
+       "spreadY": [
+        -30,
+        0,
+        26
+       ],
+       "interval": 0.1,
+       "speed": 520,
+       "impact": 4
+      },
+      "row": 5,
+      "hand": [
+       130,
+       45
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "roar": {
+     "name": "Sư Tử Hống",
+     "type": "atk",
+     "kind": "beam",
+     "el": "light",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.5,
+     "dmg": 6,
+     "hits": 3,
+     "text": "Gầm lên một tiếng, sóng âm vàng dồn tới, đẩy lùi địch và ngắt phép. 6 sát thương × 3 nhịp. Ngắt phép đang niệm, đẩy lùi nhẹ",
+     "interrupt": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_roar",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "beam",
+       "origin": "head",
+       "ticks": [
+        1,
+        3,
+        5
+       ],
+       "fps": 12,
+       "shake": 3
+      },
+      "row": 6,
+      "hand": [
+       66,
+       134
+      ],
+      "frames": 8,
+      "fps": 12,
+      "beamHead": [
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        5,
+        132,
+        187
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ],
+       [
+        6,
+        132,
+        186
+       ]
+      ],
+      "headPt": [
+       128,
+       100
+      ]
+     }
+    },
+    "staff": {
+     "name": "Thiếu Lâm Côn Pháp",
+     "type": "atk",
+     "kind": "boomerang",
+     "el": "light",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.4,
+     "dmg": 12,
+     "hits": 2,
+     "text": "Ném cây côn xoay tròn bay tới đánh địch rồi quay về tay, trúng 2 lần. 12 sát thương × 2 nhịp. Mỗi lần trúng giảm 10% giáp",
+     "armorBreak": 0.1,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_staff",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "boomerang",
+       "origin": "hand",
+       "speed": 540,
+       "passes": 2
+      },
+      "row": 7,
+      "hand": [
+       95,
+       69
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    }
+   }
+  },
+  "bard": {
+   "name": "Thi Sĩ Lyra",
+   "format": 2,
+   "el": "mind",
+   "tip": "Âm nhạc: nốt lượn sóng, ru ngủ, âm thoa ngắt phép từng nhịp, hành khúc tăng sát thương, Bis! diễn lại phép trước.",
+   "hand": [
+    150,
+    104
+   ],
+   "head": [
+    102,
+    42
+   ],
+   "sheet": "anim/bard-sheet.png",
+   "anim": "anim/bard.json",
+   "spellSheet": "spells/bard-spells.png",
+   "spellRows": 8,
+   "defaultLoadout": [
+    "wavenote",
+    "chord",
+    "lullaby",
+    "march",
+    "fork",
+    "harp",
+    "bass",
+    "encore"
+   ],
+   "spells": {
+    "wavenote": {
+     "name": "Nốt Nhạc Lượn Sóng",
+     "type": "atk",
+     "kind": "wave",
+     "el": "mind",
+     "level": 1,
+     "cost": 2,
+     "cast": 0.4,
+     "dmg": 16,
+     "hits": 1,
+     "text": "Gảy đàn, một nốt nhạc lượn lên xuống theo sóng nhạc bay tới địch, khó né. 16 sát thương. Bay theo hình sóng, vượt qua khiên thấp",
+     "copies": 2,
+     "anim": {
+      "pose": "sp_wavenote",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "wave",
+       "origin": "hand",
+       "speed": 420,
+       "amp": 34,
+       "waves": 2,
+       "impact": 4
+      },
+      "row": 0,
+      "hand": [
+       175,
+       119
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "chord": {
+     "name": "Hợp Âm Tam Trùng",
+     "type": "atk",
+     "kind": "fan",
+     "el": "mind",
+     "level": 1,
+     "cost": 3,
+     "cast": 0.4,
+     "dmg": 8,
+     "hits": 3,
+     "text": "Chơi một hợp âm, ba nốt bay cùng lúc theo ba tầng cao thấp, trúng cùng một nhịp. 8 sát thương × 3 nhịp. Trúng đủ 3 nốt thì địch choáng 0,3 giây",
+     "stunLast": 0.3,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_chord",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "fan",
+       "origin": "hand",
+       "count": 3,
+       "spreadY": [
+        -26,
+        0,
+        22
+       ],
+       "interval": 0,
+       "speed": 560,
+       "impact": 4
+      },
+      "row": 1,
+      "hand": [
+       127,
+       53
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "lullaby": {
+     "name": "Khúc Ru Ngủ",
+     "type": "atk",
+     "kind": "sleep",
+     "el": "mind",
+     "level": 2,
+     "cost": 5,
+     "cast": 1,
+     "dmg": 0,
+     "hits": 1,
+     "text": "Hát khúc ru, địch ngủ gục tại chỗ. Bị đánh trúng thì tỉnh dậy. Ngủ 3 giây (tỉnh khi trúng đòn)",
+     "sleep": 3,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_lullaby",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "sleep",
+       "dur": 3,
+       "fps": 6
+      },
+      "row": 2,
+      "hand": [
+       62,
+       38
+      ],
+      "frames": 8,
+      "fps": 6
+     }
+    },
+    "march": {
+     "name": "Hành Khúc Xung Trận",
+     "type": "support",
+     "kind": "self",
+     "el": "mind",
+     "level": 2,
+     "cost": 4,
+     "cast": 0.5,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Tấu bản hành khúc: 3 phép tiếp theo mạnh hơn. 3 phép tiếp theo +25% sát thương",
+     "empower": {
+      "mul": 1.25,
+      "n": 3
+     },
+     "copies": 2,
+     "anim": {
+      "pose": "sp_march",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "self",
+       "empower": 25,
+       "fps": 10,
+       "label": "3 phép kế mạnh hơn"
+      },
+      "row": 3,
+      "hand": [
+       69,
+       41
+      ],
+      "frames": 8,
+      "fps": 10
+     }
+    },
+    "fork": {
+     "name": "Âm Thoa Cộng Hưởng",
+     "type": "atk",
+     "kind": "totem",
+     "el": "mind",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.8,
+     "dmg": 6,
+     "hits": 4,
+     "text": "Cắm một âm thoa vàng xuống cạnh địch, rung phát sóng âm 4 nhịp. 6 sát thương × 4 nhịp. Mỗi nhịp ngắt phép đang niệm của địch",
+     "interrupt": true,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_fork",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "totem",
+       "life": 2.6,
+       "ticks": 4,
+       "fps": 10
+      },
+      "row": 4,
+      "hand": [
+       166,
+       143
+      ],
+      "frames": 8,
+      "fps": 10
+     }
+    },
+    "harp": {
+     "name": "Đàn Hạc Thiên Đường",
+     "type": "support",
+     "kind": "regen",
+     "el": "mind",
+     "level": 2,
+     "cost": 5,
+     "cast": 0.9,
+     "dmg": 0,
+     "hits": 1,
+     "self": true,
+     "text": "Gọi chiếc đàn hạc vàng sau lưng, tự gảy 4 nhịp, mỗi nhịp hồi máu. Hồi 6 máu mỗi nhịp, 4 nhịp",
+     "regenHeal": 6,
+     "copies": 2,
+     "anim": {
+      "pose": "sp_harp",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "regen",
+       "heal": 6,
+       "beats": [
+        2,
+        3,
+        5,
+        6
+       ],
+       "fps": 6,
+       "at": "caster_back"
+      },
+      "row": 5,
+      "hand": [
+       143,
+       99
+      ],
+      "frames": 8,
+      "fps": 6
+     }
+    },
+    "bass": {
+     "name": "Nốt Trầm Giáng Thế",
+     "type": "atk",
+     "kind": "drop",
+     "el": "mind",
+     "level": 3,
+     "cost": 6,
+     "cast": 1.1,
+     "dmg": 32,
+     "hits": 1,
+     "text": "Một nốt nhạc trầm khổng lồ rơi từ trời xuống đè địch, sóng âm rung cả sân. 32 sát thương. Đẩy lùi, làm chậm 30% trong 2 giây",
+     "slow": 0.3,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_bass",
+      "release": 3,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "drop",
+       "hit": 4,
+       "shake": 7,
+       "slow": 0.3
+      },
+      "row": 6,
+      "hand": [
+       58,
+       35
+      ],
+      "frames": 8,
+      "fps": 14
+     }
+    },
+    "encore": {
+     "name": "Bis! Diễn Lại",
+     "type": "atk",
+     "kind": "encore",
+     "el": "mind",
+     "level": 3,
+     "cost": 6,
+     "cast": 0.3,
+     "dmg": 0,
+     "hits": 1,
+     "text": "Khán giả hô \"bis!\": diễn lại ngay phép vừa niệm, không tốn ma lực. Lặp lại phép trước đó (trừ Bis)",
+     "encore": true,
+     "copies": 1,
+     "anim": {
+      "pose": "sp_encore",
+      "release": 2,
+      "poseFps": 12
+     },
+     "visual": {
+      "mech": {
+       "type": "encore",
+       "fps": 10,
+       "label": "Bis!"
+      },
+      "row": 7,
+      "hand": [
+       64,
+       64
+      ],
+      "frames": 8,
+      "fps": 10
+     }
+    }
+   }
+  }
+ }
+}

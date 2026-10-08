@@ -15,6 +15,7 @@ index.html                 Khung trang: HUD 2 bên, sân khấu (#fMe, #fOpp, ca
 src/duel/
   duel.js                  ★ Toàn bộ luật: tạo trận, niệm, rút phép, nhịp sát thương, trạng thái, Đấu Đũa, AI, HUD, điều khiển
   mages.js                 Nạp gói pháp sư, đổi dữ liệu phép (v1 + v2) thành "phép trận" (mục 4); ORIGIN_FIX
+tools/export-spells.mjs    Xuất phép trận ra godot-export/spells.json (dữ liệu cho Godot)
   spellfx.js               Vẽ phép lên canvas từ sheet phép (mục 6)
   anim.js                  Chạy sprite sheet nhân vật (idle / niệm / tư thế / trúng đòn / gục)
   data.js                  RULES, DIFF (độ khó), DUEL_WEATHER
@@ -144,7 +145,11 @@ Mỗi phép có id `"<mage>.<key>"` và các trường:
 | `encore` | `mech.type = encore` | Niệm lại phép trước đó (không tốn ma lực, trễ 0,38 s) |
 | `cleanse` | "giải hiệu ứng xấu" | Xoá Ướt, Cháy, Đóng băng, Choáng, Mù, Chậm, Con mồi |
 
-> Đọc câu chữ bằng regex là cách tạm. Khi sang Godot nên **xuất một lần ra JSON / Resource có trường rõ ràng** (chạy `loadMages()` trên web rồi `JSON.stringify` các phép), rồi sửa tay chỗ sai, thay vì port lại regex.
+> Đọc câu chữ bằng regex là cách tạm. **Godot dùng thẳng `godot-export/spells.json`** (đã có sẵn trường rõ ràng), không port lại regex.
+> Sinh lại sau khi đổi dữ liệu / `mages.js`: `node tools/export-spells.mjs`. Cấu trúc file:
+> `rules, weather, difficulty, reactions` (mục 2, 5.5, 5.6, 7) và `characters[id] = {name, format, el, tip, hand, head, sheet, anim, spellSheet, spellRows, defaultLoadout, spells}`;
+> mỗi phép = các trường bảng trên (chỉ có trường nào phép đó dùng) + `copies` (số bản trong sách) + `anim {pose, release, poseFps}` (khung tư thế bật phép)
+> + `visual` (thông số hình gốc của gói, đã áp `ORIGIN_FIX`). `wall.n = 99` nghĩa là chặn mọi đạn.
 
 ---
 
@@ -301,7 +306,7 @@ Thứ tự ưu tiên:
 res://
   data/                     Chép nguyên public/mage (anim/, spells/, game-data.json) — Import: Filter Off / Nearest
   autoload/
-    GameData.gd             Nạp JSON → Dictionary phép trận (mục 4); có thể sinh sẵn .tres
+    GameData.gd             Nạp godot-export/spells.json (phép trận + luật) và anim/<id>.json; có thể sinh sẵn .tres
     Rules.gd                RULES, DIFF, WEATHER (mục 2, 5.6, 7)
   scenes/
     Menu.tscn               Chọn nhân vật / phép / đối thủ / độ khó (lưu bằng ConfigFile user://)
