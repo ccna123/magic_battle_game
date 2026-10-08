@@ -94,7 +94,13 @@ function typed(sp){
   return sp;
 }
 // v2: bộ phép riêng; mech.type quyết định cách bay / đặt; root / freeze / slow / confuse / shield / empower / heal đọc thẳng từ mech
+// Sửa điểm xuất phát dò sai trong gói (toạ độ trong khung 192 của tư thế ra đòn)
+const ORIGIN_FIX = {
+  'monk.mantra':{hand:[130, 45]},       // gói ghi [120, 168] (sát chân): chữ chân ngôn phải bay ra ngang trên đầu
+  'monk.roar':{headPt:[128, 100]},      // gói ghi [66, 134] (sau lưng): tiếng gầm phải ra từ miệng sư tử
+};
 function v2Spell(cid, key, info, meta, el, anim){
+  meta = {...meta, ...ORIGIN_FIX[`${cid}.${key}`]};
   const mech = meta.mech || info.mech || {type:'projectile'};
   const sp = {id:`${cid}.${key}`, mage:cid, key, name:meta.name || info.name, el, cost:meta.mana ?? info.mana, cast:meta.cast ?? info.castTime,
     dmg:meta.dmg ?? info.damage, hits:meta.hits || info.hits || 1, v2:true, kind:mech.type, pose:meta.pose, meta, mech,
