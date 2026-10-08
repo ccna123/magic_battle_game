@@ -1,0 +1,301 @@
+{
+  "id": "pharaoh",
+  "version": 2,
+  "element": "sand",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "horus",
+      "name": "Mắt Horus",
+      "release": 2,
+      "how": "Con mắt thần mở trên trán, bắn tia sáng vàng xuyên thẳng tới địch, 3 nhịp.",
+      "dmg": 10,
+      "hits": 3,
+      "mana": 4,
+      "cast": 0.6,
+      "effect": "Làm Mù 2 giây",
+      "mech": {
+        "type": "beam",
+        "origin": "head",
+        "ticks": [
+          1,
+          3,
+          5
+        ],
+        "fps": 12
+      },
+      "vis": "a golden beam of light with tiny glowing hieroglyphs along it",
+      "guide": "every cell is ONE horizontal segment of the beam entering at the exact middle of the left edge and leaving at the exact middle of the right edge (tileable); frames 1-6 pulsing; frames 7-8 thinning",
+      "pose_txt": "one hand raised to the forehead as if opening a third eye, the other arm at the side, head tilted slightly up, a golden eye glowing on the forehead in frames 3-5",
+      "row": 0,
+      "pose": "sp_horus",
+      "hand": [
+        123,
+        89
+      ],
+      "frames": 8,
+      "fps": 12,
+      "row2": 1,
+      "beamHead": [
+        [
+          4,
+          132,
+          188
+        ],
+        [
+          4,
+          132,
+          188
+        ],
+        [
+          4,
+          132,
+          188
+        ],
+        [
+          4,
+          132,
+          188
+        ],
+        [
+          4,
+          127,
+          180
+        ],
+        [
+          4,
+          128,
+          182
+        ],
+        [
+          4,
+          125,
+          177
+        ],
+        [
+          4,
+          97,
+          137
+        ]
+      ],
+      "headPt": [
+        123,
+        89
+      ]
+    },
+    {
+      "key": "scarab",
+      "name": "Bọ Hung Đẩy Mặt Trời",
+      "release": 3,
+      "how": "Bọ hung thánh đẩy quả cầu mặt trời lăn sát đất tới địch rồi nổ chói.",
+      "dmg": 22,
+      "mana": 4,
+      "cast": 0.7,
+      "effect": "Thiêu đốt 3 giây",
+      "mech": {
+        "type": "projectile",
+        "origin": "ground",
+        "speed": 300,
+        "impact": 4
+      },
+      "vis": "a sacred scarab beetle pushing a rolling golden sun ball along the ground",
+      "guide": "frames 1-4: the scarab and ball rolling to the RIGHT on the ground line at the bottom of the cell (seamless loop); frames 5-8: the ball bursting into a bright golden flash",
+      "pose_txt": "crouching low and shoving both palms forward near the ground as if rolling something heavy",
+      "hits": 1,
+      "row": 2,
+      "pose": "sp_scarab",
+      "hand": [
+        154,
+        169
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "sandstorm",
+      "name": "Lốc Cát Sa Mạc",
+      "release": 3,
+      "how": "Gọi một cơn lốc cát chạy dọc sân về phía địch, cuốn 4 nhịp.",
+      "dmg": 7,
+      "hits": 4,
+      "mana": 5,
+      "cast": 0.9,
+      "effect": "Làm Mù, chậm 20%",
+      "mech": {
+        "type": "zone",
+        "move": true,
+        "speed": 150,
+        "ticks": [
+          2,
+          4,
+          6,
+          7
+        ],
+        "fps": 8,
+        "loop": true,
+        "life": 2.4
+      },
+      "vis": "a swirling sand tornado with pebbles caught in it",
+      "guide": "standing on the ground line at the bottom of the cell; all 8 frames are one seamless swirling loop",
+      "pose_txt": "both arms whirling in circles above the head, robe flaring, stirring up the wind",
+      "row": 3,
+      "pose": "sp_sandstorm",
+      "hand": [
+        142,
+        143
+      ],
+      "frames": 8,
+      "fps": 8
+    },
+    {
+      "key": "judgement",
+      "name": "Cán Cân Anubis",
+      "release": 3,
+      "how": "Cán cân phán xử của thần chết giáng xuống đè lên địch. Địch càng nhiều máu càng đau.",
+      "dmg": 34,
+      "mana": 7,
+      "cast": 1.2,
+      "effect": "Gây thêm sát thương bằng 10% máu hiện tại của địch",
+      "mech": {
+        "type": "drop",
+        "hit": 3,
+        "shake": 6
+      },
+      "vis": "golden scales of judgment with a small jackal head on top crashing down",
+      "guide": "frames 1-2 at the TOP of the cell; frames 3-4 falling; frame 4-6 slamming onto the ground line with a golden flash; frames 7-8 fading",
+      "pose_txt": "holding both hands straight up as if lifting a heavy pair of scales, then slamming them down",
+      "hits": 1,
+      "row": 4,
+      "pose": "sp_judgement",
+      "hand": [
+        149,
+        159
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "mummy",
+      "name": "Tay Xác Ướp",
+      "release": 3,
+      "how": "Những bàn tay xác ướp thò lên từ cát túm chân địch, giữ đứng yên.",
+      "dmg": 14,
+      "mana": 3,
+      "cast": 0.6,
+      "effect": "Trói chân 1,5 giây",
+      "mech": {
+        "type": "erupt",
+        "hit": 2,
+        "root": 1.5
+      },
+      "vis": "bandaged mummy hands bursting up from the sand and grasping",
+      "guide": "side view on the ground line at the bottom of the cell; frames 1-3 hands rising; frames 4-6 grasping; frames 7-8 sinking back",
+      "pose_txt": "kneeling and clawing the ground with both hands as if pulling something up from below",
+      "hits": 1,
+      "row": 5,
+      "pose": "sp_mummy",
+      "hand": [
+        140,
+        171
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "sarcophagus",
+      "name": "Quan Tài Phong Ấn",
+      "release": 3,
+      "how": "Một quan tài vàng dựng lên nhốt địch, khi vỡ ra thì gây sát thương lớn.",
+      "dmg": 26,
+      "mana": 6,
+      "cast": 1.0,
+      "effect": "Địch đứng yên 1,2 giây, không niệm được phép",
+      "mech": {
+        "type": "erupt",
+        "hit": 6,
+        "freeze": true,
+        "fps": 7,
+        "front": true
+      },
+      "vis": "a golden sarcophagus standing upright, closing around a target (semi-transparent)",
+      "guide": "standing on the ground line at the bottom of the cell, semi-transparent so a person inside stays visible; frames 1-3 rising and closing; frames 4-6 sealed; frames 7-8 bursting into gold and blue fragments",
+      "pose_txt": "arms crossed over the chest in the classic pharaoh pose, glowing",
+      "hits": 1,
+      "row": 6,
+      "pose": "sp_sarcophagus",
+      "hand": [
+        123,
+        107
+      ],
+      "frames": 8,
+      "fps": 7
+    },
+    {
+      "key": "khopesh",
+      "name": "Khopesh Hồi Toàn",
+      "release": 2,
+      "how": "Ném lưỡi kiếm cong xoay vòng bay tới địch rồi quay về tay, trúng 2 lần.",
+      "dmg": 12,
+      "hits": 2,
+      "mana": 3,
+      "cast": 0.4,
+      "effect": "Mỗi lần trúng gây Chảy máu 1 giây",
+      "mech": {
+        "type": "boomerang",
+        "origin": "hand",
+        "speed": 520,
+        "passes": 2
+      },
+      "vis": "a curved bronze khopesh sickle-sword spinning",
+      "guide": "frames 1-4: the blade spinning in place, centered (seamless loop); frames 5-8: a quick slash flash",
+      "pose_txt": "a sidearm throwing motion: arm swung far back, then whipped forward to release a spinning blade",
+      "row": 7,
+      "pose": "sp_khopesh",
+      "hand": [
+        168,
+        89
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "sundisk",
+      "name": "Thái Dương Ra",
+      "release": 2,
+      "how": "Đĩa mặt trời có cánh bay lên sau lưng, bắn 5 tia nắng xuống địch.",
+      "dmg": 8,
+      "hits": 5,
+      "mana": 7,
+      "cast": 1.3,
+      "effect": "Người niệm hồi 3 máu mỗi tia trúng",
+      "mech": {
+        "type": "self",
+        "rays": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "fps": 8,
+        "at": "caster_back"
+      },
+      "vis": "a winged golden sun disk rising, radiating rays",
+      "guide": "the disk rises from the center to the upper part of the cell; frames 1-3 rising; frames 4-7 shining; frame 8 dimming",
+      "pose_txt": "both arms raised high and wide as if lifting the sun into the sky, head tilted back",
+      "row": 8,
+      "pose": "sp_sundisk",
+      "hand": [
+        147,
+        7
+      ],
+      "frames": 8,
+      "fps": 8
+    }
+  ]
+}

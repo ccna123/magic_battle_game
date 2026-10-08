@@ -20,7 +20,7 @@
     },
     "cast_loop": {
       "row": 2,
-      "frames": 6,
+      "frames": 4,
       "fps": 10,
       "loop": true
     },
@@ -39,7 +39,7 @@
     },
     "buff": {
       "row": 5,
-      "frames": 4,
+      "frames": 5,
       "fps": 10,
       "loop": false
     },
@@ -77,8 +77,8 @@
   },
   "hand": {
     "release": [
-      150,
-      100
+      190,
+      84
     ]
   }
 }

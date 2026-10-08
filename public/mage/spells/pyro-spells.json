@@ -27,7 +27,8 @@
           7
         ]
       },
-      "hitFrame": 4
+      "hitFrame": 4,
+      "offsetX": -5
     },
     {
       "key": "bolt2",
@@ -53,7 +54,8 @@
           4,
           7
         ]
-      }
+      },
+      "offsetX": -21
     },
     {
       "key": "bolt3",
@@ -79,7 +81,8 @@
           4,
           7
         ]
-      }
+      },
+      "offsetX": 4
     },
     {
       "key": "sky1",
@@ -105,11 +108,11 @@
         ]
       },
       "hitFrame": 2,
-      "skyMode": "fall",
-      "landFrame": 2,
-      "top": 115,
-      "band": 41,
-      "dir": 0.25
+      "skyMode": "cloud",
+      "landFrame": 3,
+      "top": 41,
+      "band": 104,
+      "dir": 0
     },
     {
       "key": "sky2",
@@ -147,8 +150,8 @@
       },
       "skyMode": "fall",
       "landFrame": 3,
-      "top": 95,
-      "band": 63,
+      "top": 57,
+      "band": 91,
       "dir": 0.7
     },
     {
@@ -180,9 +183,9 @@
         ]
       },
       "skyMode": "fall",
-      "landFrame": 3,
-      "top": 82,
-      "band": 73,
+      "landFrame": 2,
+      "top": 0,
+      "band": 135,
       "dir": 0.7
     },
     {
@@ -297,7 +300,8 @@
           6,
           7
         ]
-      }
+      },
+      "offsetX": 2
     },
     {
       "key": "spread2",
@@ -322,7 +326,8 @@
           4,
           7
         ]
-      }
+      },
+      "offsetX": -2
     },
     {
       "key": "spread3",
@@ -355,7 +360,8 @@
           6,
           7
         ]
-      }
+      },
+      "offsetX": 0
     }
   ]
 }

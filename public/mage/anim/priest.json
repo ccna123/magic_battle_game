@@ -1,10 +1,15 @@
 {
-  "id": "beastmaster",
+  "id": "priest",
+  "version": 2,
   "frame": {
     "w": 192,
     "h": 192
   },
   "baseline": 180,
+  "head": [
+    102,
+    42
+  ],
   "anims": {
     "idle": {
       "row": 0,
@@ -12,73 +17,72 @@
       "fps": 8,
       "loop": true
     },
-    "cast_start": {
+    "charge": {
       "row": 1,
-      "frames": 4,
-      "fps": 12,
-      "loop": false
-    },
-    "cast_loop": {
-      "row": 2,
       "frames": 4,
       "fps": 10,
       "loop": true
     },
-    "release": {
-      "row": 3,
-      "frames": 6,
-      "fps": 14,
-      "loop": false
-    },
-    "guard": {
-      "row": 4,
-      "frames": 4,
-      "fps": 12,
-      "loop": false,
-      "hold": true
-    },
-    "buff": {
-      "row": 5,
-      "frames": 5,
-      "fps": 10,
-      "loop": false
-    },
     "hit": {
-      "row": 6,
-      "frames": 3,
+      "row": 2,
+      "frames": 4,
       "fps": 14,
       "loop": false
     },
     "ko": {
-      "row": 7,
+      "row": 3,
       "frames": 6,
       "fps": 10,
       "loop": false,
       "hold": true
     },
-    "release_sky": {
+    "sp_holybolt": {
+      "row": 4,
+      "frames": 4,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_lance": {
+      "row": 5,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_pillar": {
+      "row": 6,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_chains": {
+      "row": 7,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_aegis": {
       "row": 8,
       "frames": 6,
-      "fps": 14,
+      "fps": 12,
       "loop": false
     },
-    "release_ground": {
+    "sp_blessing": {
       "row": 9,
       "frames": 6,
-      "fps": 14,
+      "fps": 12,
       "loop": false
     },
-    "release_spread": {
+    "sp_angel": {
       "row": 10,
       "frames": 6,
-      "fps": 14,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_revive": {
+      "row": 11,
+      "frames": 5,
+      "fps": 12,
       "loop": false
     }
-  },
-  "hand": {
-    "release": [
-      169,
-      73
-    ]
   }
 }

@@ -1,0 +1,88 @@
+{
+  "id": "pharaoh",
+  "version": 2,
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "head": [
+    103,
+    43
+  ],
+  "anims": {
+    "idle": {
+      "row": 0,
+      "frames": 6,
+      "fps": 8,
+      "loop": true
+    },
+    "charge": {
+      "row": 1,
+      "frames": 6,
+      "fps": 10,
+      "loop": true
+    },
+    "hit": {
+      "row": 2,
+      "frames": 3,
+      "fps": 14,
+      "loop": false
+    },
+    "ko": {
+      "row": 3,
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "hold": true
+    },
+    "sp_horus": {
+      "row": 4,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_scarab": {
+      "row": 5,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_sandstorm": {
+      "row": 6,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_judgement": {
+      "row": 7,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_mummy": {
+      "row": 8,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_sarcophagus": {
+      "row": 9,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_khopesh": {
+      "row": 10,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_sundisk": {
+      "row": 11,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    }
+  }
+}

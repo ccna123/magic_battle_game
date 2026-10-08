@@ -1,8 +1,9 @@
 /* Hoạt ảnh đấu sĩ theo sprite sheet nhân vật của gói pháp sư (public/mage/anim/<id>-sheet.png + <id>.json).
-   Mỗi hàng là một hoạt ảnh: idle, cast_start, cast_loop, release, guard, buff, hit, ko, release_sky, release_ground, release_spread. */
+   v1: idle, cast_start, cast_loop, release, guard, buff, hit, ko, release_sky, release_ground, release_spread.
+   v2: idle, charge (gồng phép, lặp), hit, ko, rồi sp_<key> cho từng phép. Niệm v1 = cast_start → cast_loop; v2 = charge lặp. */
 const SHEETS = {};
 const COLS = 6;
-const FALLBACK = {release_sky:'release', release_ground:'release', release_spread:'buff', guard:'release', buff:'release', cast_loop:'cast_start'};
+const FALLBACK = {release_sky:'release', release_ground:'release', release_spread:'buff', guard:'release', buff:'release', cast_loop:'cast_start', cast_start:'charge'};
 
 // Đăng ký sheet của một nhân vật (gọi sau khi nạp gói pháp sư)
 export function addSheet(id, meta, src){
@@ -40,7 +41,8 @@ export function tick(A, dt, base, castT = 0){
     if (A.t + dt >= a.frames / a.fps + (a.hold ? .25 : 0)) { A.once = null; A.name = ''; }
   }
   if (base !== 'ko' && !A.once) {
-    if (base === 'cast') {
+    if (base === 'cast' && m.anims.charge) { if (A.name !== 'charge') { A.name = 'charge'; A.t = castT; } }
+    else if (base === 'cast') {
       const s = m.anims[has(m, 'cast_start')], startDur = s.frames / s.fps;
       const name = castT < startDur ? 'cast_start' : 'cast_loop';
       if (A.name !== name) { A.name = name; A.t = name === 'cast_start' ? castT : castT - startDur; }

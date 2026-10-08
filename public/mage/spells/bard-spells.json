@@ -1,0 +1,251 @@
+{
+  "id": "bard",
+  "version": 2,
+  "element": "sound",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "wavenote",
+      "name": "Nốt Nhạc Lượn Sóng",
+      "release": 2,
+      "how": "Gảy đàn, một nốt nhạc lượn lên xuống theo sóng nhạc bay tới địch, khó né.",
+      "dmg": 16,
+      "mana": 2,
+      "cast": 0.4,
+      "effect": "Bay theo hình sóng, vượt qua khiên thấp",
+      "mech": {
+        "type": "wave",
+        "origin": "hand",
+        "speed": 420,
+        "amp": 34,
+        "waves": 2,
+        "impact": 4
+      },
+      "vis": "a pink double music note with a short trail of staff lines",
+      "guide": "frames 1-4: the note flying to the RIGHT (seamless loop, centered); frames 5-8: bursting into small music notes",
+      "pose_txt": "strumming a lute held across the chest with a big flourish of the strumming hand",
+      "hits": 1,
+      "row": 0,
+      "pose": "sp_wavenote",
+      "hand": [
+        175,
+        119
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "chord",
+      "name": "Hợp Âm Tam Trùng",
+      "release": 2,
+      "how": "Chơi một hợp âm, ba nốt bay cùng lúc theo ba tầng cao thấp, trúng cùng một nhịp.",
+      "dmg": 8,
+      "hits": 3,
+      "mana": 3,
+      "cast": 0.4,
+      "effect": "Trúng đủ 3 nốt thì địch choáng 0,3 giây",
+      "mech": {
+        "type": "fan",
+        "origin": "hand",
+        "count": 3,
+        "spreadY": [
+          -26,
+          0,
+          22
+        ],
+        "interval": 0,
+        "speed": 560,
+        "impact": 4
+      },
+      "vis": "a glowing cyan round music note",
+      "guide": "frames 1-4: the note flying to the RIGHT (seamless loop, centered); frames 5-8: a ring-shaped sound wave growing and fading",
+      "pose_txt": "slamming a strong chord on the lute, leaning forward",
+      "row": 1,
+      "pose": "sp_chord",
+      "hand": [
+        127,
+        53
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "lullaby",
+      "name": "Khúc Ru Ngủ",
+      "release": 3,
+      "how": "Hát khúc ru, địch ngủ gục tại chỗ. Bị đánh trúng thì tỉnh dậy.",
+      "dmg": 0,
+      "mana": 5,
+      "cast": 1.0,
+      "effect": "Ngủ 3 giây (tỉnh khi trúng đòn)",
+      "mech": {
+        "type": "sleep",
+        "dur": 3,
+        "fps": 6
+      },
+      "vis": "floating Z letters, a small crescent moon and soft purple music notes drifting up",
+      "guide": "centered at head height of a target: frames 1-3 appearing; frames 4-6 the Z letters and notes drifting upward; frames 7-8 fading",
+      "pose_txt": "softly singing with eyes closed, one hand on the chest, gently swaying",
+      "hits": 1,
+      "row": 2,
+      "pose": "sp_lullaby",
+      "hand": [
+        62,
+        38
+      ],
+      "frames": 8,
+      "fps": 6
+    },
+    {
+      "key": "march",
+      "name": "Hành Khúc Xung Trận",
+      "release": 2,
+      "how": "Tấu bản hành khúc: 3 phép tiếp theo mạnh hơn.",
+      "dmg": 0,
+      "mana": 4,
+      "cast": 0.5,
+      "effect": "3 phép tiếp theo +25% sát thương",
+      "mech": {
+        "type": "self",
+        "empower": 25,
+        "fps": 10,
+        "label": "3 phép kế mạnh hơn"
+      },
+      "vis": "a small red war drum with red and orange music notes bouncing around the caster",
+      "guide": "centered: frames 1-3 appearing; frames 4-6 the notes bouncing to the beat; frames 7-8 fading",
+      "pose_txt": "marching in place with the lute raised high, playing a rousing tune",
+      "hits": 1,
+      "row": 3,
+      "pose": "sp_march",
+      "hand": [
+        69,
+        41
+      ],
+      "frames": 8,
+      "fps": 10
+    },
+    {
+      "key": "fork",
+      "name": "Âm Thoa Cộng Hưởng",
+      "release": 3,
+      "how": "Cắm một âm thoa vàng xuống cạnh địch, rung phát sóng âm 4 nhịp.",
+      "dmg": 6,
+      "hits": 4,
+      "mana": 5,
+      "cast": 0.8,
+      "effect": "Mỗi nhịp ngắt phép đang niệm của địch",
+      "mech": {
+        "type": "totem",
+        "life": 2.6,
+        "ticks": 4,
+        "fps": 10
+      },
+      "vis": "a golden tuning fork stuck in the ground, vibrating and emitting sound wave arcs",
+      "guide": "standing on the bottom of the cell: frames 1-2 plunging into the ground; frames 3-8 vibrating with sound wave arcs pulsing out in a loop",
+      "pose_txt": "kneeling and striking a note on the lute, then pointing at the ground",
+      "row": 4,
+      "pose": "sp_fork",
+      "hand": [
+        166,
+        143
+      ],
+      "frames": 8,
+      "fps": 10
+    },
+    {
+      "key": "harp",
+      "name": "Đàn Hạc Thiên Đường",
+      "release": 3,
+      "how": "Gọi chiếc đàn hạc vàng sau lưng, tự gảy 4 nhịp, mỗi nhịp hồi máu.",
+      "dmg": 0,
+      "heal": 6,
+      "mana": 5,
+      "cast": 0.9,
+      "effect": "Hồi 6 máu mỗi nhịp, 4 nhịp",
+      "mech": {
+        "type": "regen",
+        "heal": 6,
+        "beats": [
+          2,
+          3,
+          5,
+          6
+        ],
+        "fps": 6,
+        "at": "caster_back"
+      },
+      "vis": "a floating golden harp with green healing music notes falling around it",
+      "guide": "centered: frames 1-3 the harp appearing; frames 4-7 strings glowing and notes falling; frame 8 dimming",
+      "pose_txt": "hands raised and fingers plucking invisible harp strings in the air",
+      "hits": 1,
+      "row": 5,
+      "pose": "sp_harp",
+      "hand": [
+        143,
+        99
+      ],
+      "frames": 8,
+      "fps": 6
+    },
+    {
+      "key": "bass",
+      "name": "Nốt Trầm Giáng Thế",
+      "release": 3,
+      "how": "Một nốt nhạc trầm khổng lồ rơi từ trời xuống đè địch, sóng âm rung cả sân.",
+      "dmg": 32,
+      "mana": 6,
+      "cast": 1.1,
+      "effect": "Đẩy lùi, làm chậm 30% trong 2 giây",
+      "mech": {
+        "type": "drop",
+        "hit": 4,
+        "shake": 7,
+        "slow": 0.3
+      },
+      "vis": "a giant dark purple music note falling and slamming into the ground with sound waves",
+      "guide": "frames 1-4: the note falling from the TOP of the cell; frames 5-8: hitting the bottom of the cell with half-circle sound waves, fading",
+      "pose_txt": "raising the lute high above the head, then smashing a deep bass note",
+      "hits": 1,
+      "row": 6,
+      "pose": "sp_bass",
+      "hand": [
+        58,
+        35
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "encore",
+      "name": "Bis! Diễn Lại",
+      "release": 2,
+      "how": "Khán giả hô \"bis!\": diễn lại ngay phép vừa niệm, không tốn ma lực.",
+      "dmg": 0,
+      "mana": 6,
+      "cast": 0.3,
+      "effect": "Lặp lại phép trước đó (trừ Bis)",
+      "mech": {
+        "type": "encore",
+        "fps": 10,
+        "label": "Bis!"
+      },
+      "vis": "red roses tossed in an arc and a glowing ring of light around the caster",
+      "guide": "centered: frames 1-3 roses flying up in an arc; frames 4-6 a glowing ring; frames 7-8 fading",
+      "pose_txt": "taking a dramatic bow, then flinging one arm up to the audience",
+      "hits": 1,
+      "row": 7,
+      "pose": "sp_encore",
+      "hand": [
+        64,
+        64
+      ],
+      "frames": 8,
+      "fps": 10
+    }
+  ]
+}

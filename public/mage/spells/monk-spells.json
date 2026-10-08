@@ -1,0 +1,302 @@
+{
+  "id": "monk",
+  "version": 2,
+  "element": "zen",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "palm",
+      "name": "Như Lai Thần Chưởng",
+      "release": 2,
+      "how": "Một chưởng đẩy ra, bàn tay Phật vàng khổng lồ lao tới đánh bật địch.",
+      "dmg": 28,
+      "mana": 5,
+      "cast": 0.8,
+      "effect": "Đẩy lùi mạnh",
+      "mech": {
+        "type": "projectile",
+        "origin": "hand",
+        "speed": 500,
+        "impact": 4,
+        "shake": 4,
+        "pull": -60
+      },
+      "vis": "a giant upright golden Buddha palm made of light charging forward",
+      "guide": "frames 1-4: the palm flying to the RIGHT (seamless loop, centered); frames 5-8: a burst of golden light with a lotus-shaped shockwave",
+      "pose_txt": "a deep horse-stance lunge, one open palm thrust straight forward with full force, the other hand held vertically at the chest in prayer",
+      "hits": 1,
+      "row": 0,
+      "pose": "sp_palm",
+      "hand": [
+        154,
+        93
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "bell",
+      "name": "Kim Chung Tráo",
+      "release": 2,
+      "how": "Một chiếc chuông vàng úp xuống bao lấy thân, đao thương bất nhập.",
+      "dmg": 0,
+      "mana": 4,
+      "cast": 0.4,
+      "effect": "Giáp 35, miễn choáng trong 4 giây",
+      "mech": {
+        "type": "self",
+        "shield": 35,
+        "fps": 8
+      },
+      "vis": "a giant translucent golden temple bell covering the caster, with glowing sanskrit runes around its rim",
+      "guide": "standing on the bottom of the cell, semi-transparent: frames 1-3 the bell coming down; frames 4-6 holding with runes glowing; frames 7-8 fading",
+      "pose_txt": "a firm stance with palms pressed together in prayer, the body tensed like iron",
+      "hits": 1,
+      "row": 1,
+      "pose": "sp_bell",
+      "hand": [
+        92,
+        58
+      ],
+      "frames": 8,
+      "fps": 8
+    },
+    {
+      "key": "arhat",
+      "name": "La Hán Quyền",
+      "release": 2,
+      "how": "Lướt tới trước mặt địch tung chuỗi quyền dồn dập 4 đòn.",
+      "dmg": 7,
+      "hits": 4,
+      "mana": 4,
+      "cast": 0.3,
+      "effect": "Đòn cuối choáng 0,4 giây",
+      "mech": {
+        "type": "dash",
+        "hit": 2,
+        "stop": "front",
+        "fps": 12,
+        "combo": [
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      "vis": "a flurry of overlapping golden fist strikes",
+      "guide": "centered: frame 1 empty; frames 2-5 more and more glowing fists appear, overlapping; frames 6-8 fading",
+      "pose_txt": "a rapid flurry of straight punches with both fists, leaning forward",
+      "row": 2,
+      "pose": "sp_arhat",
+      "hand": [
+        123,
+        166
+      ],
+      "frames": 8,
+      "fps": 12
+    },
+    {
+      "key": "buddhahand",
+      "name": "Phật Thủ Giáng Thế",
+      "release": 3,
+      "how": "Bàn tay Phật khổng lồ từ trời úp xuống đè bẹp địch, rung chuyển cả sân.",
+      "dmg": 36,
+      "mana": 7,
+      "cast": 1.3,
+      "effect": "Choáng 0,8 giây",
+      "mech": {
+        "type": "drop",
+        "hit": 4,
+        "shake": 8
+      },
+      "vis": "a giant golden Buddha hand slamming down palm-first from the sky",
+      "guide": "frames 1-4: the giant hand coming down from the TOP of the cell; frames 5-8: pressed onto the bottom of the cell with a golden shockwave, then fading",
+      "pose_txt": "one arm raised straight up with the palm open, then swung down hard, the other hand in prayer",
+      "hits": 1,
+      "row": 3,
+      "pose": "sp_buddhahand",
+      "hand": [
+        107,
+        71
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "lotus",
+      "name": "Liên Hoa Tịnh Toạ",
+      "release": 3,
+      "how": "Ngồi kiết già trên đài sen vàng, tịnh tâm hồi máu.",
+      "dmg": 0,
+      "heal": 24,
+      "mana": 4,
+      "cast": 0.9,
+      "effect": "Hồi 24 máu",
+      "mech": {
+        "type": "self",
+        "heal": 24,
+        "healAt": 4,
+        "fps": 8
+      },
+      "vis": "a blooming pink-gold lotus flower with a round golden halo above",
+      "guide": "the lotus on the bottom of the cell, the halo in the middle: frames 1-3 blooming; frames 4-6 glowing; frames 7-8 fading",
+      "pose_txt": "sitting down cross-legged in lotus meditation with hands resting in the lap, eyes closed",
+      "hits": 1,
+      "row": 4,
+      "pose": "sp_lotus",
+      "hand": [
+        98,
+        163
+      ],
+      "frames": 8,
+      "fps": 8
+    },
+    {
+      "key": "mantra",
+      "name": "Lục Tự Chân Ngôn",
+      "release": 2,
+      "how": "Tụng chân ngôn, ba chữ phạn vàng bay ra ba tầng đánh vào địch.",
+      "dmg": 8,
+      "hits": 3,
+      "mana": 3,
+      "cast": 0.5,
+      "effect": "Mỗi chữ trúng xoá 1 hiệu ứng tốt của địch",
+      "mech": {
+        "type": "fan",
+        "origin": "hand",
+        "count": 3,
+        "spreadY": [
+          -30,
+          0,
+          26
+        ],
+        "interval": 0.1,
+        "speed": 520,
+        "impact": 4
+      },
+      "vis": "a glowing golden sanskrit syllable inside a ring of light",
+      "guide": "frames 1-4: the syllable flying to the RIGHT (seamless loop, centered); frames 5-8: dissolving into golden motes",
+      "pose_txt": "one hand raised in a mudra gesture beside the face, chanting, prayer beads swinging in the other hand",
+      "row": 5,
+      "pose": "sp_mantra",
+      "hand": [
+        120,
+        168
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "roar",
+      "name": "Sư Tử Hống",
+      "release": 2,
+      "how": "Gầm lên một tiếng, sóng âm vàng dồn tới, đẩy lùi địch và ngắt phép.",
+      "dmg": 6,
+      "hits": 3,
+      "mana": 4,
+      "cast": 0.5,
+      "effect": "Ngắt phép đang niệm, đẩy lùi nhẹ",
+      "mech": {
+        "type": "beam",
+        "origin": "head",
+        "ticks": [
+          1,
+          3,
+          5
+        ],
+        "fps": 12,
+        "shake": 3
+      },
+      "vis": "golden curved sound waves pushing outward horizontally",
+      "guide": "every cell is ONE horizontal segment of the sound waves entering at the exact middle of the left edge and leaving at the exact middle of the right edge (tileable); frames 1-6 pulsing; frames 7-8 thinning",
+      "pose_txt": "crouching and roaring with the mouth wide open, arms thrown back, a lion-roar shout",
+      "row": 6,
+      "pose": "sp_roar",
+      "hand": [
+        66,
+        134
+      ],
+      "frames": 8,
+      "fps": 12,
+      "beamHead": [
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ]
+      ],
+      "headPt": [
+        66,
+        134
+      ]
+    },
+    {
+      "key": "staff",
+      "name": "Thiếu Lâm Côn Pháp",
+      "release": 2,
+      "how": "Ném cây côn xoay tròn bay tới đánh địch rồi quay về tay, trúng 2 lần.",
+      "dmg": 12,
+      "hits": 2,
+      "mana": 3,
+      "cast": 0.4,
+      "effect": "Mỗi lần trúng giảm 10% giáp",
+      "mech": {
+        "type": "boomerang",
+        "origin": "hand",
+        "speed": 540,
+        "passes": 2
+      },
+      "vis": "a wooden shaolin staff with brass caps spinning",
+      "guide": "all 8 frames: the staff spinning in place, centered (seamless loop)",
+      "pose_txt": "spinning a long wooden staff overhead, then hurling it forward",
+      "row": 7,
+      "pose": "sp_staff",
+      "hand": [
+        95,
+        69
+      ],
+      "frames": 8,
+      "fps": 14
+    }
+  ]
+}

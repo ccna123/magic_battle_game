@@ -1,0 +1,88 @@
+{
+  "id": "bard",
+  "version": 2,
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "head": [
+    102,
+    42
+  ],
+  "anims": {
+    "idle": {
+      "row": 0,
+      "frames": 6,
+      "fps": 8,
+      "loop": true
+    },
+    "charge": {
+      "row": 1,
+      "frames": 6,
+      "fps": 10,
+      "loop": true
+    },
+    "hit": {
+      "row": 2,
+      "frames": 3,
+      "fps": 14,
+      "loop": false
+    },
+    "ko": {
+      "row": 3,
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "hold": true
+    },
+    "sp_wavenote": {
+      "row": 4,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_chord": {
+      "row": 5,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_lullaby": {
+      "row": 6,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_march": {
+      "row": 7,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_fork": {
+      "row": 8,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_harp": {
+      "row": 9,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_bass": {
+      "row": 10,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_encore": {
+      "row": 11,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    }
+  }
+}

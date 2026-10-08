@@ -1,0 +1,88 @@
+{
+  "id": "chrono",
+  "version": 2,
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "head": [
+    105,
+    42
+  ],
+  "anims": {
+    "idle": {
+      "row": 0,
+      "frames": 6,
+      "fps": 8,
+      "loop": true
+    },
+    "charge": {
+      "row": 1,
+      "frames": 4,
+      "fps": 10,
+      "loop": true
+    },
+    "hit": {
+      "row": 2,
+      "frames": 4,
+      "fps": 14,
+      "loop": false
+    },
+    "ko": {
+      "row": 3,
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "hold": true
+    },
+    "sp_clockhand": {
+      "row": 4,
+      "frames": 4,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_hourglass": {
+      "row": 5,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_rewind": {
+      "row": 6,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_stasis": {
+      "row": 7,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_echo": {
+      "row": 8,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_haste": {
+      "row": 9,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_timebomb": {
+      "row": 10,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_needles": {
+      "row": 11,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    }
+  }
+}

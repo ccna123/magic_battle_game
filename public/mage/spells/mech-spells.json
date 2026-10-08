@@ -1,0 +1,302 @@
+{
+  "id": "mech",
+  "version": 2,
+  "element": "steam",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "rivet",
+      "name": "Súng Đinh Tán",
+      "release": 1,
+      "how": "Rút súng đinh tán bắn liên thanh 5 phát vào địch.",
+      "dmg": 5,
+      "hits": 5,
+      "mana": 3,
+      "cast": 0.3,
+      "effect": "Mỗi phát làm chậm 4%",
+      "mech": {
+        "type": "fan",
+        "origin": "hand",
+        "count": 5,
+        "spreadY": [
+          0,
+          -4,
+          3,
+          -2,
+          2
+        ],
+        "interval": 0.09,
+        "speed": 760,
+        "impact": 4
+      },
+      "vis": "a red-hot rivet bullet with a puff of steam behind",
+      "guide": "frames 1-4: the rivet flying to the RIGHT (seamless loop, centered); frames 5-8: a spray of metal sparks",
+      "pose_txt": "aiming a chunky brass rivet gun forward with both hands, recoiling with each shot",
+      "row": 0,
+      "pose": "sp_rivet",
+      "hand": [
+        163,
+        91
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "grenade",
+      "name": "Lựu Đạn Bánh Răng",
+      "release": 3,
+      "how": "Ném vòng cung một quả lựu đạn bánh răng, rơi trúng chỗ địch đứng rồi nổ.",
+      "dmg": 28,
+      "mana": 5,
+      "cast": 0.7,
+      "effect": "Đẩy lùi, cháy 2 giây",
+      "mech": {
+        "type": "lob",
+        "origin": "hand",
+        "flight": 0.75,
+        "arc": 150,
+        "impact": 4,
+        "shake": 5
+      },
+      "vis": "a round gear-shaped grenade with a sparking fuse",
+      "guide": "frames 1-4: the grenade tumbling in the air (seamless loop, centered); frames 5-8: an explosion with flying little gears",
+      "pose_txt": "an overhand lob: the arm swung back behind the head, then arcing forward and up to toss a grenade",
+      "hits": 1,
+      "row": 1,
+      "pose": "sp_grenade",
+      "hand": [
+        160,
+        68
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "turret",
+      "name": "Tháp Pháo Hơi Nước",
+      "release": 3,
+      "how": "Đặt một tháp pháo hơi nước trước mặt, tự bắn địch 6 phát trong 3 giây.",
+      "dmg": 5,
+      "hits": 6,
+      "mana": 6,
+      "cast": 0.9,
+      "effect": "Tháp pháo có 20 máu, địch đánh trúng sẽ phá",
+      "mech": {
+        "type": "turret",
+        "life": 3.2,
+        "every": 0.5,
+        "speed": 620,
+        "fps": 10
+      },
+      "vis": "a small brass tripod steam turret standing on the ground",
+      "guide": "standing on the ground line at the bottom of the cell, barrel pointing RIGHT; frames 1-4 unfolding its legs and rising; frames 5-8 firing in a loop (muzzle flash on 5 and 7, steam puffs)",
+      "pose_txt": "kneeling down and setting a machine on the ground with both hands, tightening it with a wrench",
+      "vis2": "a small glowing steam-turret bullet",
+      "guide2": "frames 1-4: the bullet flying to the RIGHT (seamless loop, centered); frames 5-8: a small spark burst",
+      "row": 2,
+      "pose": "sp_turret",
+      "hand": [
+        137,
+        127
+      ],
+      "frames": 8,
+      "fps": 10,
+      "row2": 3
+    },
+    {
+      "key": "drill",
+      "name": "Mũi Khoan Ngầm",
+      "release": 3,
+      "how": "Đấm xuống đất phóng mũi khoan chạy ngầm, trồi lên đâm thủng chân địch.",
+      "dmg": 26,
+      "mana": 5,
+      "cast": 0.8,
+      "effect": "Phá 40% giáp",
+      "mech": {
+        "type": "projectile",
+        "origin": "ground",
+        "speed": 380,
+        "impact": 4
+      },
+      "vis": "a spinning brass drill bit moving through the ground",
+      "guide": "frames 1-4: only the drill tip poking out of the ground line at the bottom of the cell, moving to the RIGHT with flying dirt (seamless loop); frames 5-8: the drill bursting fully up out of the ground then sinking",
+      "pose_txt": "a hammer punch straight down into the ground with one fist, crouching low",
+      "hits": 1,
+      "row": 4,
+      "pose": "sp_drill",
+      "hand": [
+        148,
+        171
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "magnet",
+      "name": "Nam Châm Kéo",
+      "release": 2,
+      "how": "Phóng nam châm khổng lồ bám vào địch rồi giật mạnh, kéo địch lại gần.",
+      "dmg": 14,
+      "mana": 4,
+      "cast": 0.5,
+      "effect": "Kéo địch lại gần 90 px, ngắt phép đang niệm",
+      "mech": {
+        "type": "projectile",
+        "origin": "hand",
+        "speed": 600,
+        "impact": 4,
+        "pull": 90
+      },
+      "vis": "a big red horseshoe magnet with magnetic field lines",
+      "guide": "frames 1-4: the magnet flying to the RIGHT, open end forward (seamless loop, centered); frames 5-8: magnetic pulse rings",
+      "pose_txt": "firing a magnet launcher forward with an outstretched arm, then yanking both hands back hard as if pulling a rope",
+      "hits": 1,
+      "row": 5,
+      "pose": "sp_magnet",
+      "hand": [
+        153,
+        92
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "steamjet",
+      "name": "Xả Hơi Nóng",
+      "release": 2,
+      "how": "Mở van ống xả trên lưng, phun luồng hơi nóng thẳng vào địch, 4 nhịp bỏng.",
+      "dmg": 6,
+      "hits": 4,
+      "mana": 5,
+      "cast": 0.6,
+      "effect": "Bỏng: giảm hồi máu 50% trong 3 giây",
+      "mech": {
+        "type": "beam",
+        "origin": "hand",
+        "ticks": [
+          1,
+          3,
+          5,
+          7
+        ],
+        "fps": 12
+      },
+      "vis": "a gushing jet of hot white steam with orange heat glints",
+      "guide": "every cell is ONE horizontal segment of the steam jet entering at the exact middle of the left edge and leaving at the exact middle of the right edge (tileable); frames 1-6 billowing; frames 7-8 thinning",
+      "pose_txt": "bracing low and pointing a big brass nozzle forward with both hands, leaning back against the pressure",
+      "row": 6,
+      "pose": "sp_steamjet",
+      "hand": [
+        152,
+        89
+      ],
+      "frames": 8,
+      "fps": 12,
+      "beamHead": [
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ],
+        [
+          5,
+          132,
+          187
+        ]
+      ]
+    },
+    {
+      "key": "airship",
+      "name": "Không Kích Khinh Khí Cầu",
+      "release": 3,
+      "how": "Bắn pháo hiệu gọi khinh khí cầu bay ngang trời, thả 4 quả bom xuống quanh địch.",
+      "dmg": 10,
+      "hits": 4,
+      "mana": 7,
+      "cast": 1.2,
+      "effect": "Mỗi quả bom đẩy lùi nhẹ",
+      "mech": {
+        "type": "multi_drop",
+        "count": 4,
+        "spread": 80,
+        "interval": 0.18,
+        "hit": 4,
+        "ship": true
+      },
+      "vis": "a black iron bomb with brass fins falling, then exploding",
+      "guide": "frames 1-4: one bomb falling from the TOP of the cell, fins up; frames 5-8: exploding on the ground line at the bottom of the cell with dirt",
+      "pose_txt": "firing a flare pistol straight up into the sky to signal an airship",
+      "row": 7,
+      "pose": "sp_airship",
+      "hand": [
+        125,
+        32
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "overdrive",
+      "name": "Quá Tải Lõi Hơi",
+      "release": 3,
+      "how": "Mở hết van lõi hơi trên lưng: bánh răng quay quanh người tạo giáp, phép kế tiếp mạnh hơn.",
+      "dmg": 0,
+      "mana": 5,
+      "cast": 0.6,
+      "effect": "Giáp 20; phép kế tiếp +30% sát thương",
+      "mech": {
+        "type": "self",
+        "shield": 20,
+        "empower": 30,
+        "fps": 9
+      },
+      "vis": "a ring of spinning brass gears around the caster with steam venting up",
+      "guide": "centered in the cell: frames 1-3 gears appearing; frames 4-6 spinning with steam puffs at the top; frames 7-8 fading",
+      "pose_txt": "a power-up flex: fists clenched low at the sides, then thrown out as steam bursts from the backpack",
+      "hits": 1,
+      "row": 8,
+      "pose": "sp_overdrive",
+      "hand": [
+        145,
+        93
+      ],
+      "frames": 8,
+      "fps": 9
+    }
+  ]
+}

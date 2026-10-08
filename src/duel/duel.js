@@ -5,7 +5,7 @@ import { addSheet, frameStyle, makeAnimator, play, sheetOf, tick } from './anim.
 import { FX } from '../fx/three-fx.js';
 import { DIFF, DUEL_WEATHER, RULES as R } from './data.js';
 import { MAGES, loadMages, spellIcon } from './mages.js';
-import { BASE, FW, SKY_PRE, fxAdd, fxClear, fxDraw, fxUpdate } from './spellfx.js';
+import { BASE, FW, SKY_PRE, fxAdd, fxClear, fxDraw, fxUpdate, originV2 } from './spellfx.js';
 
 /* ---------- Đấu Trường Phép Thuật: đấu phép thời gian thực ----------
    Lối chơi kiểu Asuka: 4 lá xoay vòng từ sách phép, ma lực hồi liên tục, mỗi phép có thời gian niệm mà đối thủ nhìn thấy.
@@ -23,10 +23,13 @@ function buildDecks(){
   }
 }
 const TYPE = {atk:'Tấn công', counter:'Phản chú', support:'Hỗ trợ'};
-const KIND = {bolt:'Bắn thẳng', sky:'Giáng từ trời', ground:'Dưới đất', spread:'Dang tay'};
+const KIND = {bolt:'Bắn thẳng', sky:'Giáng từ trời', ground:'Dưới đất', spread:'Dang tay',
+  projectile:'Đạn bay', fan:'Loạt đạn', wave:'Đạn lượn sóng', lob:'Ném vòng cung', boomerang:'Hồi toàn', beam:'Tia', drop:'Giáng xuống', multi_drop:'Mưa đòn',
+  erupt:'Trồi từ đất', zone:'Vùng di chuyển', self:'Bản thân', dash:'Lướt chém', clones:'Phân thân', strike:'Vây đánh', random:'Ngẫu nhiên', mark:'Ấn hẹn giờ',
+  turret:'Tháp pháo', totem:'Cắm trụ', sleep:'Ru ngủ', regen:'Hồi theo nhịp', encore:'Diễn lại'};
 const COL = {water:[.4,.7,1], storm:[1,.95,.4], fire:[1,.5,.1], ice:[.7,.9,1], earth:[.75,.55,.3], light:[1,.95,.6], dark:[.6,.35,.95], mind:[.95,.45,.8]};
-const isDef = sp => !!(sp.barrier || sp.wall || sp.guard);
-const isHeal = sp => !!(sp.heal || sp.drainHp);
+const isDef = sp => !!(sp.barrier || sp.wall || sp.guard || sp.mirror);
+const isHeal = sp => !!(sp.heal || sp.drainHp || sp.regenHeal);
 const total = sp => (sp.dmg || 0) * (sp.hits || 1);
 const POSE_DELAY = 2 / 14;                               // phép hiện ra ở khung 2 của tư thế phóng phép
 
@@ -42,7 +45,7 @@ function fixCfg(){
 /* ---------- Phép mang vào trận: chọn 5–8 phép trong sách ---------- */
 const poolOf = deck => Object.keys(DECKS[deck].list);
 // Mặc định: các phép cấp 1–2 (8 phép), phép cấp 3 để người chơi tự đổi vào
-const defaultLoadout = deck => poolOf(deck).filter(id => SP[id].level <= 2).slice(0, R.LOADOUT_MAX);
+const defaultLoadout = deck => { const p = poolOf(deck); return (p.length > R.LOADOUT_MAX ? p.filter(id => SP[id].level <= 2) : p).slice(0, R.LOADOUT_MAX); };
 function loadoutOf(deck){
   const pool = poolOf(deck), l = (cfg.loadout[deck] || []).filter(id => pool.includes(id));
   return l.length >= Math.min(R.LOADOUT_MIN, pool.length) && l.length <= R.LOADOUT_MAX ? l : defaultLoadout(deck);
@@ -52,7 +55,7 @@ const aiLoadout = deck => shuffle(poolOf(deck)).slice(0, R.LOADOUT_MAX);
 /* ---------- Tạo trận ---------- */
 function mkSide(i, deck, chosen){
   const D = DECKS[deck], s = {i, deck, name:i ? 'Máy' : 'Bạn', label:D.name, hp:R.HP, mana:R.MANA_START, regen:0, hpAcc:0,
-    cast:null, next:null, drawing:null, pick:null, st:{}, shield:0, mirror:0, evade:0, barrier:null, wall:null, pets:[], lastCast:-9, hand:[], queue:[]};
+    cast:null, next:null, drawing:null, pick:null, st:{}, shield:0, mirror:0, evade:0, barrier:null, wall:null, lastCast:-9, hand:[], queue:[], hist:[], lastSpell:null, dash:null};
   for (const id of chosen) for (let k = 0; k < D.list[id]; k++) s.queue.push(id);
   shuffle(s.queue); s.hand = s.queue.splice(0, R.HAND);
   s.anim = sheetOf(deck) ? makeAnimator(sheetOf(deck)) : null;
@@ -73,7 +76,7 @@ function canBegin(s, id){
   return !!sp && active(s) && !s.cast && s.mana >= sp.cost;
 }
 // Còn hành động được: trận đang diễn ra và không bị Choáng. Niệm và rút phép chạy song song, chỉ cần đủ ma lực và có phép trên tay
-const active = s => !S.over && !S.clash && S.intro <= 0 && !s.st.stun;
+const active = s => !S.over && !S.clash && S.intro <= 0 && !s.st.stun && !s.st.sleep;
 const free = s => active(s) && !s.drawing && !s.pick;   // rảnh tay để rút phép
 const emptySlot = s => s.hand.indexOf(null);
 
@@ -118,10 +121,14 @@ function finishCast(s){
   const c = s.cast; s.cast = null;
   const sp = SP[c.id];
   play(s.anim, sp.pose || 'buff');
-  // Hoả Thân: các phép sát thương tiếp theo mạnh hơn
+  // Bị Mặt Trăng mê hoặc: phép này trượt
+  if (s.st.confuse) { delete s.st.confuse; float(s.i, 'Bị mê hoặc: trượt!', '#c58cf0', true); return; }
+  // Hoả Thân / Hành Khúc / Quá Tải: các phép sát thương tiếp theo mạnh hơn
   let mul = 1;
   if (sp.dmg && s.st.empower) { mul = s.st.empower.mul; if (--s.st.empower.n <= 0) delete s.st.empower; }
-  S.pending.push({at:S.t + POSE_DELAY, fn:() => release(s, sp, mul)});
+  if (!sp.encore) s.lastSpell = sp;
+  // v1: phép hiện ra ở khung 2 của tư thế; v2: ở khung `release` của tư thế riêng
+  S.pending.push({at:S.t + (sp.v2 ? sp.release / sp.poseFps : POSE_DELAY), fn:() => release(s, sp, mul)});
 }
 // Một nhịp sát thương: đi theo hệ thống "phép đang bay" để khiên / tường / Đấu Đũa xử lý chung
 function hitP(s, sp, delay, o = {}){
@@ -134,23 +141,13 @@ function gapRef(){ const G = geo(); return G ? Math.abs(G[1].x - G[0].x) / G[0].
 // Phép xuất hiện: dựng hình theo sheet phép và lên lịch các nhịp sát thương theo khung gây sát thương của phép
 function release(s, sp, mul){
   if (S.over) return;
+  if (sp.v2) return releaseV2(s, sp, mul);
   const o = S.side[1 - s.i], m = sp.meta || {}, fps = m.fps || 14, base = {from:s.i, to:o.i, sp, mul}, gap = gapRef();
   if (sp.self) applySelf(s, sp);
   // Phép tự thân: hình quanh người niệm (tường đá đứng trước mặt, giữ tới khi hết hạn)
   if (sp.self) {
     if (m.mode === 'wall') fxAdd({...base, i:s.i, dx:108, fps:5, hold:{from:3, to:5, until:() => s.wall ? s.wall.until : 0}});
     else fxAdd({...base, i:s.i, center:true, cy:92, fps});
-    return;
-  }
-  const last = n => (p, j) => { p.last = j === n - 1; return p; };
-  // Triệu thú: vòng triệu hồi, quái trồi ra rồi lao / bổ nhào / phun lên trúng mục tiêu
-  if (sp.summon) {
-    const atTarget = sp.mech === 'dive' || sp.mech === 'erupt';
-    fxAdd({...base, i:atTarget ? o.i : s.i, dx:atTarget ? 0 : 100, fps:12});
-    const T = {charge:.7 + gap / (380 + 160 * sp.level), dive:.85, erupt:.5, guard:1.2}[sp.mech] || .8;
-    const p = hitP(s, sp, T, {mul, last:!sp.extra, warn:true});
-    fxAdd({kind:'mon', ...base, p, delay:.25});
-    for (let j = 1; j <= (sp.extra || 0); j++) hitP(s, sp, T + .3 * j, {mul:mul * .4, last:j === sp.extra});
     return;
   }
   // Tia nối tay → địch (tia băng, xích sét)
@@ -196,14 +193,107 @@ function release(s, sp, mul){
   else hitP(s, sp, pre + hitAt / fps, {mul, last:true, warn:true});
   if (m.shake) S.pending.push({at:S.t + pre + hitAt / fps, fn:() => FX.shake(m.shake)});
 }
+// Phép v2: dựng hình theo mech.type (chép spawnV2 của gói) và lên lịch nhịp sát thương / hồi máu theo khung của phép
+function releaseV2(s, sp, mul){
+  const o = S.side[1 - s.i], m = sp.mech, meta = sp.meta, fps = m.fps || meta.fps || 14, gap = gapRef(), [ox, oy] = originV2(sp);
+  const base = {kind:'v2', from:s.i, to:o.i, sp, fps, o:{i:s.i, dx:ox, dy:oy}};
+  const hit = (delay, o2 = {}) => hitP(s, sp, delay, {mul, ...o2});
+  const at = (f, sp2 = 0) => sp2 + f / fps;                            // thời điểm của khung f
+  const ticks = (list, o2 = {}) => list.forEach((f, j) => hit(at(f), {last:j === list.length - 1, tick:j, ...o2}));
+  if (sp.self || sp.encore) applySelf(s, sp);
+  switch (m.type) {
+    case 'projectile': case 'wave': {                                  // đạn bay thẳng / lượn sóng
+      const p = hit(Math.max(.3, gap / (m.speed || 560)), {bolt:true, last:true, clashable:sp.hits === 1 && m.type === 'projectile', pierce:m.type === 'wave'});
+      p.ent = fxAdd({...base, mode:'shot', p, phase:'fly'}); return clashCheck(s, p);
+    }
+    case 'fan': (m.spreadY || [0]).slice(0, m.count || 3).forEach((dy, j, a) => S.pending.push({at:S.t + j * (m.interval || .08), fn:() => {
+      const p = hit(Math.max(.3, gap / (m.speed || 620)), {bolt:true, last:j === a.length - 1, tick:j});
+      p.ent = fxAdd({...base, mode:'shot', p, phase:'fly', dy}); }})); return;
+    case 'boomerang': {                                                 // bay tới, trúng, quay về; mỗi lượt một nhịp
+      const T = Math.max(.25, gap / (m.speed || 560)), n = m.passes || 2;
+      fxAdd({...base, mode:'boom', T, passes:n});
+      for (let j = 0; j < n; j++) hit(T * (2 * j + 1), {bolt:true, last:j === n - 1, tick:j}); return;
+    }
+    case 'lob': { const fl = m.flight || .7; fxAdd({...base, mode:'lob', flight:fl, phase:'fly'}); hit(fl, {bolt:true, last:true, warn:true}); return; }
+    case 'beam': fxAdd({...base, mode:'beam'}); ticks(m.ticks || [1]); return;
+    case 'drop': fxAdd({...base, mode:'spot', i:o.i, dy:-84}); hit(at(m.hit ?? 3), {last:true, warn:true}); shakeAt(m, at(m.hit ?? 3)); return;
+    case 'multi_drop': for (let j = 0; j < (m.count || 5); j++) {
+      const d = j * (m.interval || .1); fxAdd({...base, mode:'spot', i:o.i, dy:-84, dx:(Math.random() - .5) * (m.spread || 60), delay:d});
+      hit(d + at(m.hit ?? 3), {last:j === (m.count || 5) - 1, tick:j, warn:true}); } return;
+    case 'erupt': fxAdd({...base, mode:'spot', i:o.i, dx:-4, dy:-84}); hit(at(m.hit ?? 3), {last:true, warn:true}); return;
+    case 'strike': fxAdd({...base, mode:'spot', i:o.i, dx:-6, dy:-100}); ticks(m.hits || [3], {warn:true}); return;
+    case 'random': fxAdd({...base, mode:'spot', i:o.i, dx:-6, dy:-100}); hit(at(m.hit ?? 5), {last:true, warn:true}); return;
+    case 'clones': fxAdd({...base, mode:'spot', i:o.i, dx:-6, dy:-100, clones:[-80, 80, -40].slice(0, m.count || 3)}); ticks(m.hits || [2, 3, 4], {warn:true}); return;
+    case 'mark': {                                                      // ấn hẹn giờ trên đầu địch: nổ sớm hơn nếu địch đang bị chậm
+      const wait = Math.max(.5, (m.delay || 2.5) - (sp.early && o.st.slow ? sp.early : 0)), until = S.t + wait;
+      fxAdd({...base, mode:'spot', i:o.i, dx:-6, dy:-205, hold:{from:0, to:3, until:() => until}});
+      hit(wait + ((m.hit ?? 5) - 3) / fps, {last:true, warn:true}); return;
+    }
+    case 'dash': {                                                      // lướt tới chém rồi lướt về
+      const fr = m.combo || [m.hit ?? 2];
+      s.dash = {t:0, to:m.stop === 'behind' ? 1 : -1, stay:.08 + (Math.max(...fr) + 1) / fps};
+      fxAdd({...base, mode:'spot', i:o.i, dx:-6, dy:-100, delay:.08}); ticks(fr.map(f => f), {});
+      return;
+    }
+    case 'zone': {                                                      // lốc cát tiến về phía địch, sát thương theo nhịp khi tới nơi
+      const life = m.life || 2.4, n = (m.ticks || [1]).length, speed = Math.max(m.speed || 150, (gap - 100) / (life * .4));
+      fxAdd({...base, mode:'spot', i:s.i, dy:-84, move:true, speed, hold:{from:0, to:7, until:(t0 => () => t0 + life)(S.t)}});
+      for (let j = 0; j < n; j++) hit(life * .4 + (life * .6) * (j + .5) / n, {last:j === n - 1, tick:j}); return;
+    }
+    case 'turret': {                                                    // tháp pháo / thiên thần tự bắn đạn hàng row2
+      const life = m.life || 3, every = m.every || .5, end = S.t + life, tx = m.float ? 70 : 96, ty = m.float ? -150 : -84;
+      fxAdd({...base, mode:'spot', i:s.i, dx:tx, dy:ty, hold:{from:4, to:7, until:() => end}});
+      for (let tt = 4 / fps; tt < life; tt += every) S.pending.push({at:S.t + tt, fn:() => {
+        if (S.over) return;
+        const p = hitP(s, sp, Math.max(.2, (gap - tx) / (m.speed || 620)), {mul, bolt:true, last:false, tick:1});
+        p.ent = fxAdd({...base, mode:'shot', p, phase:'fly', row:meta.row2, o:{i:s.i, dx:tx + (m.float ? 22 : 40) - 26, dy:m.float ? ty + 8 : -46}, fps:14}); }});
+      return;
+    }
+    case 'sleep': {
+      fxAdd({...base, mode:'spot', i:o.i, dx:-6, dy:-170, hold:{from:0, to:7, until:() => o.st.sleep || 0}});
+      hit(.05, {last:true}); return;
+    }
+    case 'totem': {
+      const life = m.life || 2.5, n = m.ticks || 4, end = S.t + life;
+      fxAdd({...base, mode:'spot', i:o.i, dx:-64, dy:-84, hold:{from:2, to:7, until:() => end}});
+      for (let j = 0; j < n; j++) hit(life * (j + 1) / (n + 1), {last:j === n - 1, tick:j}); return;
+    }
+    case 'regen': fxAdd({...base, mode:'spot', i:s.i, dx:-34, dy:-120});
+      (m.beats || []).forEach(f => S.pending.push({at:S.t + at(f), fn:() => heal(s, sp.regenHeal)})); return;
+    case 'encore': fxAdd({...base, mode:'spot', i:s.i, dy:-96});
+      if (s.lastSpell && !s.lastSpell.encore) { const last = s.lastSpell; S.pending.push({at:S.t + .38, fn:() => release(s, last, mul)}); }
+      else float(s.i, 'Chưa có phép để diễn lại', 'var(--mute)');
+      return;
+    default: {                                                          // self: quanh người niệm, trước mặt hoặc sau lưng
+      const dx = m.at === 'caster_front' ? 56 : m.at === 'caster_back' ? -30 : 0, dy = m.at === 'caster_back' ? -190 : -96;
+      fxAdd({...base, mode:'spot', i:s.i, dx, dy});
+      if (sp.heal) S.pending.push({at:S.t + at(m.healAt ?? 4), fn:() => sp.rewind ? heal(s, rewound(s, sp.rewind)) : heal(s, sp.heal)});
+      if (m.rays) m.rays.forEach((f, j) => hit(at(f), {last:j === m.rays.length - 1, tick:j, zap:{from:s.i, dx, top:-dy}}));
+    }
+  }
+}
+// Tua Ngược: lượng máu đã mất trong vài giây trước (có trần)
+function rewound(s, rw){
+  const past = s.hist.filter(h => h.t >= S.t - rw.secs).reduce((a, h) => Math.max(a, h.hp), s.hp);
+  return Math.min(rw.max, Math.max(0, past - s.hp));
+}
+function shakeAt(m, t){ if (m.shake) S.pending.push({at:S.t + t, fn:() => FX.shake(m.shake)}); }
+function clashCheck(s, p){
+  const o = S.side[1 - s.i], rival = p.clashable && S.proj.find(q => q.from === o.i && q.clashable && !q.reflected && !q.gone);
+  if (rival && !S.clash) { S.clash = {mine:s.i === 0 ? p : rival, theirs:s.i === 0 ? rival : p, t:0, press:[0, 0], aiAcc:0, push:.5}; banner('Đấu Đũa!', 'var(--brass)'); }
+}
 function applySelf(s, sp){
   if (sp.barrier) { s.barrier = {hp:sp.barrier.hp, until:S.t + sp.barrier.dur}; float(s.i, `Giáp ${s.barrier.hp}`, '#9fe8ff'); }
   if (sp.wall) { s.wall = {n:sp.wall.n, until:S.t + sp.wall.dur, root:sp.wall.rootOnFall}; float(s.i, sp.wall.n >= 99 ? 'Thành luỹ!' : `Tường đá chặn ${sp.wall.n} đạn`, '#c8f06a'); }
   if (sp.guard) s.st.guard = {pct:sp.guard.pct, until:S.t + sp.guard.dur};
   if (sp.cleanse) { for (const k of ['wet', 'burn', 'frozen', 'stun', 'weak', 'slow', 'mark']) delete s.st[k]; float(s.i, 'Giải hiệu ứng', 'var(--good)'); }
-  if (sp.heal) heal(s, sp.heal);
+  if (sp.heal && !sp.v2) heal(s, sp.heal);
   if (sp.empower) { s.st.empower = {...sp.empower}; float(s.i, `${sp.empower.n} phép tới +${Math.round((sp.empower.mul - 1) * 100)}%`, '#ffb36b'); }
   if (sp.haste) { s.st.haste = S.t + sp.haste; float(s.i, 'Niệm nhanh!', '#ffe9a0'); }
+  if (sp.mirror) s.mirror = S.t + sp.mirror;
+  if (sp.thorns) s.st.thorns = {pct:sp.thorns.pct, until:S.t + sp.thorns.dur};
+  if (sp.immune) s.st.immune = S.t + sp.immune;
+  if (sp.revive) { if (s.revived) float(s.i, 'Đã hồi sinh rồi', 'var(--mute)'); else { s.st.revive = sp.revive; float(s.i, 'Hồi sinh sẵn sàng', '#ffe9a0'); } }
 }
 function interrupt(t){
   banner('Ngắt phép!', 'var(--bad)'); float(t.i, SP[t.cast.id].name + ' bị huỷ', 'var(--bad)');
@@ -214,7 +304,7 @@ function interrupt(t){
 function land(p){
   const sp = p.sp, t = S.side[p.to], c = S.side[p.from], st = t.st;
   if (t.evade > S.t) { p.gone = true; float(t.i, 'Trượt!', '#cfe8ff'); return; }
-  if (p.bolt && t.wall && t.wall.until > S.t && t.wall.n > 0 && !sp.pierce) {
+  if (p.bolt && t.wall && t.wall.until > S.t && t.wall.n > 0 && !sp.pierce && !p.pierce) {
     p.gone = true; t.wall.n--; float(t.i, 'Tường chặn!', '#c8f06a'); FX.burst(at(t.i, .6), {color:[.8,.95,.5], count:40, speed:160});
     if (t.wall.n <= 0) t.wall.until = S.t;
     return;
@@ -227,8 +317,15 @@ function land(p){
   p.gone = true;
   if (t.shield > S.t && !sp.pierce) { t.shield = 0; float(t.i, 'Chặn!', '#9fd0ff', true); return; }
   p.hitTarget = true;
-  let n = 0, burn = sp.burn;
-  if (sp.dmg) {
+  let n = 0, burn = sp.burn, dmg = sp.dmg;
+  // Bánh Xe Số Phận: bốc 1 kết quả
+  if (sp.random) {
+    const o = pick(sp.random);
+    if (o === 'dmg2') { dmg *= 2; float(t.i, 'Số phận: x2!', '#ffe9a0', true); }
+    else if (o === 'heal') { dmg = 0; heal(c, 20); float(c.i, 'Số phận: hồi máu', 'var(--good)'); }
+    else { dmg = 0; stunT(t, 1.5); float(t.i, 'Số phận: choáng!', '#ffe9a0'); }
+  }
+  if (dmg) {
     let mul = (p.mul || 1) * (1 + (DUEL_WEATHER[S.weather].mod[sp.el] || 0));
     if (c.st.weak) mul *= .7;                                          // người niệm bị Mù: phép yếu đi
     if (sp.el === 'storm' && st.wet) { mul *= 1.3; delete st.wet; react('Giật lan', EL.storm.c); }
@@ -236,10 +333,16 @@ function land(p){
     else if (sp.el === 'fire' && st.frozen) { mul *= 1.5; delete st.frozen; react('Hơi nước', '#f2f2f2'); }
     else if (sp.el === 'ice' && st.burn) { mul *= 1.2; delete st.burn; react('Tan chảy', EL.ice.c); }
     if (st.mark) mul *= 1.1;                                           // bị đánh dấu con mồi
+    if (st.vuln) mul *= 1 + st.vuln.v;                                 // bị giảm kháng phép
     if (st.guard) mul *= 1 - st.guard.pct;                             // bong bóng hộ thân
-    n = Math.max(1, Math.round(sp.dmg * mul));
+    if (sp.smite && (st.weak || st.mark)) mul *= 2;                    // thánh quang lên địch bị Mù / nguyền
+    if (sp.execute && t.hp < R.HP * sp.execute) mul *= 2;              // Lá Tử Thần
+    if (sp.crit && Math.random() < sp.crit) { mul *= 1.5; float(t.i, 'Chí mạng!', '#ffe9a0'); }
+    n = Math.max(1, Math.round(dmg * mul + (sp.pctHp ? t.hp * sp.pctHp : 0)));
   }
-  const dealt = n > 0 ? damage(t, n) : 0;
+  if (sp.armorBreak && t.barrier) { t.barrier.hp = Math.floor(t.barrier.hp * (1 - sp.armorBreak)); if (t.barrier.hp <= 0) t.barrier = null; }
+  const dealt = n > 0 ? damage(t, n, c, sp.pierce) : 0;
+  if (dealt && sp.lifePerHit) heal(c, sp.lifePerHit);
   if (p.last && sp.drainHp && dealt) heal(c, sp.drainHp);
   if (p.last && sp.selfHeal) heal(c, sp.selfHeal);
   if (p.last && sp.armorOnHit) c.barrier = {hp:(c.barrier ? c.barrier.hp : 0) + sp.armorOnHit, until:S.t + 5};
@@ -249,12 +352,17 @@ function land(p){
   if (sp.freeze) st.frozen = Math.max(st.frozen || 0, S.t + sp.freeze);
   if (sp.slow) st.slow = {until:S.t + 3, f:Math.min(.8, Math.max(st.slow ? st.slow.f : 0, sp.slow))};
   if (sp.root) { st.slow = {until:S.t + sp.root * 2 + 1, f:Math.max(st.slow ? st.slow.f : 0, .4)}; st.root = S.t + sp.root * 2 + 1; }
-  if (sp.launch) { st.stun = Math.max(st.stun || 0, S.t + .35); const f = fighter(t.i); f.classList.remove('launch'); void f.offsetWidth; f.classList.add('launch'); }
-  if (sp.stun) st.stun = Math.max(st.stun || 0, S.t + sp.stun);
-  if (t.cast && (sp.interrupt || sp.stun >= .5)) interrupt(t);
+  if (sp.vuln) st.vuln = {v:Math.min(.3, (st.vuln ? st.vuln.v : 0) + sp.vuln), until:S.t + 4};
+  if (sp.confuse) { st.confuse = S.t + sp.confuse; float(t.i, 'Bị mê hoặc', '#c58cf0'); }
+  if (sp.sleep && !st.immune) { st.sleep = S.t + sp.sleep; float(t.i, 'Ngủ…', '#c58cf0', true); if (t.cast) interrupt(t); }
+  if (sp.healCut) st.healCut = S.t + sp.healCut;
+  if (sp.stunLast && p.last) stunT(t, sp.stunLast);
+  if (sp.launch) { stunT(t, .35); const f = fighter(t.i); f.classList.remove('launch'); void f.offsetWidth; f.classList.add('launch'); }
+  if (sp.stun) stunT(t, sp.stun);
+  if (t.cast && (sp.interrupt || (sp.stun >= .5 && !st.immune))) interrupt(t);
   if (sp.blind) st.weak = Math.max(st.weak || 0, S.t + sp.blind);
   if (sp.mark) st.mark = S.t + sp.mark;
-  if (sp.dispel && p.last) {
+  if (sp.dispel && (p.last || sp.v2)) {
     const drop = [['wall', () => t.wall = null], ['barrier', () => t.barrier = null], ['empower', () => delete st.empower], ['haste', () => delete st.haste], ['guard', () => delete st.guard]]
       .find(([k]) => k === 'wall' || k === 'barrier' ? t[k] : st[k]);
     if (drop) { drop[1](); float(t.i, 'Bị xoá phép duy trì', '#c58cf0'); }
@@ -264,8 +372,12 @@ function land(p){
     y0:G => p.zap.sky ? 0 : G[p.zap.from].g - p.zap.top * G[p.zap.from].k});
   FX.burst(at(t.i), {color:COL[sp.el] || [1,1,1], count:24, speed:150});
 }
-function damage(t, n){
-  if (t.barrier && t.barrier.until > S.t) {
+// Choáng / đứng yên (Kim Chung Tráo miễn)
+function stunT(t, secs){ if (!t.st.immune) t.st.stun = Math.max(t.st.stun || 0, S.t + secs); }
+function damage(t, n, src, pierce){
+  if (t.st.sleep) { delete t.st.sleep; float(t.i, 'Tỉnh giấc!', 'var(--ink)'); }       // ngủ: tỉnh khi trúng đòn
+  if (src && t.st.thorns && src !== t) { const r = Math.round(n * t.st.thorns.pct); if (r) { float(t.i, `Phản ${r}`, '#ffe9a0'); damage(src, r); } }
+  if (t.barrier && t.barrier.until > S.t && !pierce) {
     const a = Math.min(t.barrier.hp, n); t.barrier.hp -= a; n -= a;
     if (a) float(t.i, `Giáp −${a}`, '#9fe8ff');
     if (t.barrier.hp <= 0) t.barrier = null;
@@ -273,6 +385,9 @@ function damage(t, n){
   if (n <= 0) return 0;
   t.hp = Math.max(0, t.hp - n); float(t.i, '−' + n, 'var(--bad)', n >= 20);
   hitFx(t.i, n);
+  if (t.hp <= 0 && t.st.revive) {                                       // Ấn Hồi Sinh (một lần mỗi trận)
+    t.hp = Math.round(R.HP * t.st.revive); delete t.st.revive; t.revived = true; banner('Hồi sinh!', '#ffe9a0'); return n;
+  }
   if (t.hp <= 0 && !S.over) {
     S.over = true; S.winner = 1 - t.i; S.stop = 0;
     fighter(t.i).classList.add('ko'); banner('K.O.', 'var(--bad)', true); FX.shake(14);
@@ -281,6 +396,7 @@ function damage(t, n){
   return n;
 }
 function heal(s, n){
+  if (s.st.healCut) n = Math.round(n / 2);                             // bỏng hơi nóng: giảm hồi máu
   if (n <= 0) return;
   s.hp = Math.min(R.HP, s.hp + n); float(s.i, '+' + n, 'var(--good)'); FX.rise(at(s.i), [.45,1,.6], 30);
 }
@@ -302,8 +418,9 @@ function step(dt){
   if ((S.wNext -= dt) <= 0) setWeather(pick(Object.keys(DUEL_WEATHER).filter(k => k !== S.weather)));
   for (const s of S.side) {
     const st = s.st;
-    for (const k of ['wet', 'frozen', 'stun', 'weak', 'haste', 'mark', 'root']) if (st[k] && st[k] <= S.t) delete st[k];
-    for (const k of ['slow', 'guard']) if (st[k] && st[k].until <= S.t) delete st[k];
+    for (const k of ['wet', 'frozen', 'stun', 'weak', 'haste', 'mark', 'root', 'confuse', 'sleep', 'immune', 'healCut']) if (st[k] && st[k] <= S.t) delete st[k];
+    for (const k of ['slow', 'guard', 'vuln', 'thorns']) if (st[k] && st[k].until <= S.t) delete st[k];
+    if (!s.hist.length || S.t - s.hist[s.hist.length - 1].t >= .2) { s.hist.push({t:S.t, hp:s.hp}); if (s.hist.length > 40) s.hist.shift(); }
     if (s.barrier && s.barrier.until <= S.t) s.barrier = null;
     // Tường đá hết hạn: Thành Luỹ Cổ Thụ sụp xuống làm đối thủ bị Trói chân
     if (s.wall && s.wall.until <= S.t) { const o = S.side[1 - s.i]; if (s.wall.root) { o.st.slow = {until:S.t + 3, f:.4}; o.st.root = S.t + 3; } s.wall = null; }
@@ -500,7 +617,15 @@ function chips(s){
   else if (st.slow) c('d-cu', `Chậm ${Math.round(st.slow.f * 100)}% ${left(st.slow.until)}`);
   if (st.mark) c('d-cu', `Con mồi ${left(st.mark)}`);
   if (st.haste) c('d-good', `Niệm nhanh ${left(st.haste)}`);
-  if (st.empower) c('d-good', `Hoả Thân ×${st.empower.n}`);
+  if (st.empower) c('d-good', `Cường hoá ×${st.empower.n}`);
+  if (st.sleep) c('st-stun', `Ngủ ${left(st.sleep)}`);
+  if (st.confuse) c('d-cu', `Mê hoặc ${left(st.confuse)}`);
+  if (st.vuln) c('d-cu', `Kháng phép −${Math.round(st.vuln.v * 100)}%`);
+  if (st.healCut) c('d-cu', `Bỏng: hồi máu −50% ${left(st.healCut)}`);
+  if (st.immune) c('d-good', `Miễn choáng ${left(st.immune)}`);
+  if (st.thorns) c('d-good', `Phản đòn ${left(st.thorns.until)}`);
+  if (st.revive) c('d-good', 'Hồi sinh sẵn sàng');
+  if (s.mirror > S.t) c('d-mi', `Phản đạn ${left(s.mirror)}`);
   if (st.guard) c('d-sh', `Bong bóng −${Math.round(st.guard.pct * 100)}% ${left(st.guard.until)}`);
   if (s.wall && s.wall.until > S.t) c('d-ba', `Tường đá ${s.wall.n >= 99 ? '∞' : s.wall.n} · ${left(s.wall.until)}`);
   if (s.shield > S.t) c('d-sh', `Khiên ${left(s.shield)}`);
@@ -657,6 +782,17 @@ document.addEventListener('keydown', e => {
 // Chạy sprite sheet của đấu sĩ; khựng hình khi trúng đòn nặng thì hoạt ảnh cũng khựng theo
 function animate(dt){
   if (!S || S.stop > 0) return;
+  // Lướt chém (dash): người niệm lướt tới sát / sau lưng địch, đứng chém rồi lướt về
+  for (const s of S.side) {
+    const f = fighter(s.i), d = s.dash; if (!f) continue;
+    if (!d) { if (f.style.translate) f.style.translate = ''; continue; }
+    d.t += dt;
+    const W = $('.d-stage').getBoundingClientRect().width, sw = f.querySelector('.f-sprite').getBoundingClientRect().width, k = sw / FW;
+    const far = .6 * W + 70 * k * d.to, go = .12, back = .22;
+    const u = d.t < go ? d.t / go : d.t < go + d.stay ? 1 : Math.max(0, 1 - (d.t - go - d.stay) / back);
+    f.style.translate = `${(s.i ? -1 : 1) * far * (1 - (1 - u) * (1 - u))}px 0`;
+    if (d.t >= go + d.stay + back) s.dash = null;
+  }
   fxUpdate(S.over || S.intro > 0 ? dt : S.clash ? dt * .5 : dt, () => S.t);
   for (const s of S.side) {
     if (!s.anim) continue;

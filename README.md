@@ -7,7 +7,7 @@ Game đấu phép thời gian thực một người chơi với máy, chạy tr�
 - **Thanh niệm dưới chân:** đang niệm thì nhân vật có thanh tiến độ, đối thủ cũng nhìn thấy.
 - **Đấu Đũa:** hai phép sát thương va nhau giữa sân, ai bấm nhanh hơn thì đẩy được luồng phép về phía đối thủ.
 - **Phản ứng nguyên tố** (Ướt + Sét = Giật lan, Đóng băng + Lửa = Hơi nước…) và **thời tiết** đổi mỗi 30 giây.
-- **7 pháp sư, mỗi người 12 phép** (bắn thẳng, giáng từ trời, dưới đất, dang tay), mỗi phép có hoạt ảnh riêng; máy có 3 độ khó.
+- **14 nhân vật:** 6 pháp sư gốc 12 phép (bắn thẳng, giáng từ trời, dưới đất, dang tay) và 8 nhân vật bộ phép riêng 8 phép, mỗi phép một tư thế; mọi phép có hoạt ảnh riêng; máy có 3 độ khó.
 
 Luật chi tiết: [docs/LUAT-CHOI.md](docs/LUAT-CHOI.md) · Việc sắp làm: [docs/LO-TRINH.md](docs/LO-TRINH.md)
 
@@ -35,15 +35,15 @@ index.html              Khung trang: HUD, sân khấu, canvas phép, tay 4 lá
 src/
   duel/
     duel.js             Vòng lặp thời gian thực, niệm → tư thế → phép, sát thương/phản ứng, máy (AI), giao diện, điều khiển
-    mages.js            Nạp gói pháp sư, đổi dữ liệu phép trong game-data.json thành phép của trận
-    spellfx.js          Vẽ phép từ sheet phép lên canvas (đạn bay, giáng từ trời, tia, tường, quái triệu hồi…)
+    mages.js            Nạp gói pháp sư (định dạng v1 và v2), đổi dữ liệu phép thành phép của trận
+    spellfx.js          Vẽ phép từ sheet phép lên canvas (đạn bay, hồi toàn, ném vòng, giáng, tia, tường, tháp pháo, phân thân…)
     anim.js             Chạy sprite sheet nhân vật (idle, niệm, các tư thế phóng phép, trúng đòn, gục)
     data.js             Luật trận, thời tiết, độ khó
     duel.css, base.css  Giao diện
     config.js           Hệ nguyên tố (tên, màu)
   fx/three-fx.js        Lớp hiệu ứng three.js: hạt, flipbook, rung màn hình, hạt thời tiết
 public/
-  mage/                 ★ Gói pháp sư: game-data.json, anim/<id>-sheet.png + .json, spells/<id>-spells.png + .json, summons/
+  mage/                 ★ Gói pháp sư: game-data.json, anim/<id>-sheet.png + .json, spells/<id>-spells.png + .json
   fx/<tên>.png          Dải hiệu ứng 8 khung dùng chung (khiên, ngắt phép…)
   ui/                   Khung lá phép
 docs/mage-anim/CLAUDE.md  Định dạng gói pháp sư (khung, hàng hoạt ảnh, thông số phép)
@@ -51,6 +51,6 @@ docs/mage-anim/CLAUDE.md  Định dạng gói pháp sư (khung, hàng hoạt ả
 
 ## Sửa hoặc thêm phép
 
-Chỉ số phép (tên, sát thương, số nhịp, ma lực, thời gian niệm, hiệu ứng) nằm trong `public/mage/game-data.json`, hình phép trong `public/mage/spells/<id>-spells.png` + `.json`.
+Chỉ số phép (tên, sát thương, số nhịp, ma lực, thời gian niệm, hiệu ứng) nằm trong `public/mage/game-data.json` (v1) và `public/mage/spells/<id>-spells.json` (v2, kèm `mech`), hình phép trong `public/mage/spells/<id>-spells.png`.
 `src/duel/mages.js` đọc câu hiệu ứng (`effect`) để ra cơ chế: Cháy, Choáng, Làm chậm, Ướt, Đóng băng, Trói chân, Hút máu, Mù, Hất tung, Đánh dấu con mồi, giáp, tường chặn đạn, Hoả Thân, Lôi Tốc…
 Thêm nhân vật mới: thêm vào `game-data.json` và thả sheet nhân vật + sheet phép đúng định dạng trong `docs/mage-anim/CLAUDE.md`.

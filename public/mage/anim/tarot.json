@@ -1,0 +1,88 @@
+{
+  "id": "tarot",
+  "version": 2,
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "head": [
+    103,
+    42
+  ],
+  "anims": {
+    "idle": {
+      "row": 0,
+      "frames": 6,
+      "fps": 8,
+      "loop": true
+    },
+    "charge": {
+      "row": 1,
+      "frames": 6,
+      "fps": 10,
+      "loop": true
+    },
+    "hit": {
+      "row": 2,
+      "frames": 3,
+      "fps": 14,
+      "loop": false
+    },
+    "ko": {
+      "row": 3,
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "hold": true
+    },
+    "sp_fan": {
+      "row": 4,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_tower": {
+      "row": 5,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_wheel": {
+      "row": 6,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_death": {
+      "row": 7,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_star": {
+      "row": 8,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_moon": {
+      "row": 9,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_chain": {
+      "row": 10,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_world": {
+      "row": 11,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    }
+  }
+}

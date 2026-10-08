@@ -28,7 +28,8 @@
         ]
       },
       "hitFrame": 4,
-      "impactAnchor": "bottom"
+      "impactAnchor": "bottom",
+      "offsetX": -8
     },
     {
       "key": "bolt2",
@@ -60,7 +61,8 @@
           7
         ]
       },
-      "impactAnchor": "bottom"
+      "impactAnchor": "bottom",
+      "offsetX": -4
     },
     {
       "key": "bolt3",
@@ -89,46 +91,47 @@
           7
         ]
       },
+      "offsetX": -1,
       "beamHead": [
         [
-          46,
-          99,
-          173
-        ],
-        [
-          6,
-          81,
-          186
-        ],
-        [
-          5,
-          81,
-          187
-        ],
-        [
-          5,
-          81,
-          187
-        ],
-        [
-          5,
-          81,
-          187
-        ],
-        [
-          6,
-          81,
-          186
-        ],
-        [
-          5,
-          81,
-          187
-        ],
-        [
-          4,
-          81,
+          7,
+          83,
           188
+        ],
+        [
+          9,
+          84,
+          188
+        ],
+        [
+          9,
+          84,
+          188
+        ],
+        [
+          9,
+          83,
+          186
+        ],
+        [
+          7,
+          82,
+          186
+        ],
+        [
+          6,
+          81,
+          185
+        ],
+        [
+          6,
+          81,
+          185
+        ],
+        [
+          6,
+          80,
+          183
         ]
       ]
     },
@@ -156,11 +159,11 @@
         ]
       },
       "hitFrame": 2,
-      "skyMode": "fall",
+      "skyMode": "cloud",
       "landFrame": 3,
-      "top": 28,
-      "band": 114,
-      "dir": -0.55
+      "top": 49,
+      "band": 98,
+      "dir": 0
     },
     {
       "key": "sky2",
@@ -195,8 +198,8 @@
       },
       "skyMode": "cloud",
       "landFrame": 3,
-      "top": 2,
-      "band": 47,
+      "top": 26,
+      "band": 115,
       "dir": 0
     },
     {
@@ -227,11 +230,11 @@
           7
         ]
       },
-      "skyMode": "fall",
+      "skyMode": "cloud",
       "landFrame": 2,
-      "top": 5,
-      "band": 130,
-      "dir": 0.6
+      "top": 0,
+      "band": 104,
+      "dir": 0
     },
     {
       "key": "ground1",
@@ -349,7 +352,8 @@
           6,
           7
         ]
-      }
+      },
+      "offsetX": -2
     },
     {
       "key": "spread2",
@@ -378,7 +382,8 @@
           6,
           7
         ]
-      }
+      },
+      "offsetX": 1
     },
     {
       "key": "spread3",
@@ -412,7 +417,8 @@
           6,
           7
         ]
-      }
+      },
+      "offsetX": 0
     }
   ]
 }

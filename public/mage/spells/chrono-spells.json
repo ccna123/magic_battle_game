@@ -1,0 +1,242 @@
+{
+  "id": "chrono",
+  "version": 2,
+  "element": "time",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "clockhand",
+      "name": "Kim Đồng Hồ Hồi Toàn",
+      "release": 2,
+      "how": "Ném chiếc kim đồng hồ khổng lồ xoay như lưỡi dao, bay tới rồi quay về, trúng 2 lần.",
+      "dmg": 11,
+      "hits": 2,
+      "mana": 3,
+      "cast": 0.4,
+      "effect": "Mỗi lần trúng làm chậm 15%",
+      "mech": {
+        "type": "boomerang",
+        "origin": "hand",
+        "speed": 560,
+        "passes": 2
+      },
+      "vis": "a giant golden clock hand spinning like a blade",
+      "guide": "all 8 frames: the clock hand spinning in place, centered (seamless loop)",
+      "pose_txt": "a sidearm throwing motion, whipping a spinning golden clock hand forward",
+      "row": 0,
+      "pose": "sp_clockhand",
+      "hand": [
+        129,
+        62
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "hourglass",
+      "name": "Đồng Hồ Cát Giáng",
+      "release": 3,
+      "how": "Một đồng hồ cát khổng lồ rơi xuống đập vỡ trên đầu địch, cát thời gian làm địch chậm lại.",
+      "dmg": 24,
+      "mana": 5,
+      "cast": 0.9,
+      "effect": "Làm chậm 40% trong 3 giây",
+      "mech": {
+        "type": "drop",
+        "hit": 4,
+        "shake": 4,
+        "slow": 0.4
+      },
+      "vis": "a giant golden hourglass falling and shattering, golden sand of time bursting out",
+      "guide": "frames 1-4: the hourglass falling from the TOP of the cell; frames 5-8: shattering on the bottom of the cell with sand and glass shards spraying",
+      "pose_txt": "raising a pocket watch high to the sky, then bringing the arm down hard",
+      "hits": 1,
+      "row": 1,
+      "pose": "sp_hourglass",
+      "hand": [
+        130,
+        62
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "rewind",
+      "name": "Tua Ngược",
+      "release": 3,
+      "how": "Quay ngược thời gian của bản thân, lấy lại máu đã mất trong 3 giây vừa qua.",
+      "dmg": 0,
+      "heal": 22,
+      "mana": 5,
+      "cast": 0.7,
+      "effect": "Hồi lượng máu đã mất trong 3 giây trước (tối đa 30)",
+      "mech": {
+        "type": "self",
+        "heal": 22,
+        "healAt": 5,
+        "fps": 9,
+        "label": "Tua ngược"
+      },
+      "vis": "a ring of glowing teal clock numerals spinning backwards around the caster with a curved rewind arrow",
+      "guide": "centered: frames 1-3 the clock ring appearing; frames 4-6 spinning counter-clockwise; frames 7-8 fading",
+      "pose_txt": "arms spread with the palms turned backwards, the robe fluttering in reverse, as if time is flowing backward",
+      "hits": 1,
+      "row": 2,
+      "pose": "sp_rewind",
+      "hand": [
+        130,
+        61
+      ],
+      "frames": 8,
+      "fps": 9
+    },
+    {
+      "key": "stasis",
+      "name": "Ngưng Đọng Thời Gian",
+      "release": 2,
+      "how": "Nhốt địch vào bong bóng thời gian, mọi thứ bên trong đứng im, khi vỡ thì nhận sát thương.",
+      "dmg": 18,
+      "mana": 6,
+      "cast": 0.8,
+      "effect": "Địch đứng yên 1,5 giây, không niệm được phép",
+      "mech": {
+        "type": "erupt",
+        "hit": 6,
+        "freeze": true,
+        "fps": 7
+      },
+      "vis": "a translucent teal time bubble with a frozen clock face inside, standing on the ground",
+      "guide": "on the bottom of the cell, semi-transparent so a person inside stays visible: frames 1-3 forming; frames 4-6 frozen with a still clock; frames 7-8 shattering into fragments",
+      "pose_txt": "pointing two fingers at the enemy while holding an open pocket watch up in the other hand",
+      "hits": 1,
+      "row": 3,
+      "pose": "sp_stasis",
+      "hand": [
+        130,
+        58
+      ],
+      "frames": 8,
+      "fps": 7
+    },
+    {
+      "key": "echo",
+      "name": "Dư Ảnh Quá Khứ",
+      "release": 2,
+      "how": "Gọi ba bản thân từ quá khứ hiện quanh địch, mỗi bản chém một nhát kim đồng hồ.",
+      "dmg": 9,
+      "hits": 3,
+      "mana": 5,
+      "cast": 0.6,
+      "effect": "Mỗi nhát làm chậm thêm 10%",
+      "mech": {
+        "type": "clones",
+        "count": 3,
+        "hits": [
+          2,
+          3,
+          4
+        ],
+        "fps": 10
+      },
+      "vis": "crossing slashes shaped like golden clock hands",
+      "guide": "centered: frame 1 empty; frames 2-4 one, two, then three crossing clock-hand slashes appear with a faint clock ring; frames 5-6 holding; frames 7-8 fading",
+      "pose_txt": "the body flickering and semi-transparent, splitting into afterimages of itself",
+      "row": 4,
+      "pose": "sp_echo",
+      "hand": [
+        110,
+        60
+      ],
+      "frames": 8,
+      "fps": 10
+    },
+    {
+      "key": "haste",
+      "name": "Gia Tốc",
+      "release": 2,
+      "how": "Tăng tốc dòng thời gian của bản thân: niệm nhanh hơn, hồi ma lực nhanh hơn.",
+      "dmg": 0,
+      "mana": 4,
+      "cast": 0.3,
+      "effect": "Thời gian niệm phép giảm 40% trong 5 giây",
+      "mech": {
+        "type": "self",
+        "fps": 10,
+        "label": "Gia tốc 40%"
+      },
+      "vis": "small brass clock gears spinning fast around the caster with teal speed lines",
+      "guide": "centered: frames 1-3 the gears appearing; frames 4-6 spinning fast; frames 7-8 fading",
+      "pose_txt": "snapping the fingers above the head, a brief burst of speed lines around the body",
+      "hits": 1,
+      "row": 5,
+      "pose": "sp_haste",
+      "hand": [
+        126,
+        96
+      ],
+      "frames": 8,
+      "fps": 10
+    },
+    {
+      "key": "timebomb",
+      "name": "Bom Hẹn Giờ",
+      "release": 2,
+      "how": "Treo một chiếc đồng hồ báo thức trên đầu địch, hết giờ thì nổ.",
+      "dmg": 38,
+      "mana": 6,
+      "cast": 0.6,
+      "effect": "Nếu địch đang bị chậm thì nổ sớm hơn 1 giây",
+      "mech": {
+        "type": "mark",
+        "delay": 3.0,
+        "hit": 5
+      },
+      "vis": "a small brass alarm clock with two bells floating, its hand ticking, then exploding in teal light",
+      "guide": "frames 1-4: the alarm clock hovering and ticking (seamless loop, centered); frames 5-8: a teal and gold explosion",
+      "pose_txt": "tossing a small alarm clock up with a flick of the wrist and pointing at the enemy",
+      "hits": 1,
+      "row": 6,
+      "pose": "sp_timebomb",
+      "hand": [
+        172,
+        83
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "needles",
+      "name": "Mưa Kim Giây",
+      "release": 3,
+      "how": "Xé toạc bầu trời, 6 cây kim giây sắc nhọn cắm xuống dồn dập quanh địch.",
+      "dmg": 6,
+      "hits": 6,
+      "mana": 7,
+      "cast": 1.1,
+      "effect": "Mỗi kim trúng làm chậm 5%",
+      "mech": {
+        "type": "multi_drop",
+        "count": 6,
+        "spread": 70,
+        "interval": 0.1,
+        "hit": 4
+      },
+      "vis": "a sharp golden second-hand needle plunging point-first into the ground",
+      "guide": "frames 1-4: one needle falling from the TOP of the cell; frames 5-6: stuck in the bottom of the cell with a ring of teal light; frames 7-8 fading",
+      "pose_txt": "tearing the air open above the head with both hands",
+      "row": 7,
+      "pose": "sp_needles",
+      "hand": [
+        184,
+        81
+      ],
+      "frames": 8,
+      "fps": 14
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "id": "monk",
+  "version": 2,
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "head": [
+    104,
+    42
+  ],
+  "anims": {
+    "idle": {
+      "row": 0,
+      "frames": 6,
+      "fps": 8,
+      "loop": true
+    },
+    "charge": {
+      "row": 1,
+      "frames": 4,
+      "fps": 10,
+      "loop": true
+    },
+    "hit": {
+      "row": 2,
+      "frames": 4,
+      "fps": 14,
+      "loop": false
+    },
+    "ko": {
+      "row": 3,
+      "frames": 6,
+      "fps": 10,
+      "loop": false,
+      "hold": true
+    },
+    "sp_palm": {
+      "row": 4,
+      "frames": 5,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_bell": {
+      "row": 5,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_arhat": {
+      "row": 6,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_buddhahand": {
+      "row": 7,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_lotus": {
+      "row": 8,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_mantra": {
+      "row": 9,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_roar": {
+      "row": 10,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    },
+    "sp_staff": {
+      "row": 11,
+      "frames": 6,
+      "fps": 12,
+      "loop": false
+    }
+  }
+}

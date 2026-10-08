@@ -1,0 +1,300 @@
+{
+  "id": "tarot",
+  "version": 2,
+  "element": "arcana",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "fan",
+      "name": "Tam Bài Phi Tiêu",
+      "release": 2,
+      "how": "Vung tay ném xoè ba lá bài sắc như dao, bay ba tầng cao thấp khác nhau.",
+      "dmg": 9,
+      "hits": 3,
+      "mana": 3,
+      "cast": 0.4,
+      "effect": "Mỗi lá trúng giảm 5% kháng phép của địch",
+      "mech": {
+        "type": "fan",
+        "origin": "hand",
+        "count": 3,
+        "spreadY": [
+          -34,
+          0,
+          30
+        ],
+        "interval": 0.07,
+        "speed": 640,
+        "impact": 4
+      },
+      "vis": "a spinning tarot card with a gold rim and a purple back",
+      "guide": "frames 1-4: one card flying to the RIGHT and flipping (seamless loop, centered); frames 5-8: a burst of purple and gold sparkles",
+      "pose_txt": "a flicking sidearm throw: the arm swung back holding a fan of cards, then snapped forward to release them",
+      "row": 0,
+      "pose": "sp_fan",
+      "hand": [
+        154,
+        81
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "tower",
+      "name": "Lá Toà Tháp",
+      "release": 3,
+      "how": "Rút lá Toà Tháp giơ lên trời, sét định mệnh đánh thẳng xuống đầu địch.",
+      "dmg": 32,
+      "mana": 6,
+      "cast": 1.0,
+      "effect": "Phá 30% giáp, choáng 0,3 giây",
+      "mech": {
+        "type": "drop",
+        "hit": 2,
+        "shake": 6,
+        "sky": true
+      },
+      "vis": "a jagged gold-and-violet bolt of lightning striking straight down",
+      "guide": "frames 1-2: a small spark gathering at the TOP of the cell; frames 3-6: the bolt from the top edge down to the ground line with a flash where it hits; frames 7-8: embers fading",
+      "pose_txt": "holding a single tarot card straight up above the head toward the sky",
+      "hits": 1,
+      "row": 1,
+      "pose": "sp_tower",
+      "hand": [
+        113,
+        91
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "wheel",
+      "name": "Bánh Xe Số Phận",
+      "release": 2,
+      "how": "Quay bánh xe số phận trước mặt địch. Kim dừng ở đâu thì xảy ra chuyện đó: đánh mạnh gấp đôi, hồi máu cho mình, hoặc địch bị choáng.",
+      "dmg": 20,
+      "mana": 4,
+      "cast": 0.6,
+      "effect": "Ngẫu nhiên: 40 sát thương / hồi 20 máu / choáng 1,5 giây",
+      "mech": {
+        "type": "random",
+        "hit": 6,
+        "fps": 9,
+        "outcomes": [
+          "dmg2",
+          "heal",
+          "stun"
+        ]
+      },
+      "vis": "a golden wheel of fortune with eight spokes and a pointer at the top",
+      "guide": "centered in the cell: frames 1-2 appearing; frames 1-6 spinning and slowing down; frame 6 stopping with a flash; frames 7-8 fading",
+      "pose_txt": "both hands making a big circular spinning gesture in front of the body, as if turning a wheel",
+      "hits": 1,
+      "row": 2,
+      "pose": "sp_wheel",
+      "hand": [
+        118,
+        95
+      ],
+      "frames": 8,
+      "fps": 9
+    },
+    {
+      "key": "death",
+      "name": "Lá Tử Thần",
+      "release": 2,
+      "how": "Đặt ấn Tử Thần lơ lửng trên đầu địch. Sau 2,5 giây ấn nổ, gây sát thương rất lớn.",
+      "dmg": 44,
+      "mana": 7,
+      "cast": 0.8,
+      "effect": "Nếu địch dưới 25% máu thì gây gấp đôi",
+      "mech": {
+        "type": "mark",
+        "delay": 2.5,
+        "hit": 5
+      },
+      "vis": "a floating skull sigil with a scythe inside a thin violet ring",
+      "guide": "frames 1-4: the sigil hovering and bobbing slightly (seamless loop, centered); frames 5-8: it detonates into a violet-black burst",
+      "pose_txt": "holding up one card between two fingers and pointing it at the enemy, cold and calm",
+      "hits": 1,
+      "row": 3,
+      "pose": "sp_death",
+      "hand": [
+        159,
+        72
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "star",
+      "name": "Lá Ngôi Sao",
+      "release": 3,
+      "how": "Lá Ngôi Sao bừng sáng trên đầu, mưa sao nhỏ rơi xuống hồi máu cho người niệm.",
+      "dmg": 0,
+      "heal": 24,
+      "mana": 5,
+      "cast": 0.9,
+      "effect": "Hồi 24 máu, giải hiệu ứng xấu",
+      "mech": {
+        "type": "self",
+        "heal": 24,
+        "healAt": 4,
+        "fps": 9
+      },
+      "vis": "a bright eight-pointed golden star at the top with tiny stars raining down",
+      "guide": "centered: the big star near the TOP of the cell, small twinkling stars falling down through the cell; frames 1-3 appearing; frames 4-6 shining; frames 7-8 fading",
+      "pose_txt": "hands clasped at the chest as if praying, then opening both arms upward to receive starlight",
+      "hits": 1,
+      "row": 4,
+      "pose": "sp_star",
+      "hand": [
+        145,
+        80
+      ],
+      "frames": 8,
+      "fps": 9
+    },
+    {
+      "key": "moon",
+      "name": "Lá Mặt Trăng",
+      "release": 3,
+      "how": "Trăng khuyết hiện trên đầu địch, sương mê dâng lên. Địch bị mê hoặc, phép kế tiếp đánh trượt.",
+      "dmg": 12,
+      "mana": 4,
+      "cast": 0.7,
+      "effect": "Mê hoặc: phép kế tiếp của địch trượt (trong 3 giây)",
+      "mech": {
+        "type": "erupt",
+        "hit": 3,
+        "fps": 9,
+        "confuse": 3
+      },
+      "vis": "a pale crescent moon above with violet dream mist rising from the ground",
+      "guide": "the moon near the TOP of the cell, the mist on the ground line at the bottom; frames 1-3 appearing; frames 4-6 swirling; frames 7-8 fading",
+      "pose_txt": "one hand raised gracefully above the head with the palm toward the moon, the other hand low and open",
+      "hits": 1,
+      "row": 5,
+      "pose": "sp_moon",
+      "hand": [
+        142,
+        105
+      ],
+      "frames": 8,
+      "fps": 9
+    },
+    {
+      "key": "chain",
+      "name": "Xiềng Định Mệnh",
+      "release": 2,
+      "how": "Phóng sợi xích vàng trói lấy địch, siết 3 nhịp. Địch đứng yên tới khi xích tan.",
+      "dmg": 8,
+      "hits": 3,
+      "mana": 5,
+      "cast": 0.6,
+      "effect": "Trói chân trong lúc bị xích",
+      "mech": {
+        "type": "beam",
+        "origin": "hand",
+        "ticks": [
+          2,
+          4,
+          6
+        ],
+        "fps": 10,
+        "root": 1.2
+      },
+      "vis": "a golden chain of glowing links stretched horizontally",
+      "guide": "every cell is ONE horizontal segment of the chain entering at the exact middle of the left edge and leaving at the exact middle of the right edge (tileable); frames 1-6 links glinting; frames 7-8 fading",
+      "pose_txt": "both arms thrust forward together, hands open, as if casting a chain at the enemy",
+      "row": 6,
+      "pose": "sp_chain",
+      "hand": [
+        141,
+        88
+      ],
+      "frames": 8,
+      "fps": 10,
+      "beamHead": [
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ]
+      ]
+    },
+    {
+      "key": "world",
+      "name": "Lá Thế Giới",
+      "release": 3,
+      "how": "Sáu lá bài bay vòng quanh địch, thời gian ngưng lại, các lá bài khép vào cắt 4 nhát.",
+      "dmg": 10,
+      "hits": 4,
+      "mana": 8,
+      "cast": 1.3,
+      "effect": "Địch đứng yên trong lúc bị vây",
+      "mech": {
+        "type": "strike",
+        "hits": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "freeze": true,
+        "fps": 8
+      },
+      "vis": "six tarot cards orbiting in a flat ellipse, closing inward to a bright flash",
+      "guide": "centered at chest height of a target: frames 1-3 the ring of cards forming; frames 4-6 spinning and closing in; frames 7-8 a bright flash then fading",
+      "pose_txt": "both arms spread wide open, floating cards around, the robe billowing",
+      "row": 7,
+      "pose": "sp_world",
+      "hand": [
+        113,
+        77
+      ],
+      "frames": 8,
+      "fps": 8
+    }
+  ]
+}

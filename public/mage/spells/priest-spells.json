@@ -1,0 +1,287 @@
+{
+  "id": "priest",
+  "version": 2,
+  "element": "holy",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "holybolt",
+      "name": "Thánh Quang Đạn",
+      "release": 2,
+      "how": "Phóng một quả cầu thánh quang hình thánh giá bay thẳng tới địch.",
+      "dmg": 16,
+      "mana": 2,
+      "cast": 0.4,
+      "effect": "Gây gấp đôi lên địch đang có hiệu ứng bóng tối / nguyền",
+      "mech": {
+        "type": "projectile",
+        "origin": "hand",
+        "speed": 560,
+        "impact": 4
+      },
+      "vis": "a radiant orb of holy light with a white cross inside",
+      "guide": "frames 1-4: the orb flying to the RIGHT (seamless loop, centered); frames 5-8: a star-shaped burst of golden light",
+      "pose_txt": "one open palm thrust forward while the other hand holds a small holy book at the chest",
+      "hits": 1,
+      "row": 0,
+      "pose": "sp_holybolt",
+      "hand": [
+        144,
+        105
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "lance",
+      "name": "Thương Ánh Sáng",
+      "release": 2,
+      "how": "Phóng một ngọn thương ánh sáng xuyên thẳng tới địch, đốt 3 nhịp.",
+      "dmg": 9,
+      "hits": 3,
+      "mana": 4,
+      "cast": 0.6,
+      "effect": "Mỗi nhịp hồi cho người niệm 2 máu",
+      "mech": {
+        "type": "beam",
+        "origin": "hand",
+        "ticks": [
+          1,
+          3,
+          5
+        ],
+        "fps": 12
+      },
+      "vis": "a golden-white spear of holy light stretched horizontally",
+      "guide": "every cell is ONE horizontal segment of the light beam entering at the exact middle of the left edge and leaving at the exact middle of the right edge (tileable); frames 1-6 pulsing; frames 7-8 thinning",
+      "pose_txt": "both arms thrust forward together as if hurling a spear of light",
+      "row": 1,
+      "pose": "sp_lance",
+      "hand": [
+        135,
+        95
+      ],
+      "frames": 8,
+      "fps": 12,
+      "beamHead": [
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ],
+        [
+          6,
+          132,
+          186
+        ]
+      ]
+    },
+    {
+      "key": "pillar",
+      "name": "Cột Sáng Phán Xét",
+      "release": 3,
+      "how": "Giơ cao thánh giá, một cột sáng từ trời giáng thẳng xuống đầu địch.",
+      "dmg": 30,
+      "mana": 6,
+      "cast": 1.1,
+      "effect": "Làm Mù 1,5 giây",
+      "mech": {
+        "type": "drop",
+        "hit": 2,
+        "shake": 5
+      },
+      "vis": "a pillar of golden holy light descending from a halo in the sky",
+      "guide": "frames 1-2: a small glowing halo at the TOP of the cell; frames 3-6: a bright pillar of light from the top edge down to the bottom of the cell with a cross-shaped flash at its base; frames 7-8: sparkles fading",
+      "pose_txt": "raising a holy cross staff high above the head with both hands",
+      "hits": 1,
+      "row": 2,
+      "pose": "sp_pillar",
+      "hand": [
+        129,
+        81
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "chains",
+      "name": "Xiềng Ánh Sáng",
+      "release": 3,
+      "how": "Vòng ấn thánh hiện dưới chân địch, xích sáng trồi lên trói chặt.",
+      "dmg": 12,
+      "mana": 4,
+      "cast": 0.6,
+      "effect": "Trói chân 2 giây",
+      "mech": {
+        "type": "erupt",
+        "hit": 2,
+        "root": 2
+      },
+      "vis": "a golden holy seal on the ground with glowing chains rising and coiling",
+      "guide": "side view on the bottom of the cell: frames 1-2 the seal appearing; frames 3-6 chains rising and coiling upward; frames 7-8 fading",
+      "pose_txt": "kneeling and pressing one palm on the ground while praying with the other hand",
+      "hits": 1,
+      "row": 3,
+      "pose": "sp_chains",
+      "hand": [
+        151,
+        176
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "aegis",
+      "name": "Khiên Thánh",
+      "release": 2,
+      "how": "Dựng khiên ánh sáng trước người, chặn đòn và phản lại đạn phép.",
+      "dmg": 0,
+      "mana": 4,
+      "cast": 0.4,
+      "effect": "Giáp 25; phản lại đạn phép đầu tiên trong 3 giây",
+      "mech": {
+        "type": "self",
+        "shield": 25,
+        "at": "caster_front",
+        "fps": 8,
+        "label": "Phản đạn"
+      },
+      "vis": "a tall translucent golden shield of light with a cross emblem",
+      "guide": "centered in the cell: frames 1-3 forming; frames 4-6 holding with glints; frames 7-8 fading",
+      "pose_txt": "one arm raised forward with the palm out as if holding up an invisible shield, the other hand on the chest",
+      "hits": 1,
+      "row": 4,
+      "pose": "sp_aegis",
+      "hand": [
+        155,
+        102
+      ],
+      "frames": 8,
+      "fps": 8
+    },
+    {
+      "key": "blessing",
+      "name": "Phúc Lành",
+      "release": 3,
+      "how": "Cầu nguyện, hào quang và lông vũ sáng rơi xuống hồi máu cho người niệm.",
+      "dmg": 0,
+      "heal": 26,
+      "mana": 5,
+      "cast": 1.0,
+      "effect": "Hồi 26 máu, giải hiệu ứng xấu",
+      "mech": {
+        "type": "self",
+        "heal": 26,
+        "healAt": 4,
+        "fps": 9
+      },
+      "vis": "a golden halo above with glowing feathers and light motes drifting down",
+      "guide": "centered: the halo near the TOP of the cell, feathers and sparkles falling through the cell; frames 1-3 appearing; frames 4-6 shining; frames 7-8 fading",
+      "pose_txt": "hands clasped in prayer at the chest, head bowed, then looking up",
+      "hits": 1,
+      "row": 5,
+      "pose": "sp_blessing",
+      "hand": [
+        129,
+        124
+      ],
+      "frames": 8,
+      "fps": 9
+    },
+    {
+      "key": "angel",
+      "name": "Thiên Thần Hộ Vệ",
+      "release": 3,
+      "how": "Gọi một thiên thần nhỏ bay bên cạnh, bắn 5 mũi tên ánh sáng vào địch.",
+      "dmg": 5,
+      "hits": 5,
+      "mana": 6,
+      "cast": 1.0,
+      "effect": "Mỗi mũi tên trúng hồi 2 máu cho người niệm",
+      "mech": {
+        "type": "turret",
+        "life": 3.0,
+        "every": 0.55,
+        "speed": 640,
+        "fps": 10,
+        "float": true
+      },
+      "vis": "a small winged guardian angel in a white robe with a golden halo, hovering",
+      "guide": "centered in the upper half of the cell, facing RIGHT: frames 1-4 appearing in a flash of light and spreading the wings; frames 5-8 hovering and flapping in a loop, the front hand raised to shoot light",
+      "pose_txt": "both arms raised high calling down from heaven, then opening the arms",
+      "vis2": "a small golden arrow of light",
+      "guide2": "frames 1-4: the arrow flying to the RIGHT (seamless loop, centered); frames 5-8: a small burst of light",
+      "row": 6,
+      "pose": "sp_angel",
+      "hand": [
+        154,
+        62
+      ],
+      "frames": 8,
+      "fps": 10,
+      "row2": 7
+    },
+    {
+      "key": "revive",
+      "name": "Ấn Hồi Sinh",
+      "release": 3,
+      "how": "Khắc ấn hồi sinh lên người. Nếu gục trong 8 giây tới thì đứng dậy lại.",
+      "dmg": 0,
+      "mana": 8,
+      "cast": 1.4,
+      "effect": "Hồi sinh với 35% máu (một lần mỗi trận)",
+      "mech": {
+        "type": "self",
+        "fps": 8,
+        "label": "Hồi sinh sẵn sàng"
+      },
+      "vis": "a pair of radiant light wings opening behind the caster with a small glowing ankh-cross on the chest",
+      "guide": "centered: frames 1-3 the wings unfolding; frames 4-6 glowing; frames 7-8 fading",
+      "pose_txt": "arms spread wide and head tilted back, the body glowing as if lifted by light",
+      "hits": 1,
+      "row": 8,
+      "pose": "sp_revive",
+      "hand": [
+        143,
+        102
+      ],
+      "frames": 8,
+      "fps": 8
+    }
+  ]
+}

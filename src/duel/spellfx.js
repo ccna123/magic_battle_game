@@ -1,8 +1,8 @@
 /* Vẽ phép từ sheet phép (8 cột × 12 hàng, khung 192×192) lên canvas phủ sân đấu.
    Toạ độ "gốc" theo quy ước của gói: chân nhân vật / mặt đất ở y = 180 trong khung, nhân vật quay phải.
    Mỗi hiệu ứng neo vào một đấu sĩ (i) và được phóng theo cỡ đấu sĩ trên màn hình (k = bề rộng hình / 192).
-   Phép của bên phải (máy) được lật ngang. Logic bay chép từ spell-player.js / reference/xuong-sprite.html của gói. */
-import { MAGES, MONS } from './mages.js';
+   Phép của bên phải (máy) được lật ngang. Logic bay chép từ spell-player.js, spell-player-v2.js và reference/xuong-sprite.html của gói. */
+import { MAGES } from './mages.js';
 
 export const FW = 192, BASE = 180, SKY_TOP = 285, SKY_PRE = .32;
 let ents = [];
@@ -27,7 +27,7 @@ export function fxUpdate(dt, now){
       continue;
     }
     if (e.kind === 'zap') { e.t += dt; if (e.t > .16) e.done = true; continue; }
-    if (e.kind === 'mon') { e.t += dt; if (e.p.gone && e.goneAt == null) e.goneAt = e.t; if (e.goneAt != null && e.t - e.goneAt > .35) e.done = true; continue; }
+    if (e.kind === 'v2') { updateV2(e, dt, now); continue; }
     const m = e.sp.meta;
     if (m.skyMode === 'fall' && (e.pre || 0) < SKY_PRE && e.sp.kind === 'sky' && !e.sp.summon) { e.pre = (e.pre || 0) + dt; continue; }
     e.t += dt; const step = 1 / e.fps;
@@ -46,9 +46,9 @@ export function fxDraw(g, G){
   g.imageSmoothingEnabled = false;
   for (const e of ents) {
     if (e.delay > 0) continue;
-    const M = MAGES[e.sp.mage], img = M && M.spellImg; if (!img && e.kind !== 'zap' && e.kind !== 'mon') continue;
+    const M = MAGES[e.sp.mage], img = M && M.spellImg; if (!img && e.kind !== 'zap') continue;
     if (e.kind === 'zap') { drawZap(g, e, G); continue; }
-    if (e.kind === 'mon') { drawMon(g, e, G); continue; }
+    if (e.kind === 'v2') { drawV2(g, e, G, img, M); continue; }
     if (e.kind === 'bolt') { drawBolt(g, e, G, img, M); continue; }
     if (e.beam) { drawBeam(g, e, G, img, M); continue; }
     drawArea(g, e, G, img);
@@ -134,21 +134,72 @@ function drawZap(g, e, G){
   g.lineTo(x1, y1); g.stroke(); g.restore();
 }
 
-// Quái triệu hồi: chạy theo tiến độ của đòn đánh p (trồi lên → lao tới / bổ nhào / phun lên → chạm đích khi p tới nơi)
-const MON_H = [92, 124, 160];
-function drawMon(g, e, G){
-  const im = MONS[e.sp.summon]; if (!im) return;
-  const c = G[e.from], t = G[e.to], k = c.k, face = c.face, u = e.p ? Math.min(1, e.p.k) : 1, after = e.p && e.p.gone ? e.t - e.goneAt : 0;
-  const sc = MON_H[(e.sp.level || 1) - 1] / Math.max(im.width, im.height * 1.05) * k, w = im.width * sc, h = im.height * sc;
-  const startX = c.x + 100 * k * face, hitX = t.x - (40 * k + w * .25) * face, mode = e.sp.mech;
-  let x = startX, yb = c.g, a = 1, reveal = 1;
-  if (mode === 'dive') { x = startX + (hitX - startX) * u * u; yb = (t.g - 160 * k) + 160 * k * u * u; a = Math.min(1, u * 5); }
-  else if (mode === 'erupt') { x = hitX; reveal = Math.min(1, u * 1.4); }
-  else { reveal = Math.min(1, u / .35); const v = Math.max(0, (u - .45) / .55); x = startX + (hitX - startX) * v * v; }
-  if (after > 0) a = Math.max(0, 1 - after / .35);
-  g.save(); g.globalAlpha = a;
-  if (mode !== 'dive') { g.beginPath(); g.rect(0, 0, 1e5, yb); g.clip(); }
-  g.translate(x, yb); if (face < 0) g.scale(-1, 1);
-  g.drawImage(im, -w / 2, -h + (1 - reveal) * h, w, h);
-  g.restore();
+/* ---------- Định dạng v2: bộ phép riêng (chép logic FxV2 của spell-player-v2.js) ----------
+   e.mode: shot (đạn đi theo nhịp sát thương p) · boom (hồi toàn) · lob (ném vòng cung) · beam (tia) · spot (đứng một chỗ: giáng, trồi,
+   ấn, tháp, vùng, bản thân...). Vị trí tính theo px gốc so với chân đấu sĩ, nhân hướng mặt của người niệm. */
+// Điểm xuất phát của phép v2 so với chân người niệm: tay ở khung release, đầu, hoặc mặt đất trước mặt
+export function originV2(sp){
+  const m = sp.mech, M = MAGES[sp.mage];
+  if (m.origin === 'head') { const h = sp.meta.headPt || M.head; return [h[0] - FW / 2, h[1] - BASE]; }
+  if (m.origin === 'ground') return [70, -84];
+  const h = sp.meta.hand || [150, 104]; return [h[0] - FW / 2, h[1] - BASE];
+}
+const ptOf = (G, i, cf, dx, dy) => ({x:G[i].x + dx * G[i].k * cf, y:G[i].g + dy * G[i].k});
+function center(g, img, sx, sy, x, y, k, face, alpha = 1){
+  if (sy < 0) return;
+  g.save(); g.globalAlpha = alpha; g.translate(x, y); g.scale(k * face, k); g.drawImage(img, sx, sy, FW, FW, -FW / 2, -FW / 2, FW, FW); g.restore();
+}
+function updateV2(e, dt, now){
+  if (e.delay > 0) { e.delay -= dt; return; }
+  e.age = (e.age || 0) + dt; e.t += dt;
+  const step = 1 / e.fps, loop4 = () => { while (e.t >= step) { e.t -= step; e.f = (e.f + 1) % 4; } };
+  const play = (to = 7) => { while (e.t >= step) { e.t -= step; e.f++;
+    if (e.hold && e.f > e.hold.to && now() < e.hold.until()) e.f = e.hold.from;
+    if (e.f > to) { e.done = true; break; } } };
+  if (e.mode === 'shot') { if (e.phase === 'fly') { loop4(); if (e.p.gone) { e.phase = 'impact'; e.f = e.sp.mech.impact || 4; e.t = 0; } } else play(); return; }
+  if (e.mode === 'boom') { loop4(); if (e.age >= 2 * e.T * e.passes) e.done = true; return; }
+  if (e.mode === 'lob') { if (e.phase === 'fly') { loop4(); if (e.age >= e.flight) { e.phase = 'impact'; e.f = e.sp.mech.impact || 4; e.t = 0; } } else play(); return; }
+  play();
+}
+function drawV2(g, e, G, img, M){
+  if (e.delay > 0) return;
+  const c = G[e.from], t = G[e.to], k = c.k, cf = c.face, fi = Math.min(e.f, 7), sx = fi * FW, sy = (e.row ?? e.sp.meta.row) * FW, m = e.sp.mech;
+  const O = e.o ? ptOf(G, e.o.i, cf, e.o.dx, e.o.dy) : null;
+  if (e.mode === 'shot') {
+    const x0 = O.x + 26 * k * cf, x1 = t.x - 30 * k * cf, u = Math.min(1, e.p.k);
+    if (e.phase === 'impact' && e.p.hitTarget) return center(g, img, sx, sy, t.x - 10 * k * cf, O.y + (e.dy || 0) * k, k, cf);
+    let y = O.y + (e.dy || 0) * k;
+    if (m.type === 'wave') y += Math.sin(u * Math.PI * 2 * (m.waves || 2)) * (m.amp || 30) * k;
+    return center(g, img, sx, sy, x0 + (x1 - x0) * u, y, k, cf);
+  }
+  if (e.mode === 'boom') {
+    const x0 = O.x + 20 * k * cf, x1 = t.x - 20 * k * cf, cyc = e.age / e.T, back = Math.floor(cyc) % 2 === 1, u = back ? 1 - (cyc % 1) : cyc % 1;
+    return center(g, img, sx, sy, x0 + (x1 - x0) * u, O.y, k, back && m.controlled ? -cf : cf);
+  }
+  if (e.mode === 'lob') {
+    const u = Math.min(1, e.age / e.flight), x1 = t.x - 6 * k * cf, y1 = t.g - 70 * k;
+    return center(g, img, sx, sy, O.x + (x1 - O.x) * u, O.y + (y1 - O.y) * u - Math.sin(u * Math.PI) * (m.arc || 140) * k, k, cf);
+  }
+  if (e.mode === 'beam') {
+    const x0 = O.x + (m.origin === 'head' ? 8 : -4) * k * cf, len = Math.abs((t.x - 14 * k * cf) - x0) / k, bh = (e.sp.meta.beamHead || [])[fi];
+    g.save(); g.translate(x0, O.y); g.scale(k * cf, k);
+    if (bh) { const [L, S2, R] = bh, head = R - S2, body = Math.max(1, len - head);
+      g.drawImage(img, sx + L, sy, S2 - L, FW, 0, -FW / 2, body, FW); g.drawImage(img, sx + S2, sy, head, FW, body, -FW / 2, head, FW); }
+    else for (let x = 0; x < len; x += FW) { const w = Math.min(FW, len - x); g.drawImage(img, sx, sy, w, FW, x, -FW / 2, w, FW); }
+    g.restore();
+    if (e.sp.meta.row2 != null) center(g, img, sx, e.sp.meta.row2 * FW, O.x, O.y, k, cf);     // con mắt Horus ở điểm xuất phát
+    return;
+  }
+  // spot: neo vào đấu sĩ e.i, lệch e.dx theo hướng người niệm, cao e.dy so với mặt đất
+  let dx = e.dx || 0;
+  if (e.move) dx = Math.min(Math.abs(t.x - c.x) / k - 10, 90 + e.speed * (e.age || 0));      // lốc cát tiến dần về phía địch
+  const p = ptOf(G, e.i, cf, dx, e.dy || 0);
+  let lift = 0;
+  if (m.type === 'drop' || m.type === 'multi_drop') { const hf = m.hit ?? 3; lift = fi < hf ? (1 - (e.f + e.t * e.fps) / hf) * 160 : 0; }
+  if (e.clones) {                                                                                // bóng người niệm (khung tư thế) quanh địch
+    const a = M.anim.anims[e.sp.pose] || M.anim.anims.idle;
+    e.clones.forEach((cx, j) => { if (fi >= j + 1 && fi < 7) center(g, M.sheet, Math.min(e.sp.release, a.frames - 1) * FW, a.row * FW,
+      t.x + cx * k * cf, t.g - 84 * k, k, cx > 0 ? -cf : cf, .6); });
+  }
+  center(g, img, sx, sy, p.x, p.y - Math.max(0, lift) * k, k, cf);
 }

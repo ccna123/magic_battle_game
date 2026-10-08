@@ -1,0 +1,245 @@
+{
+  "id": "swordsman",
+  "version": 2,
+  "element": "qi",
+  "frame": {
+    "w": 192,
+    "h": 192
+  },
+  "baseline": 180,
+  "cols": 8,
+  "spells": [
+    {
+      "key": "iaido",
+      "name": "Nhất Thiểm · Hoa Sơn",
+      "release": 2,
+      "how": "Rút kiếm lướt xuyên qua địch trong chớp mắt, để lại một đường chém.",
+      "dmg": 24,
+      "mana": 4,
+      "cast": 0.3,
+      "effect": "Xuyên giáp",
+      "mech": {
+        "type": "dash",
+        "hit": 2,
+        "afterimages": true,
+        "stop": "behind"
+      },
+      "vis": "a single blinding horizontal sword slash",
+      "guide": "centered in the cell: frames 1-2 a thin flash; frames 3-6 a bright wide slash line; frames 7-8 fading",
+      "pose_txt": "an iaido quick-draw: crouched with the hand on the sword hilt at the hip, then one explosive horizontal draw-slash forward",
+      "hits": 1,
+      "row": 0,
+      "pose": "sp_iaido",
+      "hand": [
+        171,
+        94
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "crescent",
+      "name": "Kiếm Khí Trảm · Không Động",
+      "release": 2,
+      "how": "Chém một nhát từ trên xuống, phóng kiếm khí hình trăng lưỡi liềm bay tới địch.",
+      "dmg": 18,
+      "mana": 3,
+      "cast": 0.4,
+      "effect": "Đẩy lùi",
+      "mech": {
+        "type": "projectile",
+        "origin": "hand",
+        "speed": 560,
+        "impact": 4
+      },
+      "vis": "a crescent-moon shaped wave of jade sword-qi",
+      "guide": "frames 1-4: the upright crescent flying to the RIGHT (seamless loop, centered); frames 5-8: dispersing into jade mist",
+      "pose_txt": "a big overhead two-handed sword chop from above the head down to the front",
+      "hits": 1,
+      "row": 1,
+      "pose": "sp_crescent",
+      "hand": [
+        150,
+        112
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "flysword",
+      "name": "Ngự Kiếm Phi Hành · Côn Lôn",
+      "release": 2,
+      "how": "Điều khiển phi kiếm bay chém tới chém lui 3 lần.",
+      "dmg": 8,
+      "hits": 3,
+      "mana": 5,
+      "cast": 0.7,
+      "effect": "Mỗi lần phá giáp 10%",
+      "mech": {
+        "type": "boomerang",
+        "origin": "hand",
+        "speed": 620,
+        "passes": 3,
+        "controlled": true
+      },
+      "vis": "a flying sword with a jade aura, point to the right",
+      "guide": "all 8 frames a seamless loop of the sword flying to the RIGHT, centered in the cell",
+      "pose_txt": "the sword-finger gesture: two fingers pointing forward to steer a flying sword, the other hand raised behind",
+      "row": 2,
+      "pose": "sp_flysword",
+      "hand": [
+        167,
+        76
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "swordrain",
+      "name": "Vạn Kiếm Quy Tông · Võ Đang",
+      "release": 3,
+      "how": "Giơ kiếm lên trời, gọi 7 thanh kiếm khí cắm xuống dồn dập quanh địch.",
+      "dmg": 6,
+      "hits": 7,
+      "mana": 7,
+      "cast": 1.2,
+      "effect": "Mỗi kiếm đẩy lùi nhẹ",
+      "mech": {
+        "type": "multi_drop",
+        "count": 7,
+        "spread": 70,
+        "interval": 0.09,
+        "hit": 4
+      },
+      "vis": "a jade-glowing sword plunging point-first into the ground",
+      "guide": "frames 1-4: one sword falling from the TOP of the cell; frames 5-6: stuck in the ground line with a ripple; frames 7-8 fading",
+      "pose_txt": "thrusting the sword straight up to the sky with one hand, calling down a rain of swords",
+      "row": 3,
+      "pose": "sp_swordrain",
+      "hand": [
+        115,
+        51
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "taiji",
+      "name": "Thái Cực Đồ · Võ Đang",
+      "release": 2,
+      "how": "Vẽ vòng âm dương trước người, hoá giải đòn đánh và đẩy ngược lại.",
+      "dmg": 0,
+      "mana": 4,
+      "cast": 0.5,
+      "effect": "Chặn 1 đòn và phản 50% sát thương trong 3 giây",
+      "mech": {
+        "type": "self",
+        "shield": 25,
+        "at": "caster_front",
+        "fps": 8
+      },
+      "vis": "a spinning black-and-white yin-yang circle with a jade rim",
+      "guide": "centered in the cell; frames 1-3 growing; frames 4-6 spinning; frames 7-8 fading",
+      "pose_txt": "low horse stance, both palms tracing slow circles in front of the chest (taiji push-hands)",
+      "hits": 1,
+      "row": 4,
+      "pose": "sp_taiji",
+      "hand": [
+        149,
+        93
+      ],
+      "frames": 8,
+      "fps": 8
+    },
+    {
+      "key": "dragonpalm",
+      "name": "Long Ảnh Chưởng · Cái Bang",
+      "release": 2,
+      "how": "Một chưởng đẩy ra, chưởng phong hoá rồng ngọc lao tới nổ tung.",
+      "dmg": 30,
+      "mana": 6,
+      "cast": 0.9,
+      "effect": "Đẩy lùi mạnh, choáng 0,5 giây",
+      "mech": {
+        "type": "projectile",
+        "origin": "hand",
+        "speed": 480,
+        "impact": 4,
+        "shake": 4
+      },
+      "vis": "a jade dragon made of palm wind charging forward",
+      "guide": "frames 1-4: the dragon flying to the RIGHT (seamless loop, centered); frames 5-8: an explosion of qi",
+      "pose_txt": "a deep lunge, one open palm thrust straight forward with full force, the other arm pulled back",
+      "hits": 1,
+      "row": 5,
+      "pose": "sp_dragonpalm",
+      "hand": [
+        165,
+        99
+      ],
+      "frames": 8,
+      "fps": 14
+    },
+    {
+      "key": "clones",
+      "name": "Ảnh Phân Thân · Nga Mi",
+      "release": 2,
+      "how": "Tách ra ba bóng ảnh vây quanh địch, mỗi bóng chém một nhát.",
+      "dmg": 9,
+      "hits": 3,
+      "mana": 5,
+      "cast": 0.6,
+      "effect": "Mỗi nhát 20% chí mạng",
+      "mech": {
+        "type": "clones",
+        "count": 3,
+        "hits": [
+          2,
+          3,
+          4
+        ],
+        "fps": 10
+      },
+      "vis": "overlapping X-shaped sword slashes",
+      "guide": "centered: frame 1 empty; frames 2-4 one, two, then three crossing slashes appear; frames 5-6 holding; frames 7-8 fading",
+      "pose_txt": "a blurring stance, the body flickering and semi-transparent as if splitting into afterimages",
+      "row": 6,
+      "pose": "sp_clones",
+      "hand": [
+        96,
+        159
+      ],
+      "frames": 8,
+      "fps": 10
+    },
+    {
+      "key": "acupoint",
+      "name": "Điểm Huyệt Định Thân",
+      "release": 2,
+      "how": "Lướt tới điểm trúng huyệt đạo, địch đứng im không cử động được.",
+      "dmg": 10,
+      "mana": 4,
+      "cast": 0.4,
+      "effect": "Địch đứng yên 1,5 giây, ngắt phép đang niệm",
+      "mech": {
+        "type": "dash",
+        "hit": 2,
+        "freeze": 1.5,
+        "stop": "front",
+        "fps": 8
+      },
+      "vis": "a glowing jade acupoint and meridian diagram",
+      "guide": "centered at chest height of a target; frames 1-2 appearing; frames 3-6 points lighting up one by one; frames 7-8 fading",
+      "pose_txt": "a quick finger jab: two fingers stabbing forward at chest height",
+      "hits": 1,
+      "row": 7,
+      "pose": "sp_acupoint",
+      "hand": [
+        163,
+        80
+      ],
+      "frames": 8,
+      "fps": 8
+    }
+  ]
+}
